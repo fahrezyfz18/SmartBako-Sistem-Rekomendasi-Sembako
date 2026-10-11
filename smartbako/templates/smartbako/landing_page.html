@@ -1,0 +1,212 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartBako | Pilih Sembako Lebih Cerdas</title>
+
+    <link rel="stylesheet"
+          href="{% static 'smartbako/css/landing.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container nav-inner">
+        <a href="{% url 'landing' %}" class="brand">
+            <span class="brand-icon">S</span>
+            SmartBako
+        </a>
+
+        <nav class="nav-links">
+            <a href="#beranda">Beranda</a>
+            <a href="#tentang">Tentang</a>
+            <a href="#fitur">Fitur</a>
+            <a href="{% url 'smartbako:katalog' %}">Katalog</a>
+            <a href="{% url 'login' %}" class="btn btn-primary">
+                Masuk →
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero" id="beranda">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="eyebrow">
+                    ✦ SMART GROCERY RECOMMENDATION
+                </span>
+
+                <h1>
+                    Temukan Sembako,
+                    <span>Lebih Cerdas.</span>
+                </h1>
+
+                <p>
+                    Bingung memilih produk kebutuhan sehari-hari?
+                    SmartBako membantu kamu menjelajahi katalog dan
+                    menemukan rekomendasi produk berdasarkan kebutuhan
+                    serta preferensimu.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'smartbako:katalog' %}"
+                       class="btn btn-primary">
+                        Jelajahi Katalog →
+                    </a>
+
+                    <a href="{% url 'login' %}"
+                       class="btn btn-light">
+                        Masuk ke Akun
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    ✓ Pencarian praktis
+                    &nbsp; ✓ Informasi produk
+                    &nbsp; ✓ Rekomendasi cerdas
+                </div>
+            </div>
+
+            <div class="hero-card">
+                <div class="card-heading">
+                    <div>
+                        <span class="card-label">KENALI KEBUTUHANMU</span>
+                        <h2>Mulai dari kebutuhan pokok</h2>
+                    </div>
+                    <span class="sparkle">✦</span>
+                </div>
+
+                <div class="category-grid">
+                    <a href="{% url 'smartbako:katalog' %}"
+                       class="category-item">
+                        <span class="category-icon">🌾</span>
+                        <strong>Beras</strong>
+                        <small>Kebutuhan pokok</small>
+                    </a>
+
+                    <a href="{% url 'smartbako:katalog' %}"
+                       class="category-item">
+                        <span class="category-icon">🫗</span>
+                        <strong>Minyak Goreng</strong>
+                        <small>Kebutuhan dapur</small>
+                    </a>
+
+                    <a href="{% url 'smartbako:katalog' %}"
+                       class="category-item">
+                        <span class="category-icon">🍚</span>
+                        <strong>Gula</strong>
+                        <small>Bahan makanan</small>
+                    </a>
+
+                    <a href="{% url 'smartbako:katalog' %}"
+                       class="category-item">
+                        <span class="category-icon">🫘</span>
+                        <strong>Kacang-kacangan</strong>
+                        <small>Pilihan lainnya</small>
+                    </a>
+                </div>
+
+                <div class="smart-note">
+                    <span>✦</span>
+                    <p>
+                        <strong>Pilihan lebih terarah</strong>
+                        <small>
+                            Kenali karakteristik produk sebelum memilih.
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section about" id="tentang">
+        <div class="container section-heading">
+            <span class="eyebrow">TENTANG SMARTBAKO</span>
+            <h2>Lebih mudah mengenali pilihan sembako</h2>
+            <p>
+                SmartBako merupakan aplikasi web sistem rekomendasi
+                produk sembako yang membantu pengguna mencari,
+                membandingkan informasi, dan menemukan produk
+                berdasarkan preferensi.
+            </p>
+        </div>
+    </section>
+
+    <section class="section features" id="fitur">
+        <div class="container">
+            <div class="section-heading">
+                <span class="eyebrow">FITUR UTAMA</span>
+                <h2>Dirancang untuk kebutuhanmu</h2>
+                <p>
+                    Temukan informasi produk dengan antarmuka yang
+                    sederhana dan mudah digunakan.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">⌕</div>
+                    <h3>Pencarian Produk</h3>
+                    <p>
+                        Cari produk berdasarkan nama, merek,
+                        atau kategori.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">▦</div>
+                    <h3>Katalog Sembako</h3>
+                    <p>
+                        Lihat informasi harga, ukuran, satuan,
+                        merek, dan deskripsi produk.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">✦</div>
+                    <h3>Rekomendasi Cerdas</h3>
+                    <p>
+                        Sistem menggunakan pendekatan Content-Based
+                        Filtering untuk mencocokkan preferensi
+                        dengan karakteristik produk.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="container section">
+        <div class="cta">
+            <div>
+                <h2>Siap menjelajahi SmartBako?</h2>
+                <p>
+                    Mulai dengan melihat katalog produk sembako
+                    yang tersedia.
+                </p>
+            </div>
+            <a href="{% url 'smartbako:katalog' %}" class="btn btn-light">
+                Lihat Katalog →
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <a href="{% url 'landing' %}" class="brand">
+            <span class="brand-icon">S</span>
+            SmartBako
+        </a>
+        <p>
+            Sistem Rekomendasi Cerdas Pemilihan Produk Sembako
+        </p>
+        <small>© 2026 SmartBako</small>
+    </div>
+</footer>
+
+</body>
+</html>
