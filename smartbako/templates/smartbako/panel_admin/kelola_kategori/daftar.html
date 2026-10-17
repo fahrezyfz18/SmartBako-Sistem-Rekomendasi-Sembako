@@ -1,0 +1,908 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kategori | SmartBako</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sidebar: #91a9c2;
+            --sidebar-dark: #718ca9;
+            --maroon: #851b20;
+            --maroon-hover: #6e151a;
+            --background: #f4f6f8;
+            --white: #ffffff;
+            --text: #263548;
+            --muted: #788597;
+            --border: #e7ebf0;
+            --blue-light: #e8eff6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 218px;
+            background: var(--sidebar);
+            color: white;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 12px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 7px 25px;
+            border-bottom: 1px solid rgba(255,255,255,.25);
+            margin-bottom: 20px;
+        }
+
+        .brand-icon {
+            width: 39px;
+            height: 39px;
+            border-radius: 10px;
+            background: var(--maroon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .brand-name {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 8px;
+            margin-top: 3px;
+            opacity: .9;
+        }
+
+        .menu-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: .75;
+            padding: 0 12px;
+            margin-bottom: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 13px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: .2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,.75);
+            color: #34475d;
+        }
+
+        .nav-icon {
+            width: 18px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,.25);
+            padding-top: 15px;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            width: calc(100% - 218px);
+            margin-left: 218px;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 66px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: #f5f7f9;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 30px;
+            width: min(360px, 55%);
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: #526d89;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 30px 32px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .breadcrumb {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb span {
+            color: var(--maroon);
+            font-weight: 600;
+        }
+
+        .page-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -.8px;
+            margin-bottom: 8px;
+        }
+
+        .page-heading p {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--maroon);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--maroon-hover);
+        }
+
+        .btn-light {
+            background: var(--blue-light);
+            color: #45617f;
+        }
+
+        .btn-light:hover {
+            background: #d8e4ef;
+        }
+
+        /* SUMMARY CARDS */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            box-shadow: 0 3px 12px rgba(38,53,72,.025);
+        }
+
+        .summary-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            background: var(--blue-light);
+        }
+
+        .summary-icon.maroon {
+            background: #f7e8e8;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 7px;
+        }
+
+        .summary-number {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* TABLE */
+        .table-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(38,53,72,.025);
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 22px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .table-header p {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .filter-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 10px 12px;
+            width: 220px;
+        }
+
+        .filter-search input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 11px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 650px;
+        }
+
+        thead {
+            background: #f7f9fb;
+        }
+
+        th {
+            color: #6d7b8d;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            font-weight: 700;
+            text-align: left;
+            padding: 15px 20px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #edf0f3;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fafbfd;
+        }
+
+        .number-cell {
+            color: var(--muted);
+            width: 55px;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .category-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 39px;
+            height: 39px;
+            border-radius: 9px;
+            background: var(--blue-light);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .category-name {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .category-caption {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        .description {
+            color: #68778a;
+            max-width: 240px;
+            line-height: 1.6;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5ed;
+            color: #26794b;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2d9b60;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 31px;
+            height: 31px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            color: #617187;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            background: var(--blue-light);
+        }
+
+        .action-delete {
+            color: var(--maroon);
+        }
+
+        .action-delete:hover {
+            background: #fbecec;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 55px 20px;
+        }
+
+        .empty-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 10px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                width: calc(100% - 190px);
+                margin-left: 190px;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .summary-grid {
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 66px;
+                padding: 15px 8px;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 5px 0 20px;
+            }
+
+            .brand-text,
+            .menu-label,
+            .nav-text {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .nav-icon {
+                font-size: 18px;
+            }
+
+            .main {
+                width: calc(100% - 66px);
+                margin-left: 66px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 22px 14px;
+            }
+
+            .page-heading {
+                flex-direction: column;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px;
+            }
+
+            .filter-search {
+                width: 100%;
+            }
+
+            .table-footer {
+                padding: 14px;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <!-- SIDEBAR ADMIN -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">🛒</div>
+            <div class="brand-text">
+                <div class="brand-name">SmartBako</div>
+                <div class="brand-subtitle">Rekomendasi Sembako Cerdas</div>
+            </div>
+        </div>
+
+        <div class="menu-label">Menu Utama</div>
+
+        <nav class="nav-menu">
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                <span class="nav-icon">⌂</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+
+            <a href="{% url 'daftar_kategori' %}" class="nav-link active">
+                <span class="nav-icon">▦</span>
+                <span class="nav-text">Kelola Kategori</span>
+            </a>
+
+            <a href="{% url 'kelola_produk' %}" class="nav-link">
+                <span class="nav-icon">▣</span>
+                <span class="nav-text">Kelola Produk</span>
+            </a>
+
+            <a href="{% url 'kelola_pengguna' %}" class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span class="nav-text">Kelola Pengguna</span>
+            </a>
+
+            <a href="{% url 'riwayat_preferensi' %}" class="nav-link">
+                <span class="nav-icon">◷</span>
+                <span class="nav-text">Riwayat Preferensi</span>
+            </a>
+
+            <a href="{% url 'statistik_admin' %}" class="nav-link">
+                <span class="nav-icon">▥</span>
+                <span class="nav-text">Statistik</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="{% url 'logout' %}" class="nav-link">
+                <span class="nav-icon">⇥</span>
+                <span class="nav-text">Keluar</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="main">
+
+        <header class="topbar">
+            <div class="search-box">
+                <span>⌕</span>
+                <input type="text" id="topSearch"
+                       placeholder="Cari kategori sembako...">
+            </div>
+
+            <div class="admin-profile">
+                <span>♙</span>
+                <div class="avatar">👤</div>
+                <span>{{ request.user.username|default:"Admin" }}</span>
+            </div>
+        </header>
+
+        <section class="content">
+
+            <div class="breadcrumb">
+                Dashboard / Kelola Data / <span>Kategori</span>
+            </div>
+
+            <div class="page-heading">
+                <div>
+                    <h1>Kelola Kategori</h1>
+                    <p>
+                        Atur kategori produk sembako agar data produk SmartBako
+                        lebih rapi dan mudah dikelola.
+                    </p>
+                </div>
+
+                <a href="{% url 'tambah_kategori' %}" class="btn btn-primary">
+                    <span>＋</span> Tambah Kategori
+                </a>
+            </div>
+
+            <!-- RINGKASAN -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon">▦</div>
+                    <div>
+                        <div class="summary-label">Total Kategori</div>
+                        <div class="summary-number">{{ kategori_list|length }}</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon maroon">🛒</div>
+                    <div>
+                        <div class="summary-label">Kategori Produk</div>
+                        <div class="summary-number">{{ kategori_list|length }}</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">✓</div>
+                    <div>
+                        <div class="summary-label">Pengelolaan Data</div>
+                        <div class="summary-number" style="font-size:17px;">
+                            Aktif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAFTAR KATEGORI -->
+            <div class="table-card">
+
+                <div class="table-header">
+                    <div>
+                        <h2>Daftar Kategori Produk</h2>
+                        <p>Daftar kategori yang tersimpan di sistem SmartBako.</p>
+                    </div>
+
+                    <div class="filter-search">
+                        <span>⌕</span>
+                        <input type="text" id="categorySearch"
+                               placeholder="Cari nama kategori...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama Kategori</th>
+                                <th>Deskripsi</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="categoryTable">
+                            {% for kategori in kategori_list %}
+                            <tr class="category-row">
+                                <td class="number-cell">{{ forloop.counter }}</td>
+
+                                <td>
+                                    <div class="category-info">
+                                        <div class="category-icon">🛍️</div>
+                                        <div>
+                                            <div class="category-name">
+                                                {{ kategori.nama_kategori }}
+                                            </div>
+                                            <div class="category-caption">
+                                                Kategori sembako
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="description">
+                                    {{ kategori.deskripsi|default:"Belum ada deskripsi" }}
+                                </td>
+
+                                <td>
+                                    <span class="status">
+                                        <span class="status-dot"></span>
+                                        Tersedia
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="actions">
+                                        <a href="{% url 'edit_kategori' kategori.id %}"
+                                           class="action-btn"
+                                           title="Edit kategori"
+                                           aria-label="Edit kategori">✎</a>
+
+                                        <form method="post"
+                                              action="{% url 'hapus_kategori' kategori.id %}"
+                                              onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="action-btn action-delete"
+                                                    title="Hapus kategori"
+                                                    aria-label="Hapus kategori">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">📦</div>
+                                        <h3>Belum Ada Kategori</h3>
+                                        <p>
+                                            Data kategori belum tersedia.
+                                            Silakan tambahkan kategori terlebih dahulu.
+                                        </p>
+                                        <a href="{% url 'tambah_kategori' %}"
+                                           class="btn btn-primary">
+                                            ＋ Tambah Kategori
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr id="noSearchResult" style="display:none;">
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">🔎</div>
+                                        <h3>Kategori Tidak Ditemukan</h3>
+                                        <p>Coba gunakan kata kunci yang berbeda.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span>
+                        Menampilkan {{ kategori_list|length }} kategori
+                    </span>
+                    <span>SmartBako &copy; 2026</span>
+                </div>
+
+            </div>
+
+            <div class="footer-note">
+                SmartBako — Sistem Rekomendasi Cerdas Pemilihan Produk Sembako
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+    // Pencarian kategori berdasarkan nama atau deskripsi
+    const categorySearch = document.getElementById('categorySearch');
+    const topSearch = document.getElementById('topSearch');
+    const rows = document.querySelectorAll('.category-row');
+    const noResult = document.getElementById('noSearchResult');
+
+    function filterCategories(keyword) {
+        let visibleCount = 0;
+        const searchText = keyword.toLowerCase().trim();
+
+        rows.forEach(function(row) {
+            const text = row.textContent.toLowerCase();
+            const match = text.includes(searchText);
+
+            row.style.display = match ? '' : 'none';
+
+            if (match) {
+                visibleCount++;
+            }
+        });
+
+        if (noResult) {
+            noResult.style.display =
+                rows.length > 0 && visibleCount === 0 ? '' : 'none';
+        }
+    }
+
+    categorySearch.addEventListener('input', function() {
+        topSearch.value = this.value;
+        filterCategories(this.value);
+    });
+
+    topSearch.addEventListener('input', function() {
+        categorySearch.value = this.value;
+        filterCategories(this.value);
+    });
+</script>
+
+</body>
+</html>
