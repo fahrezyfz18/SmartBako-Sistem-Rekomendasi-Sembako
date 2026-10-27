@@ -1,0 +1,34 @@
+{% load static %}
+<!-- START: HEADER REUSABLE KOMPONEN NAVBAR -->
+<header class="sticky top-0 z-50 bg-cream-50/90 backdrop-blur-md border-b border-cream-200/60 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        
+        <!-- Logo Brand -->
+        <a href="{% url 'smartbako:landing_page' %}" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 bg-maroon-800 rounded-xl flex items-center justify-center text-white shadow-md group-hover:bg-maroon-900 transition duration-300 overflow-hidden">
+                <img src="{% static 'smartbako/images/logo.png' %}" alt="Logo SmartBako" class="w-6 h-6 object-contain" onerror="this.remove()">
+                <!-- Fallback Ikon jika logo.png belum ada -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            </div>
+            <span class="font-heading font-bold text-2xl tracking-tight text-dark-900">
+                Smart<span class="text-maroon-800">Bako</span>
+            </span>
+        </a>
+
+        <!-- Menu Navigasi Utama -->
+        <nav class="hidden md:flex items-center space-x-8 font-medium text-sm text-dark-900/80">
+            <a href="{% url 'smartbako:landing_page' %}" class="hover:text-maroon-800 transition duration-200">Beranda</a>
+            <a href="{% url 'smartbako:fitur' %}" class="hover:text-maroon-800 transition duration-200">Fitur</a>
+            <a href="{% url 'smartbako:produk' %}" class="hover:text-maroon-800 transition duration-200">Produk</a>
+            <a href="{% url 'smartbako:tentang_kami' %}" class="hover:text-maroon-800 transition duration-200">Tentang Kami</a>
+        </nav>
+
+        <!-- Tombol Aksi Autentikasi (Masuk & Daftar) -->
+        <div class="flex items-center space-x-4">
+            <a href="{% url 'smartbako:login' %}" class="hidden sm:inline-block font-medium text-sm text-dark-900 hover:text-maroon-800 transition duration-200 px-3 py-2">Masuk</a>
+            <a href="{% url 'smartbako:registrasi' %}" class="bg-maroon-800 hover:bg-maroon-900 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-md transition duration-300 transform hover:-translate-y-0.5">Daftar</a>
+        </div>
+
+    </div>
+</header>
+<!-- END: HEADER REUSABLE KOMPONEN NAVBAR -->

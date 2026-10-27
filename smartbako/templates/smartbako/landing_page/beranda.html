@@ -1,0 +1,48 @@
+{% extends 'smartbako/base.html' %}
+{% load static %}
+
+{% block title %}SmartBako - Pilih Sembako Pas, Kebutuhan Terpenuhi{% endblock %}
+
+{% block content %}
+<!-- START: HERO SECTION LANDING PAGE -->
+<section class="bg-cream-50 py-12 md:py-20 border-b border-cream-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+        
+        <!-- Teks Informasi Utama (Kiri) -->
+        <div class="md:col-span-7 space-y-6">
+            <span class="inline-block bg-accent-blue/15 text-maroon-800 font-semibold text-xs px-3.5 py-1.5 rounded-full border border-accent-blue/30">
+                ✨ Rekomendasi Sembako Berbasis Machine Learning
+            </span>
+            <h1 class="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-dark-900 leading-tight">
+                Pilih sembako yang pas untuk kebutuhan dan budget Anda.
+            </h1>
+            <p class="text-sm md:text-base text-dark-900/75 leading-relaxed max-w-2xl">
+                SmartBako membantu Anda menemukan pilihan produk bahan pokok terbaik dengan mencocokkan preferensi merek, ukuran, dan anggaran belanja secara cerdas.
+            </p>
+            
+            <!-- Tombol Aksi (CTA) -->
+            <div class="flex flex-wrap gap-4 pt-2">
+                <a href="{% url 'smartbako:registrasi' %}" class="bg-maroon-800 hover:bg-maroon-900 text-white font-semibold text-sm px-7 py-3.5 rounded-xl shadow-lg transition flex items-center space-x-2">
+                    <span>Mulai Sekarang</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
+                <a href="{% url 'smartbako:katalog' %}" class="bg-white hover:bg-cream-100 text-dark-900 border border-cream-200 font-semibold text-sm px-7 py-3.5 rounded-xl transition shadow-xs">
+                    Lihat Produk
+                </a>
+            </div>
+        </div>
+
+        <!-- Gambar Hero Sembako Transparan (Kanan) -->
+        <div class="md:col-span-5 flex justify-center">
+            <div class="relative max-w-md w-full">
+                <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi Sembako SmartBako" class="w-full h-auto object-contain transform hover:scale-105 transition duration-500 ease-out drop-shadow-md">
+            </div>
+        </div>
+
+    </div>
+</section>
+<!-- END: HERO SECTION LANDING PAGE -->
+
+<!-- FITUR UTAMA, CARA KERJA & CTA TETAP SAMA SEPERTI SEBELUMNYA -->
+...
+{% endblock %}
