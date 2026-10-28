@@ -1,19 +1,14 @@
 {% load static %}
 <!-- START: FOOTER REUSABLE KOMPONEN BAWAH -->
 <footer class="bg-dark-900 text-cream-50 py-12 border-t border-dark-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        <!-- Kolom 1: Identitas Brand (Kontras Warna Khusus Latar Gelap) -->
+        <!-- Kolom 1: Identitas Brand -->
         <div class="space-y-4">
-            <a href="{% url 'smartbako:landing_page' %}" class="flex items-center space-x-3 group">
-                <div class="w-10 h-10 bg-cream-50/10 border border-cream-50/20 rounded-xl flex items-center justify-center text-white shadow-md">
-                    <img src="{% static 'smartbako/images/logo.png' %}" alt="Logo SmartBako" class="w-6 h-6 object-contain brightness-200" onerror="this.remove()">
-                    <!-- Fallback Ikon -->
-                    <svg class="w-6 h-6 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                </div>
-                <span class="font-heading font-bold text-2xl tracking-tight text-white">
-                    Smart<span class="text-accent-blue">Bako</span>
-                </span>
+            <a href="{% url 'smartbako:landing_page' %}" class="inline-block group">
+                <img src="{% static 'smartbako/images/logo_dark.png' %}" 
+                     alt="SmartBako Logo" 
+                     class="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90">
             </a>
             <p class="text-xs text-cream-50/70 leading-relaxed">
                 Pas harganya, pas butuhnya. Rekomendasi produk sembako berbasis kecerdasan buatan untuk belanja lebih hemat.
@@ -41,19 +36,11 @@
             </p>
         </div>
 
-        <!-- Kolom 4: Filosofi Aplikasi -->
-        <div>
-            <h4 class="font-heading font-semibold text-sm text-white mb-3 tracking-wider uppercase">Filosofi</h4>
-            <p class="text-xs text-cream-50/70 leading-relaxed">
-                Sembako Lebih Mudah, Hidup Lebih Hemat. Pilihan terbaik sesuai anggaran belanja harian keluarga Anda.
-            </p>
-        </div>
-
     </div>
 
     <!-- Copyright & Hak Cipta -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-cream-50/10 text-center text-xs text-cream-50/50">
-        &copy; 2026 SmartBako. Semua hak cipta dilindungi.
+        &copy; 2026 SmartBako. PBLIF3-MD10. Semua hak cipta dilindungi.
     </div>
 </footer>
 <!-- END: FOOTER REUSABLE KOMPONEN BAWAH -->

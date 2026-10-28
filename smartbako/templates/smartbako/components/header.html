@@ -4,15 +4,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         <!-- Logo Brand -->
-        <a href="{% url 'smartbako:landing_page' %}" class="flex items-center space-x-3 group">
-            <div class="w-10 h-10 bg-maroon-800 rounded-xl flex items-center justify-center text-white shadow-md group-hover:bg-maroon-900 transition duration-300 overflow-hidden">
-                <img src="{% static 'smartbako/images/logo.png' %}" alt="Logo SmartBako" class="w-6 h-6 object-contain" onerror="this.remove()">
-                <!-- Fallback Ikon jika logo.png belum ada -->
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            </div>
-            <span class="font-heading font-bold text-2xl tracking-tight text-dark-900">
-                Smart<span class="text-maroon-800">Bako</span>
-            </span>
+        <a href="{% url 'smartbako:landing_page' %}" class="flex items-center group py-1">
+            <img src="{% static 'smartbako/images/logo1.png' %}" alt="Logo SmartBako" class="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
         </a>
 
         <!-- Menu Navigasi Utama -->
@@ -23,12 +16,26 @@
             <a href="{% url 'smartbako:tentang_kami' %}" class="hover:text-maroon-800 transition duration-200">Tentang Kami</a>
         </nav>
 
-        <!-- Tombol Aksi Autentikasi (Masuk & Daftar) -->
-        <div class="flex items-center space-x-4">
-            <a href="{% url 'smartbako:login' %}" class="hidden sm:inline-block font-medium text-sm text-dark-900 hover:text-maroon-800 transition duration-200 px-3 py-2">Masuk</a>
-            <a href="{% url 'smartbako:registrasi' %}" class="bg-maroon-800 hover:bg-maroon-900 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-md transition duration-300 transform hover:-translate-y-0.5">Daftar</a>
+        <!-- Tombol Aksi Autentikasi (Responsif untuk Mobile & Desktop) -->
+        <div class="flex items-center space-x-2 sm:space-x-4">
+            {% if request.user.is_authenticated %}
+                <!-- Jika Pengguna Sudah Login -->
+                <a href="{% url 'smartbako:beranda' %}" class="text-xs sm:text-sm font-medium text-slate-700 hover:text-maroon-800 px-2 py-1">
+                    Halo, {{ request.user.first_name|default:request.user.username }}
+                </a>
+                <a href="{% url 'smartbako:logout' %}" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl transition duration-200 border border-rose-200">
+                    Keluar
+                </a>
+            {% else %}
+                <!-- Jika Pengguna Belum Login (Tampil di HP & Laptop) -->
+                <a href="{% url 'smartbako:login' %}" class="font-medium text-xs sm:text-sm text-slate-700 hover:text-maroon-800 px-2 sm:px-3 py-2 transition duration-200">
+                    Masuk
+                </a>
+                <a href="{% url 'smartbako:registrasi' %}" class="bg-[#581c1c] hover:bg-[#451414] text-white font-medium text-xs sm:text-sm px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl shadow-md transition duration-300">
+                    Daftar
+                </a>
+            {% endif %}
         </div>
 
     </div>
 </header>
-<!-- END: HEADER REUSABLE KOMPONEN NAVBAR -->

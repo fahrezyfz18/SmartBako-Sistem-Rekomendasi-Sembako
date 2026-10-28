@@ -4,45 +4,330 @@
 {% block title %}SmartBako - Pilih Sembako Pas, Kebutuhan Terpenuhi{% endblock %}
 
 {% block content %}
-<!-- START: HERO SECTION LANDING PAGE -->
-<section class="bg-cream-50 py-12 md:py-20 border-b border-cream-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-        
-        <!-- Teks Informasi Utama (Kiri) -->
-        <div class="md:col-span-7 space-y-6">
-            <span class="inline-block bg-accent-blue/15 text-maroon-800 font-semibold text-xs px-3.5 py-1.5 rounded-full border border-accent-blue/30">
-                ✨ Rekomendasi Sembako Berbasis Machine Learning
-            </span>
-            <h1 class="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-dark-900 leading-tight">
-                Pilih sembako yang pas untuk kebutuhan dan budget Anda.
-            </h1>
-            <p class="text-sm md:text-base text-dark-900/75 leading-relaxed max-w-2xl">
-                SmartBako membantu Anda menemukan pilihan produk bahan pokok terbaik dengan mencocokkan preferensi merek, ukuran, dan anggaran belanja secara cerdas.
+<div class="overflow-hidden scroll-smooth">
+
+    <!-- Custom CSS untuk Animasi Motion Gambar Hero -->
+    <style>
+        @keyframes floatSlow {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-12px) rotate(1deg);
+            }
+        }
+
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+    </style>
+
+    <!-- 1. HERO SECTION (BERANDA) -->
+    <section id="beranda" class="bg-[#fcfaf7] py-20 lg:py-28 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+            <!-- Teks Informasi Utama (Kiri) -->
+            <div class="lg:col-span-7 space-y-6">
+                <span
+                    class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
+                    Rekomendasi Sembako Berbasis Machine Learning
+                </span>
+
+                <!-- Perbaikan di sini: Mengubah leading menjadi normal/snug agar baris tidak bertabrakan -->
+                <h1
+                    class="font-extrabold text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-normal sm:leading-snug">
+                    Pilih sembako yang pas untuk kebutuhan dan budget Anda.
+                </h1>
+
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
+                    SmartBako membantu Anda menemukan pilihan produk bahan pokok terbaik dengan mencocokkan preferensi
+                    merek, ukuran, dan anggaran belanja secara cerdas.
+                </p>
+
+                <!-- Tombol Aksi (CTA) -->
+                <div class="flex flex-wrap gap-4 pt-4">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'smartbako:beranda' %}"
+                        class="bg-[#581c1c] hover:bg-[#451414] text-white font-semibold text-sm px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2">
+                        <span>Mulai Sekarang</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'smartbako:registrasi' %}"
+                        class="bg-[#581c1c] hover:bg-[#451414] text-white font-semibold text-sm px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2">
+                        <span>Mulai Sekarang</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                    {% endif %}
+                    <a href="#produk"
+                        class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-semibold text-sm px-7 py-3.5 rounded-xl transition-all duration-300 shadow-xs">
+                        Lihat Katalog
+                    </a>
+                </div>
+            </div>
+
+            <!-- Gambar / Ilustrasi Hero dengan Efek Motion (Kanan) -->
+            <div class="lg:col-span-5 flex justify-center">
+                <div class="relative max-w-md w-full">
+                    <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi Sembako SmartBako"
+                        class="w-full h-auto object-contain animate-float drop-shadow-xl">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 2. FITUR UNGGULAN SECTION -->
+    <section id="fitur" class="py-20 lg:py-24 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+                <span
+                    class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
+                    Keunggulan Sistem
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Mengapa Memilih SmartBako?</h2>
+                <p class="text-sm sm:text-base text-slate-600">Solusi cerdas berbelanja kebutuhan pokok harian tanpa
+                    boros.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
+                        01
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900">Rekomendasi Pintar</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Memanfaatkan algoritma Content-Based Filtering untuk memberikan saran sembako paling sesuai
+                        dengan preferensi Anda.
+                    </p>
+                </div>
+
+                <div
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
+                        02
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900">Hemat & Terukur</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Atur anggaran belanja bulanan Anda dengan mudah dan temukan opsi produk alternatif yang
+                        ekonomis.
+                    </p>
+                </div>
+
+                <div
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
+                        03
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900">Cepat & Praktis</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Katalog lengkap mulai dari beras, minyak goreng, gula, hingga bumbu dapur dalam satu genggaman
+                        platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. KATALOG PRODUK SECTION -->
+    <section id="produk" class="py-20 lg:py-24 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Header Section dengan Spasi Judul yang Rapi dan Tidak Tabrakan -->
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+                <span
+                    class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
+                    Katalog Pilihan
+                </span>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-normal leading-snug">
+                    Preview Produk Bahan Pokok
+                </h2>
+                <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+                    Beberapa pilihan produk berkualitas yang tersedia di dalam sistem.
+                </p>
+            </div>
+
+            <!-- Grid Produk Sejajar & Rapi -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+
+                <!-- Kartu Produk 1 -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-3">
+                            <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">Beras</span>
+                            <span class="font-semibold text-[#581c1c]">Premium</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1.5 leading-snug">Beras Pulen Wangi 5kg</h4>
+                        <p class="text-xs text-slate-500 mb-6">Kemasan Karung</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Estimasi</span>
+                            <span class="font-bold text-[#581c1c] text-sm">Rp 65.000</span>
+                        </div>
+                        <a href="{% url 'smartbako:login' %}"
+                            class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition-colors">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kartu Produk 2 -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-3">
+                            <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">Minyak Goreng</span>
+                            <span class="font-semibold text-[#581c1c]">Sania</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1.5 leading-snug">Minyak Goreng Pouch 2L</h4>
+                        <p class="text-xs text-slate-500 mb-6">Kemasan Refill</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Estimasi</span>
+                            <span class="font-bold text-[#581c1c] text-sm">Rp 36.000</span>
+                        </div>
+                        <a href="{% url 'smartbako:login' %}"
+                            class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition-colors">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kartu Produk 3 -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-3">
+                            <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">Gula Pasir</span>
+                            <span class="font-semibold text-[#581c1c]">Gulaku</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1.5 leading-snug">Gula Pasir Premium 1kg</h4>
+                        <p class="text-xs text-slate-500 mb-6">Kemasan Pouch</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Estimasi</span>
+                            <span class="font-bold text-[#581c1c] text-sm">Rp 17.500</span>
+                        </div>
+                        <a href="{% url 'smartbako:login' %}"
+                            class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition-colors">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kartu Produk 4 -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-3">
+                            <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">Tepung</span>
+                            <span class="font-semibold text-[#581c1c]">Segitiga Biru</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-1.5 leading-snug">Tepung Terigu 1kg</h4>
+                        <p class="text-xs text-slate-500 mb-6">Kemasan Bag</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Estimasi</span>
+                            <span class="font-bold text-[#581c1c] text-sm">Rp 14.000</span>
+                        </div>
+                        <a href="{% url 'smartbako:login' %}"
+                            class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition-colors">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. TENTANG KAMI SECTION (Gaya Mahasiswa Semester 3 / PBL) -->
+    <section id="tentang-kami" class="py-20 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
+                <span
+                    class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
+                    Tentang Kami
+                </span>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Proyek Pengembangan SmartBako</h2>
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+                    SmartBako dikembangkan sebagai bagian dari inisiatif <em>Project-Based Learning</em> (PBL) semester
+                    ini. Aplikasi ini dirancang untuk menyelesaikan permasalahan nyata seputar perencanaan kebutuhan
+                    bahan pokok rumah tangga secara sistematis.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3">
+                    <h3 class="text-lg font-bold text-slate-900">Latar Belakang Proyek</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Kami melihat kebutuhan masyarakat dalam memilih dan mengatur anggaran sembako sering kali kurang
+                        terstruktur. Melalui platform ini, kami mengimplementasikan konsep pemrograman web modern
+                        menggunakan Django serta integrasi logika rekomendasi data.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3">
+                    <h3 class="text-lg font-bold text-slate-900">Fokus Pengembangan</h3>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                            <span>Penerapan arsitektur MVC / MVT Django yang bersih dan terstruktur.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                            <span>Perancangan antarmuka responsif menggunakan Tailwind CSS.</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                            <span>Pengujian sistem autentikasi dan manajemen data katalog produk.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. CALL TO ACTION BAWAH -->
+    <section class="bg-[#581c1c] py-16 lg:py-20 text-white">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-6">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Siap Mengatur Kebutuhan Sembako Anda
+                Lebih Efisien?</h2>
+            <p class="text-sm sm:text-base text-slate-200 max-w-xl mx-auto leading-relaxed">
+                Bergabunglah sekarang dan rasakan kemudahan mendapatkan rekomendasi bahan pokok terbaik setiap hari.
             </p>
-            
-            <!-- Tombol Aksi (CTA) -->
-            <div class="flex flex-wrap gap-4 pt-2">
-                <a href="{% url 'smartbako:registrasi' %}" class="bg-maroon-800 hover:bg-maroon-900 text-white font-semibold text-sm px-7 py-3.5 rounded-xl shadow-lg transition flex items-center space-x-2">
-                    <span>Mulai Sekarang</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            <div class="pt-2">
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'smartbako:beranda' %}"
+                    class="inline-block bg-white hover:bg-slate-100 text-[#581c1c] font-semibold text-sm px-8 py-4 rounded-xl shadow-lg transition-all duration-300">
+                    Buka Dashboard Saya
                 </a>
-                <a href="{% url 'smartbako:katalog' %}" class="bg-white hover:bg-cream-100 text-dark-900 border border-cream-200 font-semibold text-sm px-7 py-3.5 rounded-xl transition shadow-xs">
-                    Lihat Produk
+                {% else %}
+                <a href="{% url 'smartbako:registrasi' %}"
+                    class="inline-block bg-white hover:bg-slate-100 text-[#581c1c] font-semibold text-sm px-8 py-4 rounded-xl shadow-lg transition-all duration-300">
+                    Buat Akun Gratis Sekarang
                 </a>
+                {% endif %}
             </div>
         </div>
+    </section>
 
-        <!-- Gambar Hero Sembako Transparan (Kanan) -->
-        <div class="md:col-span-5 flex justify-center">
-            <div class="relative max-w-md w-full">
-                <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi Sembako SmartBako" class="w-full h-auto object-contain transform hover:scale-105 transition duration-500 ease-out drop-shadow-md">
-            </div>
-        </div>
-
-    </div>
-</section>
-<!-- END: HERO SECTION LANDING PAGE -->
-
-<!-- FITUR UTAMA, CARA KERJA & CTA TETAP SAMA SEPERTI SEBELUMNYA -->
-...
+</div>
 {% endblock %}

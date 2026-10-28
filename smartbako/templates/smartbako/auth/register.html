@@ -1,0 +1,84 @@
+{% extends 'smartbako/base.html' %}
+{% load static %}
+
+{% block title %}Daftar Akun - SmartBako{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <!-- Header / Logo -->
+        <div class="text-center mb-6">
+            <a href="{% url 'smartbako:landing_page' %}" class="inline-block mb-3">
+                <img src="{% static 'smartbako/images/logo.png' %}" alt="SmartBako Logo" class="h-10 mx-auto">
+            </a>
+            <h1 class="text-2xl font-bold text-slate-800">Buat Akun Baru</h1>
+            <p class="text-sm text-slate-500 mt-1">Mulai temukan rekomendasi sembako terbaik Anda</p>
+        </div>
+
+        <!-- Pesan Error / Notifikasi Form -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-3 text-sm rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Form Pendaftaran -->
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="text-xs text-slate-400 mt-1">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-xs text-rose-600 mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <!-- Tombol Submit -->
+            <button 
+                type="submit" 
+                class="w-full mt-2 py-2.5 bg-[#581c1c] hover:bg-[#451414] text-white font-medium text-sm rounded-lg transition duration-200 shadow-sm"
+            >
+                Daftar Sekarang
+            </button>
+        </form>
+
+        <!-- Footer / Link Masuk -->
+        <p class="text-center text-sm text-slate-500 mt-6">
+            Sudah punya akun SmartBako? 
+            <a href="{% url 'smartbako:login' %}" class="text-[#581c1c] font-medium hover:underline">Masuk di sini</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    form input {
+        width: 100%;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        outline: none;
+        transition: all 0.2s;
+    }
+    form input:focus {
+        border-color: #581c1c;
+        box-shadow: 0 0 0 2px rgba(88, 28, 28, 0.15);
+    }
+    .helptext {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+{% endblock %}

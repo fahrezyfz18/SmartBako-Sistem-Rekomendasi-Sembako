@@ -1,0 +1,128 @@
+{% extends 'smartbako/base.html' %}
+{% load static %}
+
+{% block title %}Fitur Unggulan - SmartBako{% endblock %}
+
+{% block content %}
+<div class="overflow-hidden bg-slate-50 py-16 lg:py-24">
+    <!-- Header Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl mb-16">
+        <span class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs px-3.5 py-1.5 rounded-full border border-[#581c1c]/20 mb-4">
+            Keunggulan Sistem
+        </span>
+        <h1 class="font-bold text-3xl sm:text-4xl text-slate-900 leading-tight">
+            Fitur Cerdas untuk Solusi Belanja Sembako Anda
+        </h1>
+        <p class="text-base text-slate-600 mt-4 leading-relaxed">
+            SmartBako memadukan teknologi pemrosesan data dan katalog bahan pokok terkurasi untuk memberikan pengalaman perencanaan belanja yang efisien dan tepat sasaran.
+        </p>
+    </div>
+
+    <!-- Grid Fitur Detail -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        
+        <!-- Fitur 1 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="lg:col-span-6 space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-lg">
+                    01
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Rekomendasi Berbasis Machine Learning</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Sistem menganalisis pola dan preferensi kebutuhan pokok Anda menggunakan metode *Content-Based Filtering* serta *TF-IDF Vectorization* untuk mencocokkan produk sembako paling relevan secara akurat.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-700 font-medium">
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Pencocokan merek dan ukuran kemasan otomatis</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Saran alternatif produk dengan rentang harga bersaing</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="lg:col-span-6 bg-slate-50 rounded-2xl p-6 border border-slate-100 flex items-center justify-center min-h-[260px]">
+                <div class="text-center space-y-2">
+                    <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Modul Rekomendasi Pintar</div>
+                    <div class="text-lg font-bold text-slate-800">Algoritma Kustom Python & Django</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fitur 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="lg:col-span-6 order-2 lg:order-1 bg-slate-50 rounded-2xl p-6 border border-slate-100 flex items-center justify-center min-h-[260px]">
+                <div class="text-center space-y-2">
+                    <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Manajemen Katalog</div>
+                    <div class="text-lg font-bold text-slate-800">Database Beras, Minyak, Gula & Bumbu</div>
+                </div>
+            </div>
+            <div class="lg:col-span-6 order-1 lg:order-2 space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-lg">
+                    02
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Katalog Produk Sembako Terkurasi</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Jelajahi berbagai kategori bahan pokok lengkap dengan informasi detail spesifikasi, kisaran harga pasar, serta ulasan spesifikasi produk yang transparan.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-700 font-medium">
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Pencarian cepat berdasarkan nama dan merek</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Filter kategori produk yang terstruktur rapi</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Fitur 3 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="lg:col-span-6 space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-lg">
+                    03
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Pengelolaan Preferensi Belanja</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Simpan dan atur preferensi anggaran belanja Anda agar sistem dapat memberikan kalkulasi kebutuhan bulanan yang lebih hemat dan terarah.
+                </p>
+                <ul class="space-y-2 text-sm text-slate-700 font-medium">
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Personalisasi akun pengguna yang aman</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c]"></span>
+                        <span>Riwayat pilihan sembako tersimpan otomatis</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="lg:col-span-6 bg-slate-50 rounded-2xl p-6 border border-slate-100 flex items-center justify-center min-h-[260px]">
+                <div class="text-center space-y-2">
+                    <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Dashboard Pengguna</div>
+                    <div class="text-lg font-bold text-slate-800">Panel Kontrol Interaktif & Responsif</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA Section Bawah -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 text-center">
+        <div class="bg-[#581c1c] rounded-3xl p-10 text-white space-y-6 shadow-lg">
+            <h2 class="text-2xl sm:text-3xl font-bold">Mulai Optimalkan Pengeluaran Belanja Anda</h2>
+            <p class="text-sm sm:text-base text-slate-200 max-w-xl mx-auto">
+                Daftarkan akun Anda sekarang dan nikmati kemudahan sistem rekomendasi bahan pokok berbasis kecerdasan buatan.
+            </p>
+            <div>
+                <a href="{% url 'smartbako:registrasi' %}" class="inline-block bg-white hover:bg-slate-100 text-[#581c1c] font-semibold text-sm px-8 py-3.5 rounded-xl transition shadow-md">
+                    Daftar Akun Gratis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
