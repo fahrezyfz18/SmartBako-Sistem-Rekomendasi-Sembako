@@ -1,0 +1,312 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Admin | SmartBako</title>
+
+    <link rel="stylesheet" href="{% static 'smartbako/css/admin.css' %}">
+</head>
+
+<body>
+<div class="admin-layout">
+
+    <!-- SIDEBAR ADMIN -->
+    <aside class="admin-sidebar">
+
+        <a href="#" class="admin-brand">
+
+<img
+    src="{% static 'smartbako/images/logo.jpeg' %}"
+    alt="Logo SmartBako"
+    class="admin-logo"
+>
+
+            <span class="admin-brand-name">SmartBako</span>
+        </a>
+
+        <p class="admin-menu-label">MENU ADMIN</p>
+
+        <nav class="admin-nav">
+
+            <a href="#" class="active">
+                <span class="admin-nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">▤</span>
+                Kelola Produk
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">▧</span>
+                Kelola Kategori
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">♙</span>
+                Kelola Pengguna
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">◷</span>
+                Riwayat Preferensi
+            </a>
+
+            <a href="#" class="admin-logout">
+                <span class="admin-nav-icon">⇥</span>
+                Keluar
+            </a>
+
+        </nav>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="admin-main">
+
+        <!-- HEADER -->
+        <header class="admin-topbar">
+            <div class="admin-user">
+
+                <span class="admin-avatar">
+                    {{ request.user.username|default:"A"|first|upper }}
+                </span>
+
+                <span>Admin</span>
+                <span aria-hidden="true">▾</span>
+
+            </div>
+        </header>
+
+        <section class="admin-content">
+
+            <!-- JUDUL HALAMAN -->
+            <div class="admin-page-heading">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>
+                        Ringkasan dan aktivitas sistem SmartBako.
+                    </p>
+                </div>
+            </div>
+
+            <!-- PESAN NOTIFIKASI -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="admin-alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- KARTU STATISTIK -->
+            <section class="admin-stats">
+
+                <article class="admin-stat-card">
+                    <div class="admin-stat-top">
+                        <span class="admin-stat-label">
+                            Total Produk
+                        </span>
+                        <span class="admin-stat-icon">▤</span>
+                    </div>
+
+                    <p class="admin-stat-value">
+                        {{ total_produk|default:"0" }}
+                    </p>
+                </article>
+
+                <article class="admin-stat-card">
+                    <div class="admin-stat-top">
+                        <span class="admin-stat-label">
+                            Total Kategori
+                        </span>
+                        <span class="admin-stat-icon">▧</span>
+                    </div>
+
+                    <p class="admin-stat-value">
+                        {{ total_kategori|default:"0" }}
+                    </p>
+                </article>
+
+                <article class="admin-stat-card">
+                    <div class="admin-stat-top">
+                        <span class="admin-stat-label">
+                            Total Pengguna
+                        </span>
+                        <span class="admin-stat-icon">♙</span>
+                    </div>
+
+                    <p class="admin-stat-value">
+                        {{ total_pengguna|default:"0" }}
+                    </p>
+                </article>
+
+                <article class="admin-stat-card">
+                    <div class="admin-stat-top">
+                        <span class="admin-stat-label">
+                            Total Rekomendasi
+                        </span>
+                        <span class="admin-stat-icon">⌁</span>
+                    </div>
+
+                    <p class="admin-stat-value">
+                        {{ total_rekomendasi|default:"0" }}
+                    </p>
+                </article>
+
+            </section>
+
+            <!-- GRAFIK REKOMENDASI -->
+            <section
+                class="admin-panel"
+                style="margin-bottom: 24px;"
+            >
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Statistik Hasil Rekomendasi</h2>
+                        <p class="admin-caption">
+                            Jumlah rekomendasi yang dihasilkan setiap hari.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="admin-chart">
+
+                    {% for item in grafik_rekomendasi %}
+
+                        <div class="admin-chart-item">
+
+                            <div
+                                class="admin-chart-bar"
+                                style="height: {{ item.persentase|default:0 }}%;"
+                                title="{{ item.jumlah|default:0 }} rekomendasi"
+                            ></div>
+
+                            <span class="admin-chart-day">
+                                {{ item.hari }}
+                            </span>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="admin-empty-state">
+                            Data statistik belum tersedia.
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </section>
+
+            <!-- KATEGORI DAN PRODUK POPULER -->
+            <section class="admin-dashboard-grid">
+
+                <!-- KATEGORI PALING SERING DICARI -->
+                <article class="admin-panel">
+
+                    <div class="admin-panel-heading">
+                        <div>
+                            <h2>Kategori Paling Sering Dicari</h2>
+                            <p class="admin-caption">
+                                Kategori berdasarkan riwayat preferensi pengguna.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="admin-ranking-list">
+
+                        {% for item in kategori_populer %}
+
+                            <div>
+
+                                <div class="admin-ranking-item">
+
+                                    <span class="admin-ranking-number">
+                                        {{ forloop.counter }}
+                                    </span>
+
+                                    <span class="admin-ranking-name">
+                                        {{ item.nama }}
+                                    </span>
+
+                                    <span class="admin-ranking-value">
+                                        {{ item.persentase|default:0 }}%
+                                    </span>
+
+                                </div>
+
+                                <div class="admin-progress">
+                                    <span
+                                        style="width: {{ item.persentase|default:0 }}%;"
+                                    ></span>
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p class="admin-empty-state">
+                                Belum ada data kategori yang dicari.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+                </article>
+
+                <!-- PRODUK PALING SERING DIREKOMENDASIKAN -->
+                <article class="admin-panel">
+
+                    <div class="admin-panel-heading">
+                        <div>
+                            <h2>Produk Paling Sering Direkomendasikan</h2>
+                            <p class="admin-caption">
+                                Produk yang paling banyak muncul dalam rekomendasi.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="admin-ranking-list">
+
+                        {% for produk in produk_populer %}
+
+                            <div class="admin-ranking-item">
+
+                                <span class="admin-ranking-number">
+                                    {{ forloop.counter }}
+                                </span>
+
+                                <span class="admin-ranking-name">
+                                    {{ produk.nama }}
+                                </span>
+
+                                <span class="admin-ranking-value">
+                                    {{ produk.jumlah_rekomendasi|default:0 }}x
+                                </span>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p class="admin-empty-state">
+                                Belum ada data produk yang direkomendasikan.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+                </article>
+
+            </section>
+
+        </section>
+    </main>
+
+</div>
+</body>
+</html>
