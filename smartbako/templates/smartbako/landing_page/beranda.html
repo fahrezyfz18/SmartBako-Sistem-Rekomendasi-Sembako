@@ -29,16 +29,14 @@
     <section id="beranda" class="bg-[#fcfaf7] py-20 lg:py-28 border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-            <!-- Teks Informasi Utama (Kiri) -->
             <div class="lg:col-span-7 space-y-6">
                 <span
                     class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
                     Rekomendasi Sembako Berbasis Machine Learning
                 </span>
 
-                <!-- Perbaikan di sini: Mengubah leading menjadi normal/snug agar baris tidak bertabrakan -->
                 <h1
-                    class="font-extrabold text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-normal sm:leading-snug">
+                    class="font-extrabold text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-relaxed">
                     Pilih sembako yang pas untuk kebutuhan dan budget Anda.
                 </h1>
 
@@ -47,7 +45,6 @@
                     merek, ukuran, dan anggaran belanja secara cerdas.
                 </p>
 
-                <!-- Tombol Aksi (CTA) -->
                 <div class="flex flex-wrap gap-4 pt-4">
                     {% if request.user.is_authenticated %}
                     <a href="{% url 'smartbako:beranda' %}"
@@ -75,7 +72,6 @@
                 </div>
             </div>
 
-            <!-- Gambar / Ilustrasi Hero dengan Efek Motion (Kanan) -->
             <div class="lg:col-span-5 flex justify-center">
                 <div class="relative max-w-md w-full">
                     <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi Sembako SmartBako"
@@ -99,44 +95,50 @@
                     boros.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
-                    <div
-                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
-                        01
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base mb-4">
+                            01
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Rekomendasi Pintar</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Memanfaatkan algoritma Content-Based Filtering untuk memberikan saran sembako paling sesuai
+                            dengan preferensi Anda.
+                        </p>
                     </div>
-                    <h3 class="font-bold text-lg text-slate-900">Rekomendasi Pintar</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Memanfaatkan algoritma Content-Based Filtering untuk memberikan saran sembako paling sesuai
-                        dengan preferensi Anda.
-                    </p>
                 </div>
 
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
-                    <div
-                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
-                        02
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base mb-4">
+                            02
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Hemat & Terukur</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Atur anggaran belanja bulanan Anda dengan mudah dan temukan opsi produk alternatif yang
+                            ekonomis.
+                        </p>
                     </div>
-                    <h3 class="font-bold text-lg text-slate-900">Hemat & Terukur</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Atur anggaran belanja bulanan Anda dengan mudah dan temukan opsi produk alternatif yang
-                        ekonomis.
-                    </p>
                 </div>
 
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4">
-                    <div
-                        class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base">
-                        03
+                    class="p-8 rounded-3xl bg-slate-50 border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-[#581c1c]/10 text-[#581c1c] flex items-center justify-center font-bold text-base mb-4">
+                            03
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Cepat & Praktis</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Katalog lengkap mulai dari beras, minyak goreng, gula, hingga bumbu dapur dalam satu
+                            genggaman platform.
+                        </p>
                     </div>
-                    <h3 class="font-bold text-lg text-slate-900">Cepat & Praktis</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Katalog lengkap mulai dari beras, minyak goreng, gula, hingga bumbu dapur dalam satu genggaman
-                        platform.
-                    </p>
                 </div>
             </div>
         </div>
@@ -145,8 +147,6 @@
     <!-- 3. KATALOG PRODUK SECTION -->
     <section id="produk" class="py-20 lg:py-24 bg-slate-50 border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            <!-- Header Section dengan Spasi Judul yang Rapi dan Tidak Tabrakan -->
             <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
                 <span
                     class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
@@ -160,10 +160,7 @@
                 </p>
             </div>
 
-            <!-- Grid Produk Sejajar & Rapi -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
-
-                <!-- Kartu Produk 1 -->
                 <div
                     class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
                     <div>
@@ -186,7 +183,6 @@
                     </div>
                 </div>
 
-                <!-- Kartu Produk 2 -->
                 <div
                     class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
                     <div>
@@ -209,7 +205,6 @@
                     </div>
                 </div>
 
-                <!-- Kartu Produk 3 -->
                 <div
                     class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
                     <div>
@@ -232,7 +227,6 @@
                     </div>
                 </div>
 
-                <!-- Kartu Produk 4 -->
                 <div
                     class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
                     <div>
@@ -254,12 +248,11 @@
                         </a>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
-    <!-- 4. TENTANG KAMI SECTION (Gaya Mahasiswa Semester 3 / PBL) -->
+    <!-- 4. TENTANG KAMI SECTION -->
     <section id="tentang-kami" class="py-20 lg:py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
@@ -275,31 +268,37 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3">
-                    <h3 class="text-lg font-bold text-slate-900">Latar Belakang Proyek</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">
-                        Kami melihat kebutuhan masyarakat dalam memilih dan mengatur anggaran sembako sering kali kurang
-                        terstruktur. Melalui platform ini, kami mengimplementasikan konsep pemrograman web modern
-                        menggunakan Django serta integrasi logika rekomendasi data.
-                    </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+                <div
+                    class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Latar Belakang Proyek</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Kami melihat kebutuhan masyarakat dalam memilih dan mengatur anggaran sembako sering kali
+                            kurang terstruktur. Melalui platform ini, kami mengimplementasikan konsep pemrograman web
+                            modern menggunakan Django serta integrasi logika rekomendasi data.
+                        </p>
+                    </div>
                 </div>
-                <div class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3">
-                    <h3 class="text-lg font-bold text-slate-900">Fokus Pengembangan</h3>
-                    <ul class="space-y-2.5 text-sm text-slate-600">
-                        <li class="flex items-start space-x-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
-                            <span>Penerapan arsitektur MVC / MVT Django yang bersih dan terstruktur.</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
-                            <span>Perancangan antarmuka responsif menggunakan Tailwind CSS.</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
-                            <span>Pengujian sistem autentikasi dan manajemen data katalog produk.</span>
-                        </li>
-                    </ul>
+                <div
+                    class="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Fokus Pengembangan</h3>
+                        <ul class="space-y-2.5 text-sm text-slate-600">
+                            <li class="flex items-start space-x-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                                <span>Penerapan arsitektur MVC / MVT Django yang bersih dan terstruktur.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                                <span>Perancangan antarmuka responsif menggunakan Tailwind CSS.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#581c1c] mt-2"></span>
+                                <span>Pengujian sistem autentikasi dan manajemen data katalog produk.</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

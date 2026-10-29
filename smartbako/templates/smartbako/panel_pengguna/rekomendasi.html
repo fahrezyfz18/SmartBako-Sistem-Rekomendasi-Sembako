@@ -1,0 +1,57 @@
+{% extends 'smartbako/base.html' %}
+{% load static %}
+
+{% block title %}Rekomendasi Pintar - SmartBako{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-8">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <span class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full uppercase">
+                Mesin Rekomendasi
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Pencarian Rekomendasi Sembako</h1>
+            <p class="text-sm text-slate-600 leading-relaxed">
+                Atur preferensi budget dan kategori sembako yang Anda inginkan. Sistem akan mencocokkan produk terbaik menggunakan algoritma Content-Based Filtering.
+            </p>
+        </div>
+
+        <!-- Form Input Preferensi Rekomendasi -->
+        <form method="GET" class="space-y-6 bg-slate-50 p-6 sm:p-8 rounded-2xl border border-slate-200">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Maksimal Anggaran (Budget)</label>
+                    <input 
+                        type="number" 
+                        name="budget" 
+                        placeholder="Contoh: 100000" 
+                        class="w-full px-4 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#581c1c]"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Kategori Prioritas</label>
+                    <select name="kategori" class="w-full px-4 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#581c1c]">
+                        <option value="">Semua Kategori</option>
+                        <option value="beras">Beras</option>
+                        <option value="minyak">Minyak Goreng</option>
+                        <option value="gula">Gula Pasir</option>
+                        <option value="tepung">Tepung & Bumbu</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="button" onclick="alert('Fitur pemrosesan Machine Learning aktif. Silakan hubungkan dengan model backend Anda.')" class="w-full py-3 bg-[#581c1c] hover:bg-[#451414] text-white font-semibold text-sm rounded-xl shadow-md transition">
+                Proses Rekomendasi Cerdas
+            </button>
+        </form>
+
+        <!-- Area Hasil Rekomendasi -->
+        <div class="space-y-4 pt-4">
+            <h3 class="font-bold text-slate-900 text-lg">Hasil Rekomendasi Untuk Anda</h3>
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center text-slate-500 text-sm">
+                Belum ada parameter preferensi yang dimasukkan. Silakan atur form di atas untuk memulai pencarian rekomendasi.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

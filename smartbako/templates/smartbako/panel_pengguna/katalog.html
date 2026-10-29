@@ -1,53 +1,97 @@
+{% extends 'smartbako/base.html' %}
+{% load static %}
 
-{% extends "smartbako/base.html" %}
+{% block title %}Katalog Produk - SmartBako{% endblock %}
 
 {% block content %}
-<h1>Katalog Produk Sembako</h1>
-<p>Temukan produk sembako sesuai kebutuhanmu.</p>
+<div class="min-h-screen bg-slate-50 flex flex-col">
+    
+    <!-- Header Pengguna -->
+    {% include 'smartbako/components/header_pengguna.html' %}
 
-<form method="get">
-    <input
-        type="text"
-        name="q"
-        placeholder="Cari nama atau merek produk..."
-        value="{{ kata_kunci }}"
-    >
+    <div class="flex flex-1">
+        <!-- Sidebar Pengguna di Kiri -->
+        {% include 'smartbako/components/sidebar_pengguna.html' %}
 
-    <select name="kategori">
-        <option value="">Semua kategori</option>
-        {% for kategori in kategori_list %}
-            <option
-                value="{{ kategori.id }}"
-                {% if kategori_terpilih == kategori.id|stringformat:"s" %}
-                    selected
-                {% endif %}
-            >
-                {{ kategori.nama }}
-            </option>
-        {% endfor %}
-    </select>
+        <!-- Konten Utama Katalog (Kanan) -->
+        <main class="flex-1 p-6 sm:p-10 overflow-y-auto">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <!-- Header & Form Pencarian -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs">
+                    <div>
+                        <span class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-3.5 py-1 rounded-full uppercase mb-2">
+                            Daftar Bahan Pokok
+                        </span>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Katalog Produk Sembako</h1>
+                        <p class="text-sm text-slate-600 mt-1">Temukan berbagai pilihan bahan pokok berkualitas lengkap dengan estimasi harga terbaik.</p>
+                    </div>
 
-    <button type="submit">Cari</button>
-</form>
+                    <!-- Form Pencarian -->
+                    <form method="GET" action="{% url 'smartbako:katalog' %}" class="flex gap-2 w-full md:w-auto">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            value="{{ kata_kunci }}" 
+                            placeholder="Cari nama atau merek..." 
+                            class="px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#581c1c]/20 focus:border-[#581c1c] w-full md:w-64"
+                        >
+                        <button type="submit" class="bg-[#581c1c] hover:bg-[#451414] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm">
+                            Cari
+                        </button>
+                    </form>
+                </div>
 
-<hr>
+                <!-- Filter Kategori -->
+                <div class="flex flex-wrap gap-2 pb-2">
+                    <a href="{% url 'smartbako:katalog' %}" class="px-4 py-2 text-xs font-semibold rounded-xl {% if not kategori_terpilih %}bg-[#581c1c] text-white shadow-xs{% else %}bg-white text-slate-700 border border-slate-200 hover:bg-slate-50{% endif %} transition">
+                        Semua Kategori
+                    </a>
+                    {% for kat in kategori_list %}
+                    <a href="{% url 'smartbako:katalog' %}?kategori={{ kat.id }}" class="px-4 py-2 text-xs font-semibold rounded-xl {% if kategori_terpilih == kat.id|stringformat:'s' %}bg-[#581c1c] text-white shadow-xs{% else %}bg-white text-slate-700 border border-slate-200 hover:bg-slate-50{% endif %} transition">
+                        {{ kat.nama }}
+                    </a>
+                    {% endfor %}
+                </div>
 
-<div>
-    {% for produk in produk_list %}
-        <article>
-            <h3>{{ produk.nama }}</h3>
-            <p>Kategori: {{ produk.kategori.nama }}</p>
-            <p>Merek: {{ produk.merek|default:"-" }}</p>
-            <p>Ukuran: {{ produk.ukuran }} {{ produk.satuan }}</p>
-            <p>Harga: Rp{{ produk.harga }}</p>
+                <!-- Grid Katalog Produk -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                    {% for produk in produk_list %}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+                                <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">{{ produk.kategori.nama|default:"Sembako" }}</span>
+                                <span class="font-semibold text-[#581c1c]">{{ produk.merek }}</span>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-base mb-1 line-clamp-1">{{ produk.nama }}</h3>
+                            <p class="text-xs text-slate-500 mb-4">Kemasan: {{ produk.ukuran|default:"Standar" }}</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-400 block">Estimasi</span>
+                                <span class="font-bold text-[#581c1c] text-sm">Rp {{ produk.harga|floatformat:0|default:"-" }}</span>
+                            </div>
+                            <a href="{% url 'smartbako:detail_produk' produk.id %}" class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition">
+                                Detail
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3 shadow-xs">
+                        <h3 class="font-bold text-lg text-slate-800">Produk Tidak Ditemukan</h3>
+                        <p class="text-sm text-slate-500">Pencarian atau kategori yang Anda pilih tidak cocok dengan produk manapun.</p>
+                        <div class="pt-2">
+                            <a href="{% url 'smartbako:katalog' %}" class="inline-block bg-[#581c1c] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition">
+                                Reset Filter
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
 
-            <a href="{% url 'smartbako:detail_produk' produk.id %}">
-                Lihat detail
-            </a>
-        </article>
-        <hr>
-    {% empty %}
-        <p>Produk tidak ditemukan. Tambahkan data melalui admin Django.</p>
-    {% endfor %}
+            </div>
+        </main>
+    </div>
+
 </div>
 {% endblock %}

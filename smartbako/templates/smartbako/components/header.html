@@ -4,16 +4,16 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         <!-- Logo Brand -->
-        <a href="{% url 'smartbako:landing_page' %}" class="flex items-center group py-1">
+        <a href="{% url 'smartbako:landing_page' %}#beranda" class="flex items-center group py-1">
             <img src="{% static 'smartbako/images/logo1.png' %}" alt="Logo SmartBako" class="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
         </a>
 
-        <!-- Menu Navigasi Utama -->
+        <!-- Menu Navigasi Utama (Terhubung ke One-Page Scroll) -->
         <nav class="hidden md:flex items-center space-x-8 font-medium text-sm text-dark-900/80">
-            <a href="{% url 'smartbako:landing_page' %}" class="hover:text-maroon-800 transition duration-200">Beranda</a>
-            <a href="{% url 'smartbako:fitur' %}" class="hover:text-maroon-800 transition duration-200">Fitur</a>
-            <a href="{% url 'smartbako:produk' %}" class="hover:text-maroon-800 transition duration-200">Produk</a>
-            <a href="{% url 'smartbako:tentang_kami' %}" class="hover:text-maroon-800 transition duration-200">Tentang Kami</a>
+            <a href="{% url 'smartbako:landing_page' %}#beranda" class="hover:text-maroon-800 transition duration-200">Beranda</a>
+            <a href="{% url 'smartbako:landing_page' %}#fitur" class="hover:text-maroon-800 transition duration-200">Fitur</a>
+            <a href="{% url 'smartbako:landing_page' %}#produk" class="hover:text-maroon-800 transition duration-200">Produk</a>
+            <a href="{% url 'smartbako:landing_page' %}#tentang-kami" class="hover:text-maroon-800 transition duration-200">Tentang Kami</a>
         </nav>
 
         <!-- Tombol Aksi Autentikasi (Responsif untuk Mobile & Desktop) -->
@@ -27,7 +27,7 @@
                     Keluar
                 </a>
             {% else %}
-                <!-- Jika Pengguna Belum Login (Tampil di HP & Laptop) -->
+                <!-- Jika Pengguna Belum Login -->
                 <a href="{% url 'smartbako:login' %}" class="font-medium text-xs sm:text-sm text-slate-700 hover:text-maroon-800 px-2 sm:px-3 py-2 transition duration-200">
                     Masuk
                 </a>
