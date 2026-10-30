@@ -1,0 +1,188 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Produk | SmartBako</title>
+    <link rel="stylesheet" href="{% static 'smartbako/css/admin.css' %}">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <img src="{% static 'smartbako/images/logo.jpeg' %}"
+                 alt="Logo SmartBako"
+                 class="admin-logo">
+            <span class="admin-brand-name">SmartBako</span>
+        </div>
+
+        <div class="admin-menu-label">MENU UTAMA</div>
+
+        <nav class="admin-nav">
+            <a href="{% url 'dashboard_admin' %}" class="admin-nav-link">
+                <span class="admin-nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="{% url 'daftar_produk' %}" class="admin-nav-link active">
+                <span class="admin-nav-icon">▣</span>
+                Kelola Produk
+            </a>
+
+            <a href="{% url 'daftar_kategori' %}" class="admin-nav-link">
+                <span class="admin-nav-icon">▤</span>
+                Kelola Kategori
+            </a>
+
+            <a href="#" class="admin-nav-link">
+                <span class="admin-nav-icon">♙</span>
+                Kelola Pengguna
+            </a>
+
+            <a href="#" class="admin-nav-link">
+                <span class="admin-nav-icon">▥</span>
+                Statistik Rekomendasi
+            </a>
+
+            <a href="#" class="admin-nav-link">
+                <span class="admin-nav-icon">◷</span>
+                Riwayat Preferensi
+            </a>
+        </nav>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+            <div></div>
+
+            <div class="admin-user">
+                <div class="admin-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <section class="admin-content">
+
+            <div class="admin-page-heading">
+                <div>
+                    <h1>Tambah Produk</h1>
+                    <p>Tambahkan produk sembako ke dalam sistem SmartBako</p>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="admin-alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="admin-panel">
+
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Formulir Data Produk</h2>
+                        <p>Lengkapi informasi produk di bawah ini</p>
+                    </div>
+                </div>
+
+                <form method="POST"
+                      enctype="multipart/form-data"
+                      class="admin-form">
+
+                    {% csrf_token %}
+
+                    <div class="admin-form-group">
+                        <label>Nama Produk</label>
+                        <input type="text"
+                               name="nama"
+                               class="admin-form-control"
+                               placeholder="Masukkan nama produk"
+                               required>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Kategori</label>
+                        <select name="kategori"
+                                class="admin-form-control"
+                                required>
+                            <option value="">Pilih kategori</option>
+
+                            {% for item in kategori %}
+                                <option value="{{ item.id }}">
+                                    {{ item.nama }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Harga Produk (Rp)</label>
+                        <input type="number"
+                               name="harga"
+                               class="admin-form-control"
+                               placeholder="Contoh: 15000"
+                               min="0"
+                               step="0.01"
+                               required>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Stok Produk</label>
+                        <input type="number"
+                               name="stok"
+                               class="admin-form-control"
+                               placeholder="Masukkan jumlah stok"
+                               min="0"
+                               required>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Deskripsi Produk</label>
+                        <textarea name="deskripsi"
+                                  class="admin-form-control"
+                                  rows="4"
+                                  placeholder="Masukkan deskripsi produk"></textarea>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Gambar Produk</label>
+                        <input type="file"
+                               name="gambar"
+                               class="admin-form-control"
+                               accept="image/*">
+                        <small class="admin-form-help">
+                            Pilih gambar produk dengan format JPG, JPEG, atau PNG.
+                        </small>
+                    </div>
+
+                    <div class="admin-form-actions">
+                        <a href="{% url 'daftar_produk' %}"
+                           class="admin-button admin-button-secondary">
+                            Batal
+                        </a>
+
+                        <button type="submit"
+                                class="admin-button admin-button-primary">
+                            Simpan Produk
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,56 +1,77 @@
-{% load static %}
+
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SmartBako - Rekomendasi Sembako Cerdas{% endblock %}</title>
-    
-    <!-- Konfigurasi Tailwind CSS kustom -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        maroon: { 800: '#5E1C23', 900: '#4A161C' },
-                        cream: { 50: '#F8F7F4', 100: '#EFECE6', 200: '#E5E3DB' },
-                        dark: { 900: '#2E2A27' },
-                        accent: { blue: '#849AAD', softblue: '#B1C7D4', pendukung: '#A1947F' }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Poppins', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Google Fonts: Inter & Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <title>{% block title %}SmartBako{% endblock %}</title>
     <style>
-        body { font-family: 'Inter', sans-serif; color: #2E2A27; background-color: #F8F7F4; }
-        h1, h2, h3, h4, .font-heading { font-family: 'Poppins', sans-serif; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #F8F7F4;
+            color: #2E2A27;
+        }
+
+        header {
+            background: #849AAD;
+            color: white;
+            padding: 20px 7%;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav {
+            margin-top: 12px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 18px;
+        }
+
+        main {
+            padding: 35px 7%;
+        }
+
+        .kartu {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .tombol {
+            display: inline-block;
+            background: #5E1C23;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
     </style>
 </head>
-<body class="bg-cream-50 text-dark-900 antialiased flex flex-col min-h-screen">
+<body>
+    <header>
+        <h1>SmartBako</h1>
+        <p>Temukan sembako sesuai kebutuhanmu</p>
 
-    <!-- HEADER -->
-    {% block header %}
-        {% include 'smartbako/components/header.html' %}
-    {% endblock %}
+        <nav>
+            <a href="/">Beranda</a>
+            <a href="/katalog/">Katalog Produk</a>
+            <a href="/rekomendasi/">Rekomendasi</a>
+        </nav>
+    </header>
 
-    <!-- KONTEN UTAMA YANG DINAMIS -->
-    <main class="flex-grow">
-        {% block content %}
-        {% endblock %}
+    <main>
+        {% block content %}{% endblock %}
     </main>
-
-    <!-- FOOTER -->
-    {% block footer %}
-        {% include 'smartbako/components/footer.html' %}
-    {% endblock %}
-
 </body>
 </html>

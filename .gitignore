@@ -9,3 +9,5 @@ staticfiles/
 .idea/
 .vscode/
 smartbako_backup/
+
+.venv/

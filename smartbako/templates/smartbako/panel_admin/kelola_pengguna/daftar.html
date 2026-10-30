@@ -1,0 +1,214 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Pengguna | SmartBako</title>
+
+    <link rel="stylesheet" href="{% static 'smartbako/css/admin.css' %}">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <img src="{% static 'smartbako/images/logo.jpeg' %}"
+                 alt="Logo SmartBako"
+                 class="admin-logo">
+            <span class="admin-brand-name">SmartBako</span>
+        </div>
+
+        <div class="admin-menu-label">MENU UTAMA</div>
+
+        <nav class="admin-nav">
+            <a href="{% url 'dashboard_admin' %}" class="admin-nav-link">
+                <span class="admin-nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="{% url 'daftar_produk' %}" class="admin-nav-link">
+                <span class="admin-nav-icon">▣</span>
+                Kelola Produk
+            </a>
+
+            <a href="{% url 'daftar_kategori' %}" class="admin-nav-link">
+                <span class="admin-nav-icon">▤</span>
+                Kelola Kategori
+            </a>
+
+            <a href="{% url 'daftar_pengguna' %}" class="admin-nav-link active">
+                <span class="admin-nav-icon">♙</span>
+                Kelola Pengguna
+            </a>
+
+            <a href="#" class="admin-nav-link">
+                <span class="admin-nav-icon">▥</span>
+                Statistik Rekomendasi
+            </a>
+
+            <a href="#" class="admin-nav-link">
+                <span class="admin-nav-icon">◷</span>
+                Riwayat Preferensi
+            </a>
+        </nav>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="admin-main">
+
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div></div>
+
+            <div class="admin-user">
+                <div class="admin-avatar">A</div>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <section class="admin-content">
+
+            <div class="admin-page-heading">
+                <div>
+                    <h1>Kelola Pengguna</h1>
+                    <p>Manajemen akun pengguna yang terdaftar pada SmartBako</p>
+                </div>
+            </div>
+
+            <!-- NOTIFIKASI -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="admin-alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- TOTAL PENGGUNA -->
+            <div class="admin-stats">
+                <div class="admin-stat-card">
+                    <div class="admin-stat-icon">♙</div>
+                    <div>
+                        <p>Total Pengguna</p>
+                        <h2>{{ total_pengguna }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABEL PENGGUNA -->
+            <div class="admin-panel">
+
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Daftar Pengguna</h2>
+                        <p>Data seluruh akun pengguna yang terdaftar</p>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama Pengguna</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Tanggal Bergabung</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item_user in pengguna %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+
+                                    <td>
+                                        {% if item_user.first_name or item_user.last_name %}
+                                            {{ item_user.first_name }} {{ item_user.last_name }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ item_user.username }}</td>
+
+                                    <td>{{ item_user.email|default:"-" }}</td>
+
+                                    <td>{{ item_user.date_joined|date:"d-m-Y" }}</td>
+
+                                    <td>
+                                        {% if item_user.is_active %}
+                                            <span class="admin-badge admin-badge-success">
+                                                Aktif
+                                            </span>
+                                        {% else %}
+                                            <span class="admin-badge admin-badge-danger">
+                                                Nonaktif
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if not item_user.is_superuser %}
+                                            <div class="admin-table-actions">
+
+                                                <form method="POST"
+                                                      action="{% url 'ubah_status_pengguna' item_user.id %}">
+                                                    {% csrf_token %}
+
+                                                    <button type="submit"
+                                                            class="admin-button admin-button-secondary"
+                                                            onclick="return confirm('Yakin ingin mengubah status akun ini?');">
+                                                        {% if item_user.is_active %}
+                                                            Nonaktifkan
+                                                        {% else %}
+                                                            Aktifkan
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+
+                                                <form method="POST"
+                                                      action="{% url 'hapus_pengguna' item_user.id %}"
+                                                      onsubmit="return confirm('Yakin ingin menghapus akun pengguna ini?');">
+                                                    {% csrf_token %}
+
+                                                    <button type="submit"
+                                                            class="admin-button admin-button-danger">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        {% else %}
+                                            <span>Admin Utama</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" style="text-align:center; padding:30px;">
+                                        Belum ada pengguna yang terdaftar.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

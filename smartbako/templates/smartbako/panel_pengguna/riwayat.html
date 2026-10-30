@@ -1,43 +1,10 @@
-{% extends 'smartbako/base.html' %}
-{% load static %}
 
-{% block title %}Riwayat Pencarian - SmartBako{% endblock %}
-
-{% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm space-y-6">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900">Riwayat Rekomendasi & Pencarian</h1>
-            <p class="text-sm text-slate-600 mt-1">Daftar riwayat preferensi dan pencarian sembako yang pernah Anda lakukan.</p>
-        </div>
-
-        <div class="overflow-x-auto pt-4">
-            <table class="w-full text-left text-sm text-slate-600 border-collapse">
-                <thead>
-                    <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                        <th class="py-3 px-4 rounded-l-xl">No</th>
-                        <th class="py-3 px-4">Tanggal</th>
-                        <th class="py-3 px-4">Preferensi Budget</th>
-                        <th class="py-3 px-4">Kategori</th>
-                        <th class="py-3 px-4 rounded-r-xl text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    <!-- Contoh baris statis / placeholder riwayat -->
-                    <tr>
-                        <td class="py-4 px-4 font-medium text-slate-800">1</td>
-                        <td class="py-4 px-4">28 Oktober 2026</td>
-                        <td class="py-4 px-4 font-semibold text-[#581c1c]">Rp 100.000</td>
-                        <td class="py-4 px-4">Beras & Minyak</td>
-                        <td class="py-4 px-4 text-center">
-                            <a href="{% url 'smartbako:rekomendasi' %}" class="text-xs font-semibold text-[#581c1c] bg-[#581c1c]/10 px-3 py-1.5 rounded-lg hover:bg-[#581c1c] hover:text-white transition">
-                                Lihat Ulang
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
+venv/
+__pycache__/
+*.py[cod]
+.env
+db.sqlite3
+staticfiles/
+.idea/
+.vscode/
+smartbako_backup/
