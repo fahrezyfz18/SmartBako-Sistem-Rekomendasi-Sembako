@@ -1,14 +1,13 @@
-<<<<<<< HEAD
 """Model data aplikasi SmartBako."""
 
 from decimal import Decimal
 
 from django.conf import settings
 from django.core.validators import MinValueValidator
-=======
-
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
 from django.db import models
+
+# Stok di bawah atau sama dengan angka ini ditampilkan "Terbatas".
+BATAS_STOK_TERBATAS = 10
 
 
 class Kategori(models.Model):
@@ -18,16 +17,15 @@ class Kategori(models.Model):
     deskripsi = models.TextField("deskripsi", blank=True)
 
     class Meta:
-        verbose_name = 'Kategori'
-        verbose_name_plural = 'Kategori'
-        ordering = ['nama']
+        verbose_name = "Kategori"
+        verbose_name_plural = "Kategori"
+        ordering = ["nama"]
 
     def __str__(self):
         return self.nama
 
 
 class Produk(models.Model):
-<<<<<<< HEAD
     """Produk sembako yang dapat direkomendasikan ke pengguna."""
 
     nama = models.CharField("nama produk", max_length=200)
@@ -38,19 +36,9 @@ class Produk(models.Model):
         verbose_name="kategori",
     )
     merek = models.CharField("merek", max_length=100, blank=True, default="")
-=======
-    nama = models.CharField(max_length=200)
-    kategori = models.ForeignKey(
-        Kategori,
-        on_delete=models.PROTECT,
-        related_name='produk'
-    )
-    deskripsi = models.TextField(blank=True)
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
     harga = models.DecimalField(
         "harga",
         max_digits=12,
-<<<<<<< HEAD
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0"))],
     )
@@ -68,32 +56,40 @@ class Produk(models.Model):
     gambar = models.ImageField(
         "gambar",
         upload_to="produk/",
-=======
-        decimal_places=2
-    )
-    stok = models.PositiveIntegerField(default=0)
-    gambar = models.ImageField(
-        upload_to='produk/',
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
         blank=True,
-        null=True
+        null=True,
     )
     tanggal_dibuat = models.DateTimeField(auto_now_add=True)
     tanggal_diperbarui = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'Produk'
-        verbose_name_plural = 'Produk'
-        ordering = ['nama']
+        verbose_name = "Produk"
+        verbose_name_plural = "Produk"
+        ordering = ["nama"]
 
     def __str__(self):
         return self.nama
-<<<<<<< HEAD
 
     @property
     def tersedia(self):
         """True jika stok produk masih ada."""
         return self.stok > 0
+
+    @property
+    def status_stok(self):
+        """'habis', 'terbatas', atau 'tersedia' (untuk label di tampilan)."""
+        if self.stok <= 0:
+            return "habis"
+        if self.stok <= BATAS_STOK_TERBATAS:
+            return "terbatas"
+        return "tersedia"
+
+    @property
+    def harga_per_satuan(self):
+        """Harga dibagi ukuran, mis. Rp 82.000 / 5 kg = Rp 16.400 per kg."""
+        if not self.ukuran:
+            return None
+        return self.harga / self.ukuran
 
 
 class Preferensi(models.Model):
@@ -206,5 +202,3 @@ class DetailRekomendasi(models.Model):
 
     def __str__(self):
         return f"{self.produk.nama} - peringkat {self.peringkat}"
-=======
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d

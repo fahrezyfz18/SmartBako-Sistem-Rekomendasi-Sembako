@@ -1,61 +1,96 @@
+
 /* =========================================================
-   PANEL ADMIN SMARTBAKO (Bootstrap 5)
-   Palet disamakan dengan panel pengguna:
-   biru keabuan (primary), marun (accent), krem (latar).
+   PANEL ADMIN SMARTBAKO
+   Bootstrap 5.3.3
+   Primary : Biru keabuan
+   Accent  : Marun
+   Background : Krem
+   ========================================================= */
+
+
+/* =========================================================
+   1. ROOT & WARNA
    ========================================================= */
 
 :root {
     --sb-primary: #849AAD;
     --sb-primary-soft: #E3EAF0;
+
     --sb-accent: #5E1C23;
     --sb-accent-hover: #4A151B;
     --sb-accent-soft: #F5E4E2;
+
     --sb-bg: #F8F7F4;
     --sb-border: #E5E0D8;
+
     --sb-text: #2E2A27;
     --sb-muted: #6F6359;
+
     --sb-sidebar-width: 260px;
 
-    /* Menimpa warna utama Bootstrap */
     --bs-primary: var(--sb-accent);
     --bs-primary-rgb: 94, 28, 35;
+
     --bs-link-color: var(--sb-accent);
     --bs-link-hover-color: var(--sb-accent-hover);
-    --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --bs-body-font-family: "Inter", system-ui, -apple-system,
+        "Segoe UI", sans-serif;
+
     --bs-body-color: var(--sb-text);
     --bs-body-bg: var(--sb-bg);
     --bs-border-color: var(--sb-border);
 }
 
+
 body {
     min-height: 100vh;
+    margin: 0;
+    background: var(--sb-bg);
+    color: var(--sb-text);
+    font-family: var(--bs-body-font-family);
 }
 
-h1, h2, h3, .sb-heading {
+
+h1,
+h2,
+h3,
+.sb-heading {
     font-family: "Poppins", var(--bs-body-font-family);
     font-weight: 600;
 }
 
-/* ---------- Tombol ---------- */
+
+/* =========================================================
+   2. TOMBOL
+   ========================================================= */
+
 .btn-primary {
     --bs-btn-bg: var(--sb-accent);
     --bs-btn-border-color: var(--sb-accent);
+
     --bs-btn-hover-bg: var(--sb-accent-hover);
     --bs-btn-hover-border-color: var(--sb-accent-hover);
+
     --bs-btn-active-bg: var(--sb-accent-hover);
     --bs-btn-active-border-color: var(--sb-accent-hover);
+
     --bs-btn-disabled-bg: var(--sb-accent);
     --bs-btn-disabled-border-color: var(--sb-accent);
 }
 
+
 .btn-outline-primary {
     --bs-btn-color: var(--sb-accent);
     --bs-btn-border-color: var(--sb-accent);
+
     --bs-btn-hover-bg: var(--sb-accent);
     --bs-btn-hover-border-color: var(--sb-accent);
+
     --bs-btn-active-bg: var(--sb-accent);
     --bs-btn-active-border-color: var(--sb-accent);
 }
+
 
 .btn-light-subtle {
     background: #fff;
@@ -63,9 +98,12 @@ h1, h2, h3, .sb-heading {
     color: var(--sb-text);
 }
 
+
 .btn-light-subtle:hover {
     background: var(--sb-primary-soft);
+    border-color: var(--sb-primary);
 }
+
 
 .form-control:focus,
 .form-select:focus {
@@ -73,37 +111,61 @@ h1, h2, h3, .sb-heading {
     box-shadow: 0 0 0 0.2rem rgba(132, 154, 173, 0.25);
 }
 
-/* ---------- Sidebar ---------- */
+
+/* =========================================================
+   3. SIDEBAR ADMIN
+   ========================================================= */
+
 .sb-sidebar {
+    --bs-offcanvas-width: 260px;
+
     width: var(--sb-sidebar-width);
     background: #fff;
     border-right: 1px solid var(--sb-border);
 }
 
-@media (min-width: 992px) {
-    .sb-sidebar {
-        position: fixed;
-        inset: 0 auto 0 0;
-        z-index: 1030;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-    }
 
-    /* Bootstrap memberi flex-grow: 0 pada offcanvas-body di lg+. */
-    .sb-sidebar .offcanvas-body {
-        flex-grow: 1 !important;
-    }
+/* Header sidebar */
 
-    .sb-main {
-        margin-left: var(--sb-sidebar-width);
-    }
+.sb-sidebar .offcanvas-header {
+    min-height: 90px;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--sb-border);
 }
+
+
+/* Logo SmartBako */
+
+.sb-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 90px;
+    padding: 15px;
+
+    overflow: hidden;
+    text-decoration: none;
+}
+
 
 .sb-brand img {
-    height: 44px;
+    display: block;
+
     width: auto;
+    height: 44px;
+    max-width: 180px;
+
+    object-fit: contain;
 }
+
+
+/* Area navigasi sidebar */
+
+.sb-sidebar .offcanvas-body {
+    padding: 24px 16px;
+}
+
 
 .sb-menu-label {
     font-size: 0.72rem;
@@ -112,25 +174,39 @@ h1, h2, h3, .sb-heading {
     color: var(--sb-muted);
 }
 
+
+/* Navigasi */
+
 .sb-nav .nav-link {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+
+    width: 100%;
     padding: 0.65rem 0.9rem;
+
     border-radius: 0.6rem;
+
     color: var(--sb-text);
-    font-weight: 500;
     font-size: 0.95rem;
+    font-weight: 500;
+
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
+
 
 .sb-nav .nav-link i {
     font-size: 1.1rem;
     color: var(--sb-muted);
 }
 
+
 .sb-nav .nav-link:hover {
     background: var(--sb-bg);
+    color: var(--sb-accent);
 }
+
 
 .sb-nav .nav-link.active {
     background: var(--sb-accent-soft);
@@ -138,51 +214,181 @@ h1, h2, h3, .sb-heading {
     font-weight: 600;
 }
 
+
 .sb-nav .nav-link.active i {
     color: var(--sb-accent);
 }
+
 
 .sb-logout {
     color: var(--sb-accent) !important;
 }
 
-/* ---------- Topbar ---------- */
+
+.sb-logout:hover {
+    background: var(--sb-accent-soft) !important;
+}
+
+
+/* =========================================================
+   4. SIDEBAR DESKTOP & TABLET
+   Breakpoint mengikuti offcanvas-md
+   ========================================================= */
+
+@media (min-width: 768px) {
+
+    .sb-sidebar {
+        position: fixed;
+
+        top: 0;
+        bottom: 0;
+        left: 0;
+
+        z-index: 1030;
+
+        display: flex !important;
+        flex-direction: column;
+
+        width: var(--sb-sidebar-width);
+        height: 100vh;
+        max-width: none;
+
+        overflow-y: auto;
+
+        visibility: visible !important;
+        transform: none !important;
+    }
+
+
+    /* Sembunyikan header mobile pada desktop */
+
+    .sb-sidebar .offcanvas-header {
+        display: none;
+    }
+
+
+    /* Area menu desktop */
+
+    .sb-sidebar .offcanvas-body {
+        display: flex !important;
+        flex-direction: column;
+
+        flex-grow: 1 !important;
+
+        overflow-y: auto;
+    }
+
+
+    /* Konten utama */
+
+    .sb-main {
+        width: calc(100% - var(--sb-sidebar-width));
+        min-height: 100vh;
+
+        margin-left: var(--sb-sidebar-width);
+    }
+
+}
+
+
+/* =========================================================
+   5. SIDEBAR MOBILE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .sb-sidebar {
+        width: 260px;
+        max-width: 85vw;
+    }
+
+
+    .sb-sidebar .offcanvas-header {
+        display: flex;
+    }
+
+
+    .sb-sidebar .offcanvas-body {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+
+    .sb-main {
+        width: 100%;
+        min-height: 100vh;
+        margin-left: 0;
+    }
+
+
+    .sb-brand img {
+        max-width: 160px;
+        height: 40px;
+    }
+
+}
+
+
+/* =========================================================
+   6. TOPBAR
+   ========================================================= */
+
 .sb-topbar {
     position: sticky;
     top: 0;
     z-index: 1020;
+
     background: rgba(248, 247, 244, 0.92);
     backdrop-filter: blur(6px);
+
     border-bottom: 1px solid var(--sb-border);
 }
+
 
 .sb-avatar {
     display: inline-grid;
     place-items: center;
+
     width: 38px;
     height: 38px;
+
     border-radius: 50%;
+
     background: var(--sb-accent);
     color: #fff;
+
     font-weight: 600;
 }
 
-/* ---------- Kartu ---------- */
+
+/* =========================================================
+   7. KARTU
+   ========================================================= */
+
 .sb-card {
     background: #fff;
+
     border: 1px solid var(--sb-border);
     border-radius: 1rem;
+
     box-shadow: 0 4px 16px rgba(46, 42, 39, 0.04);
 }
+
 
 .sb-stat-icon {
     display: inline-grid;
     place-items: center;
+
     width: 48px;
     height: 48px;
+
+    flex-shrink: 0;
+
     border-radius: 0.8rem;
     font-size: 1.35rem;
 }
+
 
 .sb-stat-value {
     font-family: "Poppins", sans-serif;
@@ -191,113 +397,209 @@ h1, h2, h3, .sb-heading {
     line-height: 1.1;
 }
 
-.sb-tone-accent  { background: var(--sb-accent-soft); color: var(--sb-accent); }
-.sb-tone-primary { background: var(--sb-primary-soft); color: #4E677C; }
-.sb-tone-green   { background: #E3ECE3; color: #4F6E52; }
-.sb-tone-amber   { background: #F7EBD6; color: #8A6420; }
 
-/* ---------- Tabel ---------- */
+.sb-tone-accent {
+    background: var(--sb-accent-soft);
+    color: var(--sb-accent);
+}
+
+
+.sb-tone-primary {
+    background: var(--sb-primary-soft);
+    color: #4E677C;
+}
+
+
+.sb-tone-green {
+    background: #E3ECE3;
+    color: #4F6E52;
+}
+
+
+.sb-tone-amber {
+    background: #F7EBD6;
+    color: #8A6420;
+}
+
+
+/* =========================================================
+   8. TABEL
+   ========================================================= */
+
 .sb-table {
     --bs-table-bg: transparent;
     margin-bottom: 0;
 }
 
+
 .sb-table thead th {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.04em;
+
     text-transform: uppercase;
     color: var(--sb-muted);
+
     background: var(--sb-bg);
     border-bottom: 1px solid var(--sb-border);
+
     white-space: nowrap;
 }
+
 
 .sb-table td {
     vertical-align: middle;
 }
 
+
 .sb-thumb {
     width: 48px;
     height: 48px;
+
     border-radius: 0.6rem;
+
     object-fit: cover;
     background: var(--sb-bg);
 }
+
 
 .sb-thumb-placeholder {
     display: inline-grid;
     place-items: center;
+
     color: var(--sb-muted);
 }
+
 
 .sb-detail-image {
     width: 100%;
     max-width: 320px;
+
     aspect-ratio: 1 / 1;
+
     object-fit: cover;
+
     border-radius: 1rem;
     background: var(--sb-bg);
 }
 
-/* ---------- Grafik & peringkat ---------- */
+
+/* =========================================================
+   9. GRAFIK & PERINGKAT
+   ========================================================= */
+
 .sb-chart {
     position: relative;
+    width: 100%;
     height: 260px;
 }
+
 
 .sb-rank-number {
     display: inline-grid;
     place-items: center;
+
+    flex-shrink: 0;
+
     width: 28px;
     height: 28px;
+
     border-radius: 50%;
+
     background: var(--sb-primary-soft);
+
     font-size: 0.8rem;
     font-weight: 700;
 }
+
 
 .progress {
     height: 8px;
     background: var(--sb-bg);
 }
 
+
 .progress-bar {
     background: var(--sb-primary);
 }
 
-/* ---------- Lain-lain ---------- */
+
+/* =========================================================
+   10. KOMPONEN LAINNYA
+   ========================================================= */
+
 .sb-empty {
     padding: 3rem 1rem;
+
     color: var(--sb-muted);
     text-align: center;
 }
 
+
 .sb-empty i {
-    font-size: 2.2rem;
     display: block;
+
     margin-bottom: 0.5rem;
+
+    font-size: 2.2rem;
 }
+
 
 .badge.text-bg-accent {
     background: var(--sb-accent-soft) !important;
     color: var(--sb-accent) !important;
 }
 
+
 .pagination {
     --bs-pagination-color: var(--sb-text);
+
     --bs-pagination-active-bg: var(--sb-accent);
     --bs-pagination-active-border-color: var(--sb-accent);
+
     --bs-pagination-hover-color: var(--sb-accent);
-    --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(132, 154, 173, 0.25);
+
+    --bs-pagination-focus-box-shadow:
+        0 0 0 0.2rem rgba(132, 154, 173, 0.25);
 }
 
-/* Kolom dengan error validasi diberi garis merah. */
+
+/* Kolom dengan error validasi */
+
 .sb-invalid .form-control,
 .sb-invalid .form-select {
     border-color: var(--bs-danger);
 }
 
+
 .border-dashed {
     border-style: dashed !important;
+}
+
+
+/* =========================================================
+   11. RESPONSIVE DASHBOARD
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .sb-stat-value {
+        font-size: 1.4rem;
+    }
+
+    .sb-stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .sb-chart {
+        height: 220px;
+    }
+
+    .sb-main main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
 }

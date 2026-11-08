@@ -1,127 +1,18 @@
-
-from decimal import Decimal
+"""View panel pengguna SmartBako."""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
-from django.db.models import Q
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .services.recommendation import hitung_rekomendasi
+from .forms import PasswordPenggunaForm, PreferensiForm, ProfilForm
+from .models import Kategori, Preferensi, Produk, Rekomendasi
+from .services.recommendation import simpan_rekomendasi
+from .views import filter_katalog
 
-from .models import (
-    Kategori,
-    Produk,
-    Preferensi,
-    Rekomendasi,
-    DetailRekomendasi,
-)
-from .forms import PreferensiForm, ProfilForm
-
-
-# ==================================================
-# FUNGSI PENDUKUNG SISTEM REKOMENDASI
-# ==================================================
-
-def buat_teks_produk(produk):
-    return " ".join([
-        produk.nama or "",
-        produk.merek or "",
-        produk.kategori.nama if produk.kategori else "",
-        produk.deskripsi or "",
-        str(produk.ukuran or ""),
-        produk.satuan or "",
-    ])
-
-
-def buat_teks_preferensi(preferensi):
-    return " ".join([
-        preferensi.kategori.nama if preferensi.kategori else "",
-        preferensi.merek or "",
-        str(preferensi.ukuran or ""),
-        preferensi.satuan or "",
-        preferensi.kebutuhan_tambahan or "",
-    ])
-
-
-def hitung_rekomendasi(preferensi, produk_list):
-    produk_list = list(produk_list)
-
-    if not produk_list:
-        return []
-
-    semua_teks = [
-        buat_teks_produk(produk)
-        for produk in produk_list
-    ]
-
-    semua_teks.append(
-        buat_teks_preferensi(preferensi)
-    )
-
-    try:
-        vectorizer = TfidfVectorizer()
-        matriks = vectorizer.fit_transform(semua_teks)
-
-        vektor_produk = matriks[:-1]
-        vektor_preferensi = matriks[-1]
-
-        skor = cosine_similarity(
-            vektor_preferensi,
-            vektor_produk,
-        ).flatten()
-
-    except ValueError:
-        skor = [0.0] * len(produk_list)
-
-    hasil = list(zip(produk_list, skor))
-    hasil.sort(
-        key=lambda item: item[1],
-        reverse=True,
-    )
-
-    return hasil
-
-
-def buat_alasan_rekomendasi(produk, preferensi):
-    alasan = []
-
-    if (
-        preferensi.kategori
-        and produk.kategori_id == preferensi.kategori_id
-    ):
-        alasan.append("Kategori sesuai dengan preferensi.")
-
-    if (
-        preferensi.merek
-        and produk.merek
-        and preferensi.merek.lower() in produk.merek.lower()
-    ):
-        alasan.append("Merek sesuai dengan preferensi.")
-
-    if (
-        preferensi.ukuran is not None
-        and produk.ukuran == preferensi.ukuran
-    ):
-        alasan.append("Ukuran produk sesuai.")
-
-    if (
-        preferensi.satuan
-        and produk.satuan
-        and preferensi.satuan.lower() == produk.satuan.lower()
-    ):
-        alasan.append("Satuan produk sesuai.")
-
-    if produk.harga <= preferensi.budget_max:
-        alasan.append("Harga sesuai dengan batas anggaran.")
-
-    if not alasan:
-        alasan.append(
-            "Produk memiliki kemiripan atribut dengan kebutuhan pengguna."
-        )
-
-    return " ".join(alasan)
+# Jumlah maksimal produk pada halaman perbandingan
+# (harus sama dengan data-max di compare_tray.html / pengguna.js).
+BATAS_BANDINGKAN = 4
 
 
 # ==================================================
@@ -130,125 +21,86 @@ def buat_alasan_rekomendasi(produk, preferensi):
 
 @login_required
 def beranda(request):
-    preferensi_terakhir = Preferensi.objects.filter(
-        pengguna=request.user
-    ).first()
+    produk_tersedia = Produk.objects.filter(stok__gt=0)
 
     context = {
-        "total_produk": Produk.objects.filter(
-            stok__gt=0
-        ).count(),
-
+        "total_produk": produk_tersedia.count(),
         "total_kategori": Kategori.objects.count(),
-
         "total_riwayat": Rekomendasi.objects.filter(
             preferensi__pengguna=request.user
         ).count(),
-
-        "preferensi_terakhir": preferensi_terakhir,
-
-        "produk_terbaru": Produk.objects.filter(
-            stok__gt=0
-        ).select_related("kategori").order_by(
-            "-tanggal_dibuat"
-        )[:6],
+        "preferensi_terakhir": (
+            Preferensi.objects
+            .filter(pengguna=request.user)
+            .select_related("kategori")
+            .first()
+        ),
+        "produk_terbaru": (
+            produk_tersedia
+            .select_related("kategori")
+            .order_by("-tanggal_dibuat")[:6]
+        ),
     }
-
-    return render(
-        request,
-        "smartbako/panel_pengguna/dashboard.html",
-        context,
-    )
+    return render(request, "smartbako/panel_pengguna/dashboard.html", context)
 
 
 # ==================================================
-# KATALOG PRODUK
+# KATALOG DAN DETAIL PRODUK
 # ==================================================
 
 @login_required
 def katalog(request):
-    produk_list = Produk.objects.filter(
-        stok__gt=0
-    ).select_related("kategori")
+    produk_list = Produk.objects.filter(stok__gt=0).select_related("kategori")
+    produk_list, kata_kunci, kategori_id = filter_katalog(request, produk_list)
 
-    kata_kunci = request.GET.get("q", "").strip()
-    kategori_id = request.GET.get("kategori", "").strip()
+    context = {
+        "produk_list": produk_list,
+        "kategori_list": Kategori.objects.all(),
+        "kata_kunci": kata_kunci,
+        "kategori_terpilih": kategori_id,
+    }
+    return render(request, "smartbako/panel_pengguna/katalog.html", context)
 
-    if kata_kunci:
-        produk_list = produk_list.filter(
-            Q(nama__icontains=kata_kunci)
-            | Q(merek__icontains=kata_kunci)
-            | Q(deskripsi__icontains=kata_kunci)
-        )
-
-    if kategori_id:
-        produk_list = produk_list.filter(
-            kategori_id=kategori_id
-        )
-
-    return render(
-        request,
-        "smartbako/panel_pengguna/katalog.html",
-        {
-            "produk_list": produk_list,
-            "kategori_list": Kategori.objects.all(),
-            "kata_kunci": kata_kunci,
-            "kategori_terpilih": kategori_id,
-        },
-    )
-
-
-# ==================================================
-# DETAIL PRODUK
-# ==================================================
 
 @login_required
-def detail_produk(request, id):
-    produk = get_object_or_404(
-        Produk.objects.select_related("kategori"),
-        id=id,
+def detail_produk(request, pk):
+    produk = get_object_or_404(Produk.objects.select_related("kategori"), pk=pk)
+
+    produk_terkait = (
+        Produk.objects
+        .filter(kategori=produk.kategori, stok__gt=0)
+        .exclude(id=produk.id)
+        .select_related("kategori")[:4]
     )
 
-    produk_terkait = Produk.objects.filter(
-        kategori=produk.kategori,
-        stok__gt=0,
-    ).exclude(
-        id=produk.id
-    )[:4]
-
-    return render(
-        request,
-        "smartbako/panel_pengguna/detail_produk.html",
-        {
-            "produk": produk,
-            "produk_terkait": produk_terkait,
-        },
-    )
+    context = {
+        "produk": produk,
+        "produk_terkait": produk_terkait,
+    }
+    return render(request, "smartbako/panel_pengguna/detail_produk.html", context)
 
 
 # ==================================================
-# PREFERENSI PENGGUNA
+# PREFERENSI DAN REKOMENDASI
 # ==================================================
 
 @login_required
 def atur_preferensi(request):
+    """
+    Menyimpan preferensi lalu langsung menghitung rekomendasi.
+    Proses yang menulis ke database hanya terjadi pada POST.
+    """
     if request.method == "POST":
         form = PreferensiForm(request.POST)
-
         if form.is_valid():
             preferensi = form.save(commit=False)
             preferensi.pengguna = request.user
             preferensi.save()
 
-            messages.success(
-                request,
-                "Preferensi berhasil disimpan.",
-            )
+            simpan_rekomendasi(preferensi)
 
-            return redirect(
-                "smartbako:rekomendasi",
-                id=preferensi.id,
-            )
+            messages.success(request, "Preferensi berhasil disimpan.")
+            return redirect("smartbako:rekomendasi", pk=preferensi.pk)
     else:
         form = PreferensiForm()
 
@@ -259,92 +111,47 @@ def atur_preferensi(request):
     )
 
 
-# ==================================================
-# REKOMENDASI PRODUK
-# ==================================================
-
 @login_required
-def rekomendasi(request, id):
+def rekomendasi(request, pk):
+    """
+    Menampilkan hasil rekomendasi terakhir milik sebuah preferensi.
+
+    Sebelumnya setiap kali halaman dibuka (termasuk dari menu Riwayat)
+    data rekomendasi baru dibuat sehingga riwayat terus bertambah.
+    Sekarang hasil yang sudah ada cukup ditampilkan ulang.
+    """
     preferensi = get_object_or_404(
-        Preferensi,
-        id=id,
+        Preferensi.objects.select_related("kategori"),
+        pk=pk,
         pengguna=request.user,
     )
 
-    produk_list = Produk.objects.filter(
-        stok__gt=0,
-        harga__lte=preferensi.budget_max,
-    ).select_related("kategori")
-
-    if preferensi.budget_min is not None:
-        produk_list = produk_list.filter(
-            harga__gte=preferensi.budget_min
-        )
-
-    hasil = hitung_rekomendasi(
-        preferensi,
-        produk_list,
-    )
-
-    rekomendasi_obj = Rekomendasi.objects.create(
-        preferensi=preferensi,
-        jumlah_hasil=len(hasil),
-    )
-
-    detail_list = []
-
-    for peringkat, (produk, skor) in enumerate(
-        hasil,
-        start=1,
-    ):
-        detail_list.append(
-            DetailRekomendasi(
-                rekomendasi=rekomendasi_obj,
-                produk=produk,
-                skor_kecocokan=Decimal(
-                    str(round(float(skor), 8))
-                ),
-                peringkat=peringkat,
-                alasan_rekomendasi=buat_alasan_rekomendasi(
-                    produk,
-                    preferensi,
-                ),
-            )
-        )
-
-    if detail_list:
-        DetailRekomendasi.objects.bulk_create(detail_list)
+    rekomendasi_obj = preferensi.rekomendasi.first()
+    if rekomendasi_obj is None:
+        # Untuk data lama yang belum pernah dihitung.
+        rekomendasi_obj = simpan_rekomendasi(preferensi)
 
     hasil_rekomendasi = rekomendasi_obj.detail.select_related(
         "produk",
         "produk__kategori",
-    ).all()
-
-    return render(
-        request,
-        "smartbako/panel_pengguna/rekomendasi.html",
-        {
-            "preferensi": preferensi,
-            "rekomendasi": rekomendasi_obj,
-            "hasil_rekomendasi": hasil_rekomendasi,
-        },
     )
 
+    context = {
+        "preferensi": preferensi,
+        "rekomendasi": rekomendasi_obj,
+        "hasil_rekomendasi": hasil_rekomendasi,
+    }
+    return render(request, "smartbako/panel_pengguna/rekomendasi.html", context)
 
-# ==================================================
-# RIWAYAT REKOMENDASI
-# ==================================================
 
 @login_required
 def riwayat_rekomendasi(request):
-    riwayat = Rekomendasi.objects.filter(
-        preferensi__pengguna=request.user
-    ).select_related(
-        "preferensi"
-    ).order_by(
-        "-tanggal_rekomendasi"
+    riwayat = (
+        Rekomendasi.objects
+        .filter(preferensi__pengguna=request.user)
+        .select_related("preferensi", "preferensi__kategori")
+        .order_by("-tanggal_rekomendasi")
     )
-
     return render(
         request,
         "smartbako/panel_pengguna/riwayat.html",
@@ -358,39 +165,35 @@ def riwayat_rekomendasi(request):
 
 @login_required
 def bandingkan_produk(request):
-    daftar_id = request.GET.getlist("produk")
+    # Hanya ID berupa angka yang dipakai, maksimal BATAS_BANDINGKAN produk.
+    daftar_id = [
+        int(nilai)
+        for nilai in request.GET.getlist("produk")
+        if nilai.isdigit()
+    ]
+    daftar_id = list(dict.fromkeys(daftar_id))[:BATAS_BANDINGKAN]
 
-    produk_dipilih = Produk.objects.filter(
-        id__in=daftar_id
-    ).select_related("kategori")
-
+    produk_dipilih = Produk.objects.filter(id__in=daftar_id).select_related(
+        "kategori"
+    )
     return render(
         request,
         "smartbako/panel_pengguna/bandingkan.html",
-        {
-            "produk_dipilih": produk_dipilih,
-        },
+        {"produk_dipilih": produk_dipilih},
     )
 
 
 # ==================================================
-# PROFIL PENGGUNA
+# PROFIL DAN KATA SANDI
 # ==================================================
 
 @login_required
 def profil_pengguna(request):
     if request.method == "POST":
-        form = ProfilForm(
-            request.POST,
-            instance=request.user,
-        )
-
+        form = ProfilForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(
-                request,
-                "Profil berhasil diperbarui.",
-            )
+            messages.success(request, "Profil berhasil diperbarui.")
             return redirect("smartbako:profil")
     else:
         form = ProfilForm(instance=request.user)
@@ -402,30 +205,18 @@ def profil_pengguna(request):
     )
 
 
-# ==================================================
-# UBAH KATA SANDI
-# ==================================================
-
 @login_required
 def ubah_password(request):
     if request.method == "POST":
-        form = PasswordChangeForm(
-            user=request.user,
-            data=request.POST,
-        )
-
+        form = PasswordPenggunaForm(user=request.user, data=request.POST)
         if form.is_valid():
             user = form.save()
+            # Agar pengguna tidak otomatis logout setelah ganti kata sandi.
             update_session_auth_hash(request, user)
-
-            messages.success(
-                request,
-                "Kata sandi berhasil diperbarui.",
-            )
-
-            return redirect("smartbako:ubah_password")
+            messages.success(request, "Kata sandi berhasil diperbarui.")
+            return redirect("smartbako:profil")
     else:
-        form = PasswordChangeForm(user=request.user)
+        form = PasswordPenggunaForm(user=request.user)
 
     return render(
         request,

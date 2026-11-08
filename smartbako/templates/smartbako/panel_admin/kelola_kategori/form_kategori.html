@@ -8,8 +8,8 @@
         <div class="alert alert-danger">{{ error }}</div>
     {% endfor %}
     <div class="row g-3">
-        {% include 'smartbako/panel_admin/components/field.html' with field=form.nama %}
-        {% include 'smartbako/panel_admin/components/field.html' with field=form.deskripsi %}
+        {% include 'smartbako/components/field.html' with field=form.nama %}
+        {% include 'smartbako/components/field.html' with field=form.deskripsi %}
     </div>
     <div class="d-flex justify-content-end gap-2 mt-4">
         <a href="{% url 'smartbako:daftar_kategori' %}" class="btn btn-light-subtle px-4">Batal</a>

@@ -1,5 +1,7 @@
+"""URL panel admin SmartBako (khusus akun staff)."""
 
 from django.urls import path
+
 from . import views_admin as views
 
 urlpatterns = [
@@ -39,6 +41,11 @@ urlpatterns = [
         name="tambah_produk",
     ),
     path(
+        "panel-admin/produk/<int:id>/",
+        views.detail_produk_admin,
+        name="detail_produk_admin",
+    ),
+    path(
         "panel-admin/produk/edit/<int:id>/",
         views.edit_produk,
         name="edit_produk",
@@ -56,6 +63,11 @@ urlpatterns = [
         name="daftar_pengguna",
     ),
     path(
+        "panel-admin/pengguna/<int:id>/",
+        views.detail_pengguna,
+        name="detail_pengguna",
+    ),
+    path(
         "panel-admin/pengguna/status/<int:id>/",
         views.ubah_status_pengguna,
         name="ubah_status_pengguna",
@@ -64,6 +76,18 @@ urlpatterns = [
         "panel-admin/pengguna/hapus/<int:id>/",
         views.hapus_pengguna,
         name="hapus_pengguna",
+    ),
+
+    # Riwayat preferensi (US-13 / FR-06)
+    path(
+        "panel-admin/riwayat-preferensi/",
+        views.riwayat_preferensi,
+        name="riwayat_preferensi",
+    ),
+    path(
+        "panel-admin/riwayat-preferensi/<int:id>/",
+        views.detail_preferensi,
+        name="detail_preferensi",
     ),
 
     path(

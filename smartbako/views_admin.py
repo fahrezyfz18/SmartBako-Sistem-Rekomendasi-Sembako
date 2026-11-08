@@ -49,7 +49,7 @@ def admin_required(view_func):
 
         if not (user.is_active and user.is_staff):
             messages.error(request, "Halaman tersebut khusus admin.")
-            return redirect("smartbako:beranda")
+            return redirect("smartbako:landing_page")
 
         return view_func(request, *args, **kwargs)
 

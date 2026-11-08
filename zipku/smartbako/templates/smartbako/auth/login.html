@@ -42,20 +42,21 @@
             <form method="post" novalidate>
                 {% csrf_token %}
 
-                {% if request.GET.next %}
-                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {# Halaman tujuan setelah login (dikirim dari view). #}
+                {% if tujuan %}
+                    <input type="hidden" name="next" value="{{ tujuan }}">
                 {% endif %}
 
                 <div class="au-field">
-                    <label for="username">Nama pengguna</label>
+                    <label for="email">Email</label>
                     <div class="au-field__control">
                         <input
-                            type="text"
-                            name="username"
-                            id="username"
-                            value="{{ request.POST.username }}"
-                            placeholder="Masukkan nama pengguna"
-                            autocomplete="username"
+                            type="email"
+                            name="email"
+                            id="email"
+                            value="{{ request.POST.email }}"
+                            placeholder="nama@email.com"
+                            autocomplete="email"
                             autocapitalize="none"
                             required
                             autofocus

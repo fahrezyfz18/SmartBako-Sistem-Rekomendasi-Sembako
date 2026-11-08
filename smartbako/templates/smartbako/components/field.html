@@ -1,6 +1,6 @@
 {% comment %}
-    Satu input form Bootstrap + pesan error di bawah kolom (sesuai wireframe).
-    Pakai: {% include 'smartbako/panel_admin/components/field.html' with field=form.nama kolom='col-md-6' bantuan='...' %}
+    Satu input form Bootstrap + pesan error di bawah kolom (panel admin & pengguna).
+    Pakai: {% include 'smartbako/components/field.html' with field=form.nama kolom='col-md-6' bantuan='...' %}
 {% endcomment %}
 <div class="{{ kolom|default:'col-12' }}">
     <label for="{{ field.id_for_label }}" class="form-label fw-medium">

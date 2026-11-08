@@ -3,16 +3,10 @@
 
 import os
 import sys
-from pathlib import Path
 
 
 def main():
-    # Folder config/ boleh berada di folder ini atau satu tingkat di atasnya.
-    lokasi = Path(__file__).resolve().parent
-    for folder in (lokasi, lokasi.parent):
-        if (folder / "config").is_dir() and str(folder) not in sys.path:
-            sys.path.insert(0, str(folder))
-
+    """Menjalankan perintah administratif Django."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
     try:
