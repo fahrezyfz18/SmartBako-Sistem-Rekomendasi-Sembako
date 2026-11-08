@@ -1,209 +1,83 @@
-
-{% extends 'smartbako/base.html' %}
+{% extends 'smartbako/base_publik.html' %}
 {% load static %}
 
-{% block title %}Daftar Akun - SmartBako{% endblock %}
+{% block title %}Daftar | SmartBako{% endblock %}
 
 {% block extra_css %}
-<style>
-    .auth-container {
-        min-height: 75vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 35px 15px;
-    }
-
-    .auth-card {
-        width: 100%;
-        max-width: 480px;
-        background: #FFFFFF;
-        padding: 35px;
-        border-radius: 16px;
-        border: 1px solid #E5E1DA;
-        box-shadow: 0 8px 25px rgba(46, 42, 39, 0.07);
-    }
-
-    .auth-header {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-    .auth-logo {
-        width: 155px;
-        max-height: 65px;
-        object-fit: contain;
-        margin-bottom: 18px;
-    }
-
-    .auth-header h1 {
-        color: #2E2A27;
-        font-size: 25px;
-        margin: 0 0 8px;
-    }
-
-    .auth-header p {
-        color: #625246;
-        font-size: 14px;
-        margin: 0;
-    }
-
-    .auth-form-group {
-        margin-bottom: 17px;
-    }
-
-    .auth-form-group label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 7px;
-        color: #2E2A27;
-    }
-
-    .auth-form-group input {
-        width: 100%;
-        padding: 12px 14px;
-        border: 1px solid #D6D1C9;
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
-        background: #FFFFFF;
-    }
-
-    .auth-form-group input:focus {
-        border-color: #849AAD;
-        box-shadow: 0 0 0 3px rgba(132, 154, 173, 0.18);
-    }
-
-    .auth-help {
-        display: block;
-        color: #82786D;
-        font-size: 11px;
-        margin-top: 6px;
-        line-height: 1.5;
-    }
-
-    .auth-error {
-        color: #B42318;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-
-    .auth-button {
-        width: 100%;
-        padding: 13px;
-        border: none;
-        border-radius: 8px;
-        background: #5E1C23;
-        color: #FFFFFF;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-top: 8px;
-    }
-
-    .auth-button:hover {
-        background: #45141A;
-    }
-
-    .auth-link {
-        text-align: center;
-        font-size: 13px;
-        color: #625246;
-        margin-top: 23px;
-    }
-
-    .auth-link a {
-        color: #5E1C23;
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-    .auth-link a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 480px) {
-        .auth-card {
-            padding: 25px 20px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'smartbako/css/auth.css' %}">
 {% endblock %}
 
-{% block public_content %}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block footer %}{% endblock %}
 
-<div class="auth-container">
-    <div class="auth-card">
+{% block content %}
+<div class="au-shell">
 
-        <div class="auth-header">
-            <a href="{% url 'smartbako:landing_page' %}">
-                <img
-                    src="{% static 'smartbako/images/logo1.png' %}"
-                    alt="Logo SmartBako"
-                    class="auth-logo"
-                >
+    {% include 'smartbako/auth/_panel_merek.html' with judul='Mulai belanja dengan lebih terarah.' deskripsi='Buat akun gratis untuk mengatur preferensi dan mendapatkan rekomendasi produk sembako.' %}
+
+    <section class="au-panel">
+
+        <a href="{% url 'smartbako:landing_page' %}" class="au-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            Kembali ke beranda
+        </a>
+
+        <div class="au-card">
+
+            <a href="{% url 'smartbako:landing_page' %}" class="au-mobile-logo" aria-label="SmartBako">
+                <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako">
             </a>
 
-            <h1>Buat Akun Baru</h1>
-            <p>
-                Daftar dan temukan rekomendasi sembako
-                sesuai kebutuhan Anda.
-            </p>
-        </div>
-
-        <form method="POST">
-            {% csrf_token %}
-
-            {% for field in form %}
-
-                <div class="auth-form-group">
-
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                    </label>
-
-                    {{ field }}
-
-                    {% if field.help_text %}
-                        <small class="auth-help">
-                            {{ field.help_text|safe }}
-                        </small>
-                    {% endif %}
-
-                    {% for error in field.errors %}
-                        <p class="auth-error">
-                            {{ error }}
-                        </p>
-                    {% endfor %}
-
-                </div>
-
-            {% endfor %}
+            <div class="au-head">
+                <h1>Buat akun baru</h1>
+                <p>Lengkapi data berikut untuk mulai menggunakan SmartBako.</p>
+            </div>
 
             {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <p class="auth-error">
-                        {{ error }}
-                    </p>
-                {% endfor %}
+                <div class="au-alert" role="alert">{{ form.non_field_errors }}</div>
             {% endif %}
 
-            <button type="submit" class="auth-button">
-                Daftar Sekarang
-            </button>
+            <form method="post" novalidate>
+                {% csrf_token %}
 
-        </form>
+                {% for field in form %}
+                    <div class="au-field{% if field.field.widget.input_type == 'password' %} au-field--password{% endif %}{% if field.errors %} has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
 
-        <div class="auth-link">
-            Sudah punya akun SmartBako?
-            <a href="{% url 'smartbako:login' %}">
-                Masuk di sini
-            </a>
+                        <div class="au-field__control">
+                            {{ field }}
+
+                            {% if field.field.widget.input_type == 'password' %}
+                                <button
+                                    type="button"
+                                    class="au-toggle"
+                                    data-toggle-password="{{ field.id_for_label }}"
+                                    aria-label="Tampilkan kata sandi"
+                                >Lihat</button>
+                            {% endif %}
+                        </div>
+
+                        {% for error in field.errors %}
+                            <p class="au-error" role="alert">{{ error }}</p>
+                        {% endfor %}
+
+                        {% if field.help_text and not field.errors %}
+                            <div class="au-help">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="sb-btn sb-btn--primary au-submit">Daftar</button>
+            </form>
+
+            <p class="au-switch">
+                Sudah punya akun?
+                <a href="{% url 'smartbako:login' %}">Masuk di sini</a>
+            </p>
+
         </div>
+    </section>
 
-    </div>
 </div>
-
 {% endblock %}

@@ -1,64 +1,69 @@
-{% extends 'smartbako/base.html' %}
-{% load static %}
+{% extends 'smartbako/base_publik.html' %}
 
-{% block title %}Katalog Produk Publik - SmartBako{% endblock %}
+{% block title %}Katalog Produk | SmartBako{% endblock %}
 
 {% block content %}
-<div class="bg-slate-50 py-16 lg:py-24 min-h-[80vh]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header Halaman -->
-        <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span class="inline-block bg-[#581c1c]/10 text-[#581c1c] font-semibold text-xs tracking-wide px-4 py-1.5 rounded-full border border-[#581c1c]/20 uppercase">
-                Katalog Publik
-            </span>
-            <h1 class="text-3xl font-bold text-slate-900 leading-snug">Daftar Produk Bahan Pokok</h1>
-            <p class="text-sm text-slate-600">
-                Berikut adalah beberapa pilihan produk sembako berkualitas yang terdaftar di dalam sistem SmartBako.
-            </p>
-        </div>
 
-        <!-- Daftar Produk Grid -->
+<section class="sb-pagehead">
+    <div class="sb-container sb-pagehead__inner">
+        <span class="sb-eyebrow">Katalog</span>
+        <h1>Katalog produk sembako</h1>
+        <p>Temukan berbagai produk bahan pokok yang tersedia dalam katalog SmartBako.</p>
+    </div>
+</section>
+
+<section class="sb-page">
+    <div class="sb-container">
+
+        <form method="get" action="{% url 'smartbako:produk_publik' %}" class="sb-filter" role="search">
+            <input
+                type="search"
+                name="q"
+                value="{{ kata_kunci }}"
+                class="sb-input"
+                placeholder="Cari nama atau merek produk..."
+                aria-label="Cari produk"
+            >
+
+            <select name="kategori" class="sb-input" aria-label="Pilih kategori">
+                <option value="">Semua Kategori</option>
+                {% for kategori in kategori_list %}
+                    <option
+                        value="{{ kategori.id }}"
+                        {% if kategori_terpilih == kategori.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ kategori.nama }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="sb-btn sb-btn--primary">Cari Produk</button>
+        </form>
+
         {% if produk_list %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+            <p class="sb-count" aria-live="polite">
+                Menampilkan <strong>{{ produk_list|length }}</strong> produk
+            </p>
+
+            <div class="sb-products">
                 {% for produk in produk_list %}
-                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between text-xs text-slate-500 mb-3">
-                            <span class="bg-slate-100 px-2.5 py-1 rounded-md font-medium">{{ produk.kategori.nama|default:"Sembako" }}</span>
-                            <span class="font-semibold text-[#581c1c]">{{ produk.merek }}</span>
-                        </div>
-                        <h2 class="font-bold text-slate-800 text-base mb-1.5 leading-snug">{{ produk.nama }}</h2>
-                        <p class="text-xs text-slate-500 mb-6">Kemasan: {{ produk.ukuran|default:"Standar" }}</p>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div>
-                            <span class="text-xs text-slate-400 block">Estimasi Harga</span>
-                            <span class="font-bold text-[#581c1c] text-sm">Rp {{ produk.harga|floatformat:0|default:"-" }}</span>
-                        </div>
-                        <a href="{% url 'smartbako:login' %}" class="px-3.5 py-2 bg-[#581c1c]/10 hover:bg-[#581c1c] text-[#581c1c] hover:text-white text-xs font-semibold rounded-lg transition-colors">
-                            Detail
-                        </a>
-                    </div>
-                </div>
+                    {% include 'smartbako/components/kartu_produk_publik.html' with produk=produk %}
                 {% endfor %}
             </div>
         {% else %}
-            <!-- Kondisi Jika Produk Kosong -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto space-y-4 shadow-sm">
-                <h3 class="font-bold text-lg text-slate-800">Belum Ada Produk Tersedia</h3>
-                <p class="text-sm text-slate-500">
-                    Katalog produk sedang disiapkan oleh administrator. Silakan cek kembali beberapa saat lagi.
+            <div class="sb-empty">
+                <h2>Produk tidak ditemukan</h2>
+                <p>
+                    Tidak ada produk yang sesuai dengan pencarian atau kategori yang dipilih.
+                    Silakan ubah kata kunci atau gunakan kategori lain.
                 </p>
-                <div class="pt-2">
-                    <a href="{% url 'smartbako:landing_page' %}" class="inline-block bg-[#581c1c] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-sm">
-                        Kembali ke Beranda
-                    </a>
-                </div>
+                <a href="{% url 'smartbako:produk_publik' %}" class="sb-btn sb-btn--outline">
+                    Tampilkan Semua Produk
+                </a>
             </div>
         {% endif %}
 
     </div>
-</div>
-{% endblock %}
+</section>
+
+{% endblock %}_panel_merek.html

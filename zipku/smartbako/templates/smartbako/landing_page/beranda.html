@@ -1,0 +1,261 @@
+{% extends 'smartbako/base_publik.html' %}
+{% load static %}
+
+{% block title %}SmartBako | Rekomendasi Produk Sembako{% endblock %}
+
+{% block content %}
+
+<!-- =================================================
+     1. HERO
+================================================== -->
+<section class="sb-hero">
+    <div class="sb-container sb-hero__grid">
+
+        <div class="sb-hero__text">
+            <span class="sb-hero__badge"><i aria-hidden="true"></i> Rekomendasi produk sembako cerdas</span>
+
+            <h1>
+                Pilih sembako yang pas untuk kebutuhan dan <em>budget Anda.</em>
+            </h1>
+
+            <p class="sb-hero__lead">
+                SmartBako membantu Anda menemukan produk sembako yang sesuai
+                dengan kebutuhan dan anggaran. Isi preferensi, lalu dapatkan
+                beberapa pilihan untuk dibandingkan.
+            </p>
+
+            <div class="sb-hero__actions">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <a href="{% url 'smartbako:atur_preferensi' %}" class="sb-btn sb-btn--primary">
+                        Mulai Sekarang
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                {% else %}
+                    <a href="{% url 'smartbako:registrasi' %}" class="sb-btn sb-btn--primary">
+                        Mulai Sekarang
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'smartbako:produk_publik' %}" class="sb-btn sb-btn--outline">Lihat Produk</a>
+            </div>
+
+            <ul class="sb-hero__stats">
+                <li><strong>{{ total_produk }}</strong><span>Produk di katalog</span></li>
+                <li><strong>{{ total_kategori }}</strong><span>Kategori sembako</span></li>
+                <li><strong>Gratis</strong><span>Buat akun &amp; coba</span></li>
+            </ul>
+        </div>
+
+        <div class="sb-hero__art">
+            <span class="sb-hero__blob" aria-hidden="true"></span>
+
+            <img
+                src="{% static 'smartbako/images/hero_image.png' %}"
+                alt="Tas belanja berisi beras, minyak goreng, mi instan, dan gula dari SmartBako"
+                width="578" height="432"
+            >
+
+            <div class="sb-float sb-float--a">
+                <span class="sb-float__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                </span>
+                <div>
+                    <strong>Rekomendasi Cerdas</strong>
+                    <small>Sesuai kebutuhan Anda</small>
+                </div>
+            </div>
+
+            <div class="sb-float sb-float--b">
+                <span class="sb-float__icon" aria-hidden="true">Rp</span>
+                <div>
+                    <strong>Sesuai Budget</strong>
+                    <small>Belanja lebih terarah</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =================================================
+     2. FITUR UTAMA
+================================================== -->
+<section class="sb-section sb-section--white" id="fitur">
+    <div class="sb-container">
+
+        <div class="sb-heading sb-heading--center">
+            <span class="sb-eyebrow">Fitur SmartBako</span>
+            <h2>Semua yang Anda perlukan untuk memilih lebih mudah</h2>
+            <p>Dari mencari produk sampai membandingkan pilihan, semuanya ada dalam satu tempat.</p>
+        </div>
+
+        <div class="sb-features">
+            <article class="sb-feature">
+                <span class="sb-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+                </span>
+                <h3>Cari dan Filter</h3>
+                <p>Temukan produk berdasarkan nama, kategori, merek, dan harga.</p>
+            </article>
+
+            <article class="sb-feature">
+                <span class="sb-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+                </span>
+                <h3>Input Kebutuhan</h3>
+                <p>Isi kategori, budget, ukuran, dan merek yang Anda inginkan.</p>
+            </article>
+
+            <article class="sb-feature">
+                <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.1L20 9l-4 3.9.9 5.6-4.9-2.6-4.9 2.6.9-5.6L4 9l5.6-.9L12 3Z"/></svg>
+                </span>
+                <h3>Rekomendasi Cerdas</h3>
+                <p>Sistem mencocokkan preferensi Anda dengan data produk.</p>
+            </article>
+
+            <article class="sb-feature">
+                <span class="sb-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/><path d="M6 8h2M6 12h2M16 8h2M16 12h2"/></svg>
+                </span>
+                <h3>Bandingkan Pilihan</h3>
+                <p>Lihat tingkat kecocokan dan bandingkan harga serta ukuran.</p>
+            </article>
+        </div>
+
+    </div>
+</section>
+
+<!-- =================================================
+     3. CARA KERJA
+================================================== -->
+<section class="sb-section sb-section--tint" id="cara-kerja">
+    <div class="sb-container">
+
+        <div class="sb-heading sb-heading--center">
+            <span class="sb-eyebrow">Proses rekomendasi</span>
+            <h2>Cara kerja dalam tiga langkah</h2>
+        </div>
+
+        <ol class="sb-steps">
+            <li class="sb-step">
+                <span class="sb-step__num" aria-hidden="true">1</span>
+                <h3>Isi Preferensi</h3>
+                <p>Masukkan kebutuhan dan budget belanja Anda.</p>
+            </li>
+
+            <li class="sb-step">
+                <span class="sb-step__num" aria-hidden="true">2</span>
+                <h3>Sistem Memproses</h3>
+                <p>Preferensi dicocokkan dengan data produk sembako.</p>
+            </li>
+
+            <li class="sb-step">
+                <span class="sb-step__num" aria-hidden="true">3</span>
+                <h3>Pilih Produk</h3>
+                <p>Bandingkan beberapa rekomendasi, lalu tentukan sendiri.</p>
+            </li>
+        </ol>
+
+    </div>
+</section>
+
+<!-- =================================================
+     4. PRODUK TERBARU
+================================================== -->
+{% if produk_terbaru %}
+<section class="sb-section" id="produk">
+    <div class="sb-container">
+
+        <div class="sb-heading-row">
+            <div class="sb-heading">
+                <span class="sb-eyebrow">Katalog</span>
+                <h2>Produk terbaru</h2>
+            </div>
+
+            <a href="{% url 'smartbako:produk_publik' %}" class="sb-link-arrow">
+                Lihat semua produk
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+        </div>
+
+        <div class="sb-products">
+            {% for produk in produk_terbaru|slice:":4" %}
+                {% include 'smartbako/components/kartu_produk_publik.html' with produk=produk %}
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endif %}
+
+<!-- =================================================
+     5. KATEGORI
+================================================== -->
+<section class="sb-section sb-section--white" id="kategori">
+    <div class="sb-container">
+
+        <div class="sb-heading-row">
+            <div class="sb-heading">
+                <span class="sb-eyebrow">Pilih kebutuhan</span>
+                <h2>Kategori sembako</h2>
+            </div>
+        </div>
+
+        <div class="sb-cats">
+            <a href="{% url 'smartbako:produk_publik' %}" class="sb-cat">
+                <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 21V9"/><path d="M12 9c0-3 2-5 5-5 0 3-2 5-5 5Z"/><path d="M12 14c0-3-2-5-5-5 0 3 2 5 5 5Z"/><path d="M12 19c0-2.5 1.8-4.5 4.5-4.5 0 2.5-1.8 4.5-4.5 4.5Z"/></svg>
+                </span>
+                <div><strong>Beras</strong><span>Berbagai jenis dan kemasan</span></div>
+            </a>
+
+            <a href="{% url 'smartbako:produk_publik' %}" class="sb-cat">
+                <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.500 9 7 12 3Z"/></svg>
+                </span>
+                <div><strong>Minyak Goreng</strong><span>Botol dan kemasan isi ulang</span></div>
+            </a>
+
+            <a href="{% url 'smartbako:produk_publik' %}" class="sb-cat">
+                <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M5 10h14"/><path d="M10 5v14"/></svg>
+                </span>
+                <div><strong>Gula</strong><span>Pasir dan gula olahan</span></div>
+            </a>
+
+            <a href="{% url 'smartbako:produk_publik' %}" class="sb-cat">
+                <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M5 20c0-8 4-13 14-15-1 10-6 14-14 15Z"/><path d="M5 20 13 12"/></svg>
+                </span>
+                <div><strong>Tepung</strong><span>Terigu dan tepung lainnya</span></div>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- =================================================
+     6. AJAKAN BERTINDAK
+================================================== -->
+<section class="sb-section">
+    <div class="sb-container">
+        <div class="sb-cta">
+            <span class="sb-eyebrow">Mulai bersama SmartBako</span>
+            <h2>Siap menemukan produk yang tepat?</h2>
+            <p>Buat akun gratis dan dapatkan rekomendasi pertama Anda.</p>
+
+            <div class="sb-cta__actions">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <a href="{% url 'smartbako:atur_preferensi' %}" class="sb-btn sb-btn--light">Mulai Rekomendasi</a>
+                {% else %}
+                    <a href="{% url 'smartbako:registrasi' %}" class="sb-btn sb-btn--light">Daftar Sekarang</a>
+                    <a href="{% url 'smartbako:login' %}" class="sb-btn sb-btn--ghost-light">Saya sudah punya akun</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

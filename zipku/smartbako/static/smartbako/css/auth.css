@@ -1,0 +1,370 @@
+/* ==================================================
+   SMARTBAKO - HALAMAN AUTENTIKASI
+   Login, registrasi, dan lupa kata sandi.
+   Memakai token warna dari landing_page.css.
+   ================================================== */
+
+.au-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    min-height: 100vh;
+}
+
+/* ---------- Panel merek (kiri) ---------- */
+
+.au-brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    overflow: hidden;
+    padding: clamp(28px, 4vw, 52px);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(177, 199, 212, 0.3), transparent 46%),
+        linear-gradient(160deg, var(--sb-accent) 0%, #7A2B34 100%);
+    color: var(--sb-white);
+}
+
+.au-brand::before,
+.au-brand::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.au-brand::before {
+    right: -120px;
+    bottom: -120px;
+    width: 380px;
+    height: 380px;
+    border: 56px solid rgba(255, 255, 255, 0.05);
+}
+
+.au-brand::after {
+    top: 38%;
+    left: -90px;
+    width: 220px;
+    height: 220px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.au-brand > * {
+    position: relative;
+    z-index: 1;
+}
+
+.au-brand__logo {
+    align-self: flex-start;
+}
+
+.au-brand__body h2 {
+    max-width: 16ch;
+    font-size: clamp(26px, 3.2vw, 38px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.au-brand__body > p {
+    max-width: 38ch;
+    margin-top: 14px;
+    color: #F0DEE0;
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.au-points {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.au-points li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14.5px;
+}
+
+.au-points span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.au-points svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.au-brand__foot {
+    color: #E4C6CA;
+    font-size: 13px;
+}
+
+/* ---------- Panel formulir (kanan) ---------- */
+
+.au-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: clamp(28px, 4vw, 56px) max(20px, env(safe-area-inset-right, 0px)) clamp(28px, 4vw, 56px) max(20px, env(safe-area-inset-left, 0px));
+    background:
+        radial-gradient(circle at 100% 0%, rgba(177, 199, 212, 0.35), transparent 40%),
+        var(--sb-bg);
+}
+
+.au-back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+    color: var(--sb-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.au-back svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+.au-back:hover {
+    color: var(--sb-accent);
+}
+
+.au-back:hover svg {
+    transform: translateX(-3px);
+}
+
+.au-card {
+    width: 100%;
+    max-width: 460px;
+    padding: clamp(24px, 4vw, 40px);
+    border: 1px solid var(--sb-border);
+    border-radius: 22px;
+    background: var(--sb-white);
+    box-shadow: var(--sb-shadow-lg);
+}
+
+.au-mobile-logo {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.au-mobile-logo img {
+    display: block;
+    width: 150px;
+    height: auto;
+}
+
+.au-head {
+    margin-bottom: 26px;
+}
+
+.au-head h1 {
+    font-size: clamp(24px, 3vw, 28px);
+    font-weight: 700;
+}
+
+.au-head p {
+    margin-top: 8px;
+    color: var(--sb-muted);
+    font-size: 14.5px;
+}
+
+/* ---------- Formulir ---------- */
+
+.au-field {
+    margin-bottom: 18px;
+}
+
+.au-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--sb-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.au-field__control {
+    position: relative;
+}
+
+.au-field input {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    border: 1px solid #D6D1C9;
+    border-radius: 12px;
+    background: var(--sb-white);
+    color: var(--sb-text);
+    font-size: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.au-field input::placeholder {
+    color: #9A9088;
+}
+
+.au-field input:hover {
+    border-color: #BDB6AC;
+}
+
+.au-field input:focus {
+    outline: none;
+    border-color: var(--sb-primary);
+    box-shadow: 0 0 0 4px rgba(177, 199, 212, 0.55);
+}
+
+.au-field--password input {
+    padding-right: 104px;
+}
+
+.au-field.has-error input {
+    border-color: #C95151;
+    background: #FFFAFA;
+}
+
+.au-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--sb-accent);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.au-toggle:hover {
+    background: var(--sb-accent-soft);
+}
+
+.au-error {
+    margin: 7px 0 0;
+    color: #A32929;
+    font-size: 13px;
+}
+
+.au-help {
+    margin-top: 7px;
+    color: var(--sb-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+.au-help ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.au-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: -4px 0 20px;
+    font-size: 13.5px;
+}
+
+.au-row a {
+    color: var(--sb-accent);
+    font-weight: 600;
+}
+
+.au-row a:hover {
+    text-decoration: underline;
+}
+
+.au-submit {
+    width: 100%;
+    padding-block: 15px;
+    font-size: 15px;
+}
+
+.au-alert {
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border: 1px solid #F1CACA;
+    border-radius: 12px;
+    background: #F8E7E7;
+    color: #8A2525;
+    font-size: 14px;
+}
+
+.au-alert ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.au-switch {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--sb-border);
+    color: var(--sb-muted);
+    font-size: 14.5px;
+    text-align: center;
+}
+
+.au-switch a {
+    color: var(--sb-accent);
+    font-weight: 600;
+}
+
+.au-switch a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Responsif ---------- */
+
+@media (max-width: 960px) {
+    .au-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .au-brand {
+        display: none;
+    }
+
+    .au-mobile-logo {
+        display: block;
+    }
+
+    .au-panel {
+        justify-content: flex-start;
+        padding-top: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .au-card {
+        padding: 24px 20px;
+        border-radius: 18px;
+    }
+}

@@ -1,0 +1,66 @@
+{% comment %}
+    Kartu produk untuk panel pengguna.
+    Parameter:
+      produk     : objek Produk (wajib)
+      bandingkan : isi True untuk menampilkan pilihan "Bandingkan"
+{% endcomment %}
+
+<article class="product-card">
+    <a
+        href="{% url 'smartbako:detail_produk' produk.id %}"
+        class="product-card__media"
+        tabindex="-1"
+        aria-hidden="true"
+    >
+        {% if produk.gambar %}
+            <img src="{{ produk.gambar.url }}" alt="" loading="lazy">
+        {% else %}
+            <span class="product-card__placeholder">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+                Gambar belum tersedia
+            </span>
+        {% endif %}
+
+        {% if produk.stok <= 10 %}
+            <span class="badge badge--warn">Stok menipis</span>
+        {% endif %}
+    </a>
+
+    <div class="product-card__body">
+        <span class="product-card__category">{{ produk.kategori.nama }}</span>
+
+        <h3 class="product-card__title">
+            <a href="{% url 'smartbako:detail_produk' produk.id %}">{{ produk.nama }}</a>
+        </h3>
+
+        <p class="product-card__meta">
+            {% if produk.merek %}{{ produk.merek }}{% else %}Tanpa merek{% endif %}
+            {% if produk.ukuran %}
+                &middot; {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}
+            {% endif %}
+        </p>
+
+        <p class="product-card__price">Rp {{ produk.harga|floatformat:"0g" }}</p>
+
+        <div class="product-card__footer">
+            <a
+                href="{% url 'smartbako:detail_produk' produk.id %}"
+                class="user-button user-button--outline user-button--sm"
+            >
+                Lihat Detail
+            </a>
+
+            {% if bandingkan %}
+                <label class="compare-toggle">
+                    <input
+                        type="checkbox"
+                        data-compare
+                        data-id="{{ produk.id }}"
+                        data-name="{{ produk.nama }}"
+                    >
+                    <span>Bandingkan</span>
+                </label>
+            {% endif %}
+        </div>
+    </div>
+</article>

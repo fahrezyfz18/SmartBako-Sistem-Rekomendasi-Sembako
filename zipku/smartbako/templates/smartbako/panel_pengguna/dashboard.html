@@ -1,0 +1,161 @@
+{% extends 'smartbako/base.html' %}
+
+{% block title %}Beranda | SmartBako{% endblock %}
+
+{% block content %}
+<div class="user-page">
+
+    <section class="user-hero">
+        <div class="user-hero__text">
+            <span class="user-eyebrow">Panel Pengguna</span>
+            <h1>Halo, {{ request.user.first_name|default:request.user.username }}!</h1>
+            <p>
+                Tentukan anggaran dan kebutuhan belanja sembako Anda,
+                lalu biarkan SmartBako menyusun produk yang paling sesuai.
+            </p>
+
+            <div class="user-actions">
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button user-button--light">
+                    Buat Rekomendasi
+                </a>
+                <a href="{% url 'smartbako:katalog' %}" class="user-button user-button--ghost-light">
+                    Jelajahi Katalog
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="user-grid user-grid--3" aria-label="Ringkasan">
+        <article class="user-stat">
+            <span class="user-stat__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+            </span>
+            <div>
+                <span>Produk Tersedia</span>
+                <strong>{{ total_produk }}</strong>
+            </div>
+        </article>
+
+        <article class="user-stat">
+            <span class="user-stat__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </span>
+            <div>
+                <span>Kategori Produk</span>
+                <strong>{{ total_kategori }}</strong>
+            </div>
+        </article>
+
+        <article class="user-stat">
+            <span class="user-stat__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            <div>
+                <span>Riwayat Rekomendasi</span>
+                <strong>{{ total_riwayat }}</strong>
+            </div>
+        </article>
+    </section>
+
+    <section>
+        <div class="user-section-head">
+            <h2>Preferensi Terakhir</h2>
+        </div>
+
+        {% if preferensi_terakhir %}
+            <div class="user-card">
+                <dl class="user-facts">
+                    <div>
+                        <dt>Kategori</dt>
+                        <dd>{{ preferensi_terakhir.kategori|default:"Semua kategori" }}</dd>
+                    </div>
+                    <div>
+                        <dt>Merek</dt>
+                        <dd>{{ preferensi_terakhir.merek|default:"Tidak ditentukan" }}</dd>
+                    </div>
+                    <div>
+                        <dt>Rentang Anggaran</dt>
+                        <dd>
+                            {% if preferensi_terakhir.budget_min %}
+                                Rp {{ preferensi_terakhir.budget_min|floatformat:"0g" }} &ndash;
+                            {% else %}
+                                Maks.
+                            {% endif %}
+                            Rp {{ preferensi_terakhir.budget_max|floatformat:"0g" }}
+                        </dd>
+                    </div>
+                </dl>
+
+                <div class="user-card__foot">
+                    <span class="user-help">
+                        Disimpan pada {{ preferensi_terakhir.tanggal_input|date:"d M Y, H:i" }}
+                    </span>
+
+                    <a
+                        href="{% url 'smartbako:rekomendasi' preferensi_terakhir.id %}"
+                        class="user-button user-button--sm"
+                    >
+                        Lihat Rekomendasi
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="user-empty">
+                <strong>Belum ada preferensi belanja</strong>
+                <p>Atur anggaran dan kebutuhan Anda untuk mendapatkan rekomendasi pertama.</p>
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button">
+                    Atur Preferensi
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <div class="user-section-head">
+            <h2>Cara Kerja Rekomendasi</h2>
+        </div>
+
+        <ol class="user-steps">
+            <li>
+                <span>1</span>
+                <div>
+                    <strong>Isi preferensi</strong>
+                    <p>Pilih kategori, anggaran, ukuran, dan merek yang Anda butuhkan.</p>
+                </div>
+            </li>
+            <li>
+                <span>2</span>
+                <div>
+                    <strong>Sistem menghitung</strong>
+                    <p>Produk dicocokkan dengan kebutuhan Anda menggunakan TF-IDF dan Cosine Similarity.</p>
+                </div>
+            </li>
+            <li>
+                <span>3</span>
+                <div>
+                    <strong>Bandingkan &amp; pilih</strong>
+                    <p>Lihat peringkat, alasan rekomendasi, lalu bandingkan produk favorit.</p>
+                </div>
+            </li>
+        </ol>
+    </section>
+
+    <section>
+        <div class="user-section-head">
+            <h2>Produk Terbaru</h2>
+            <a href="{% url 'smartbako:katalog' %}" class="user-link">Lihat semua &rarr;</a>
+        </div>
+
+        {% if produk_terbaru %}
+            <div class="user-product-grid">
+                {% for produk in produk_terbaru %}
+                    {% include 'smartbako/components/kartu_produk.html' with produk=produk bandingkan=True %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="user-empty">Belum ada produk yang tersedia.</div>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}

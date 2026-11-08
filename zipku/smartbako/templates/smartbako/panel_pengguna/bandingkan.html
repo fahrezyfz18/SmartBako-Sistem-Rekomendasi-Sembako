@@ -1,0 +1,105 @@
+{% extends 'smartbako/base.html' %}
+
+{% block title %}Bandingkan Produk | SmartBako{% endblock %}
+
+{% block content %}
+<div class="user-page" data-compare-page>
+
+    <header class="user-page__heading">
+        <h1>Bandingkan Produk</h1>
+        <p>Bandingkan harga, ukuran, dan informasi lain untuk menentukan pilihan terbaik.</p>
+    </header>
+
+    {% if produk_dipilih|length >= 2 %}
+
+        <div class="user-table-wrap">
+            <table class="user-table compare-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="compare-table__corner">Informasi</th>
+                        {% for produk in produk_dipilih %}
+                            <th scope="col" data-compare-col data-id="{{ produk.id }}" data-name="{{ produk.nama }}">
+                                <div class="compare-table__product">
+                                    {% if produk.gambar %}
+                                        <img src="{{ produk.gambar.url }}" alt="" loading="lazy">
+                                    {% endif %}
+                                    <a href="{% url 'smartbako:detail_produk' produk.id %}">{{ produk.nama }}</a>
+                                    <button type="button" class="user-link user-link--danger" data-compare-remove="{{ produk.id }}">
+                                        Hapus
+                                    </button>
+                                </div>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row">Kategori</th>
+                        {% for produk in produk_dipilih %}<td>{{ produk.kategori.nama }}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Merek</th>
+                        {% for produk in produk_dipilih %}<td>{{ produk.merek|default:"-" }}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Ukuran</th>
+                        {% for produk in produk_dipilih %}
+                            <td>
+                                {% if produk.ukuran %}{{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% else %}-{% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr data-best-row="min">
+                        <th scope="row">Harga</th>
+                        {% for produk in produk_dipilih %}
+                            <td data-value="{{ produk.harga|stringformat:'f' }}">
+                                <strong>Rp {{ produk.harga|floatformat:"0g" }}</strong>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Stok</th>
+                        {% for produk in produk_dipilih %}<td>{{ produk.stok }}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Deskripsi</th>
+                        {% for produk in produk_dipilih %}
+                            <td class="compare-table__desc">{{ produk.deskripsi|default:"-"|truncatewords:30 }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="user-help">Harga terendah ditandai dengan label hijau.</p>
+
+    {% elif produk_dipilih %}
+
+        <div class="user-empty">
+            <strong>Pilih minimal dua produk</strong>
+            <p>Saat ini baru ada {{ produk_dipilih|length }} produk terpilih. Tambahkan produk lain dari katalog.</p>
+            <a href="{% url 'smartbako:katalog' %}" class="user-button">Tambah Produk</a>
+        </div>
+
+    {% else %}
+
+        <div class="user-empty">
+            <strong>Belum ada produk yang dipilih</strong>
+            <p>
+                Centang &ldquo;Bandingkan&rdquo; pada kartu produk di katalog atau hasil rekomendasi,
+                lalu tekan tombol Bandingkan di bagian bawah layar.
+            </p>
+            <a href="{% url 'smartbako:katalog' %}" class="user-button">Pilih Produk</a>
+        </div>
+
+    {% endif %}
+
+    <div class="user-actions">
+        <a href="{% url 'smartbako:katalog' %}" class="user-button user-button--outline">
+            &larr; Kembali ke Katalog
+        </a>
+    </div>
+
+</div>
+{% endblock %}

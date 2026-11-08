@@ -1,261 +1,99 @@
-
-{% extends 'smartbako/base.html' %}
+{% extends 'smartbako/base_publik.html' %}
 {% load static %}
 
-{% block title %}Masuk - SmartBako{% endblock %}
+{% block title %}Masuk | SmartBako{% endblock %}
 
 {% block extra_css %}
-<style>
-    .auth-container {
-        min-height: 75vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 35px 15px;
-    }
-
-    .auth-card {
-        width: 100%;
-        max-width: 440px;
-        background: #FFFFFF;
-        padding: 35px;
-        border-radius: 16px;
-        border: 1px solid #E5E1DA;
-        box-shadow: 0 8px 25px rgba(46, 42, 39, 0.07);
-    }
-
-    .auth-header {
-        text-align: center;
-        margin-bottom: 28px;
-    }
-
-    .auth-logo {
-        width: 155px;
-        max-height: 65px;
-        object-fit: contain;
-        margin-bottom: 18px;
-    }
-
-    .auth-header h1 {
-        color: #2E2A27;
-        font-size: 25px;
-        margin: 0 0 8px;
-    }
-
-    .auth-header p {
-        color: #625246;
-        font-size: 14px;
-        margin: 0;
-    }
-
-    .auth-form-group {
-        margin-bottom: 20px;
-    }
-
-    .auth-form-group label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #2E2A27;
-    }
-
-    .auth-input-wrapper {
-        position: relative;
-    }
-
-    .auth-input {
-        width: 100%;
-        padding: 13px 14px;
-        border: 1px solid #D6D1C9;
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
-        background: #FFFFFF;
-    }
-
-    .auth-input:focus {
-        border-color: #849AAD;
-        box-shadow: 0 0 0 3px rgba(132, 154, 173, 0.18);
-    }
-
-    .password-input {
-        padding-right: 48px;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        color: #625246;
-        padding: 5px;
-        font-size: 12px;
-    }
-
-    .auth-options {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 8px;
-    }
-
-    .auth-options a,
-    .auth-link a {
-        color: #5E1C23;
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-    .auth-options a {
-        font-size: 12px;
-    }
-
-    .auth-options a:hover,
-    .auth-link a:hover {
-        text-decoration: underline;
-    }
-
-    .auth-button {
-        width: 100%;
-        padding: 13px;
-        border: none;
-        border-radius: 8px;
-        background: #5E1C23;
-        color: #FFFFFF;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-top: 5px;
-    }
-
-    .auth-button:hover {
-        background: #45141A;
-    }
-
-    .auth-link {
-        text-align: center;
-        font-size: 13px;
-        color: #625246;
-        margin-top: 25px;
-    }
-
-    @media (max-width: 480px) {
-        .auth-card {
-            padding: 25px 20px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'smartbako/css/auth.css' %}">
 {% endblock %}
 
-{% block public_content %}
+{# Halaman autentikasi tampil penuh, tanpa navbar dan footer. #}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block footer %}{% endblock %}
 
-<div class="auth-container">
-    <div class="auth-card">
+{% block content %}
+<div class="au-shell">
 
-        <div class="auth-header">
-            <a href="{% url 'smartbako:landing_page' %}">
-                <img
-                    src="{% static 'smartbako/images/logo1.png' %}"
-                    alt="Logo SmartBako"
-                    class="auth-logo"
-                >
+    {% include 'smartbako/auth/_panel_merek.html' with judul='Belanja sembako lebih terarah.' deskripsi='Masuk untuk melanjutkan atur preferensi dan melihat rekomendasi produk Anda.' %}
+
+    <section class="au-panel">
+
+        <a href="{% url 'smartbako:landing_page' %}" class="au-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            Kembali ke beranda
+        </a>
+
+        <div class="au-card">
+
+            <a href="{% url 'smartbako:landing_page' %}" class="au-mobile-logo" aria-label="SmartBako">
+                <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako">
             </a>
 
-            <h1>Selamat Datang Kembali</h1>
-            <p>Masuk menggunakan email terdaftar Anda.</p>
-        </div>
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="auth-form-group">
-                <label for="email">Email</label>
-
-                <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    class="auth-input"
-                    placeholder="nama@email.com"
-                    value="{{ request.POST.email|default:'' }}"
-                    autocomplete="email"
-                    required
-                >
+            <div class="au-head">
+                <h1>Selamat datang kembali</h1>
+                <p>Masuk ke akun SmartBako Anda.</p>
             </div>
 
-            <div class="auth-form-group">
-                <label for="password">Kata Sandi</label>
+            {% for message in messages %}
+                <div class="sb-notice sb-notice--{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+            {% endfor %}
 
-                <div class="auth-input-wrapper">
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        class="auth-input password-input"
-                        placeholder="Masukkan kata sandi"
-                        autocomplete="current-password"
-                        required
-                    >
+            <form method="post" novalidate>
+                {% csrf_token %}
 
-                    <button
-                        type="button"
-                        class="toggle-password"
-                        onclick="togglePassword()"
-                        id="toggleButton"
-                        aria-label="Tampilkan kata sandi"
-                    >
-                        Lihat
-                    </button>
+                {# Halaman tujuan setelah login (dikirim dari view). #}
+                {% if tujuan %}
+                    <input type="hidden" name="next" value="{{ tujuan }}">
+                {% endif %}
+
+                <div class="au-field">
+                    <label for="email">Email</label>
+                    <div class="au-field__control">
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            value="{{ request.POST.email }}"
+                            placeholder="nama@email.com"
+                            autocomplete="email"
+                            autocapitalize="none"
+                            required
+                            autofocus
+                        >
+                    </div>
                 </div>
 
-                <div class="auth-options">
-                    <a href="#" onclick="return false;">
-                        Lupa password?
-                    </a>
+                <div class="au-field au-field--password">
+                    <label for="password">Kata sandi</label>
+                    <div class="au-field__control">
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Masukkan kata sandi"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="au-toggle"
+                            data-toggle-password="password"
+                            aria-label="Tampilkan kata sandi"
+                        >Lihat</button>
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" class="auth-button">
-                Masuk
-            </button>
+                <button type="submit" class="sb-btn sb-btn--primary au-submit">Masuk</button>
+            </form>
 
-        </form>
+            <p class="au-switch">
+                Belum punya akun?
+                <a href="{% url 'smartbako:registrasi' %}">Daftar sekarang</a>
+            </p>
 
-        <div class="auth-link">
-            Belum punya akun SmartBako?
-            <a href="{% url 'smartbako:registrasi' %}">
-                Daftar sekarang
-            </a>
         </div>
+    </section>
 
-    </div>
 </div>
-
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById("password");
-        const toggleButton = document.getElementById("toggleButton");
-
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            toggleButton.textContent = "Sembunyi";
-            toggleButton.setAttribute(
-                "aria-label",
-                "Sembunyikan kata sandi"
-            );
-        } else {
-            passwordInput.type = "password";
-            toggleButton.textContent = "Lihat";
-            toggleButton.setAttribute(
-                "aria-label",
-                "Tampilkan kata sandi"
-            );
-        }
-    }
-</script>
-
 {% endblock %}

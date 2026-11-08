@@ -1,128 +1,191 @@
+"""
+Layanan rekomendasi produk SmartBako.
 
+Metode: Content-Based Filtering
+1. Filter produk berdasarkan stok dan anggaran.
+2. Preprocessing teks produk dan preferensi.
+3. Pembobotan TF-IDF.
+4. Perhitungan Cosine Similarity.
+"""
+
+from decimal import Decimal
+
+from django.db import transaction
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from ..models import DetailRekomendasi, Produk, Rekomendasi
 from .preprocessing import preprocessing_teks
+
+# Jumlah maksimal produk yang ditampilkan dalam satu rekomendasi.
+BATAS_REKOMENDASI = 10
+
+# Angka desimal (2.5) dan angka+satuan (2.5kg) dipertahankan utuh.
+POLA_TOKEN = r"(?u)\b\d+(?:\.\d+)?[^\W\d_]*\b|\b\w+\b"
+
+
+# ==========================================================
+# PEMBENTUKAN DOKUMEN TEKS
+# ==========================================================
+
+def format_angka(nilai):
+    """Mengubah Decimal('5.00') menjadi '5' agar token lebih bersih."""
+    if nilai is None:
+        return ""
+    return f"{Decimal(nilai).normalize():f}"
+
+
+def gabung_ukuran_satuan(ukuran, satuan):
+    """Menghasilkan '5 kg 5kg' agar penulisan '5kg' dan '5 kg' sama-sama cocok."""
+    angka = format_angka(ukuran)
+    satuan = (satuan or "").strip()
+
+    if angka and satuan:
+        return f"{angka} {satuan} {angka}{satuan}"
+    return f"{angka} {satuan}".strip()
 
 
 def buat_dokumen_produk(produk):
     """Menggabungkan atribut produk menjadi satu dokumen teks."""
-
     return " ".join([
         produk.nama or "",
         produk.merek or "",
-        produk.kategori.nama if produk.kategori else "",
+        produk.kategori.nama if produk.kategori_id else "",
         produk.deskripsi or "",
-        produk.satuan or "",
+        gabung_ukuran_satuan(produk.ukuran, produk.satuan),
     ])
 
 
-def hitung_rekomendasi(preferensi, daftar_produk):
-    """
-    Menghitung kemiripan produk dengan preferensi
-    menggunakan TF-IDF dan Cosine Similarity.
-
-    Hasil:
-        [(produk, skor_kecocokan), ...]
-    """
-
-    produk_terpilih = []
-
-    # Filter anggaran, kategori, merek, ukuran, dan satuan.
-    for produk in daftar_produk:
-
-        if produk.harga > preferensi.budget_max:
-            continue
-
-        if (
-            preferensi.budget_min is not None
-            and produk.harga < preferensi.budget_min
-        ):
-            continue
-
-        if (
-            preferensi.kategori_id
-            and produk.kategori_id != preferensi.kategori_id
-        ):
-            continue
-
-        if (
-            preferensi.merek
-            and preferensi.merek.lower() not in (produk.merek or "").lower()
-        ):
-            continue
-
-        if (
-            preferensi.ukuran is not None
-            and produk.ukuran != preferensi.ukuran
-        ):
-            continue
-
-        if (
-            preferensi.satuan
-            and preferensi.satuan.lower() != (produk.satuan or "").lower()
-        ):
-            continue
-
-        produk_terpilih.append(produk)
-
-    if not produk_terpilih:
-        return []
-
-    # Preprocessing dokumen produk.
-    dokumen_produk = [
-        preprocessing_teks(buat_dokumen_produk(produk))
-        for produk in produk_terpilih
-    ]
-
-    # Membentuk teks preferensi.
-    teks_preferensi = " ".join([
-        preferensi.kategori.nama if preferensi.kategori else "",
+def buat_dokumen_preferensi(preferensi):
+    """Menggabungkan preferensi pengguna menjadi satu query teks."""
+    return " ".join([
+        preferensi.kategori.nama if preferensi.kategori_id else "",
         preferensi.merek or "",
-        str(preferensi.ukuran or ""),
-        preferensi.satuan or "",
+        gabung_ukuran_satuan(preferensi.ukuran, preferensi.satuan),
         preferensi.kebutuhan_tambahan or "",
     ])
 
-    teks_preferensi = preprocessing_teks(teks_preferensi)
 
-    # Menghapus dokumen produk yang kosong.
-    data_valid = [
-        (produk, dokumen)
-        for produk, dokumen in zip(produk_terpilih, dokumen_produk)
-        if dokumen.strip()
+# ==========================================================
+# PERHITUNGAN REKOMENDASI
+# ==========================================================
+
+def ambil_kandidat_produk(preferensi):
+    """Produk yang stoknya ada dan harganya masuk rentang anggaran."""
+    produk = Produk.objects.filter(
+        stok__gt=0,
+        harga__lte=preferensi.budget_max,
+    ).select_related("kategori")
+
+    if preferensi.budget_min is not None:
+        produk = produk.filter(harga__gte=preferensi.budget_min)
+
+    return produk
+
+
+def hitung_rekomendasi(preferensi, daftar_produk, batas=BATAS_REKOMENDASI):
+    """
+    Mengembalikan list tuple (produk, skor) terurut dari skor tertinggi.
+
+    Jika pengguna hanya mengisi anggaran (tidak ada teks preferensi),
+    produk tetap dikembalikan dengan skor 0 dan diurutkan dari harga
+    termurah, sehingga hasil rekomendasi tidak kosong.
+    """
+    kandidat = [
+        produk for produk in daftar_produk
+        if produk.stok > 0
+        and produk.harga <= preferensi.budget_max
+        and (
+            preferensi.budget_min is None
+            or produk.harga >= preferensi.budget_min
+        )
     ]
 
-    if not data_valid or not teks_preferensi.strip():
+    if not kandidat:
         return []
 
-    produk_valid = [item[0] for item in data_valid]
-    dokumen_valid = [item[1] for item in data_valid]
+    dokumen_preferensi = preprocessing_teks(buat_dokumen_preferensi(preferensi))
+    dokumen_produk = [
+        preprocessing_teks(buat_dokumen_produk(produk))
+        for produk in kandidat
+    ]
 
-    # Menghitung bobot TF-IDF.
-    vectorizer = TfidfVectorizer(
-        token_pattern=r"(?u)\b\w+\b"
-    )
-
-    seluruh_dokumen = dokumen_valid + [teks_preferensi]
+    if not dokumen_preferensi:
+        hasil = [(produk, 0.0) for produk in kandidat]
+        hasil.sort(key=lambda item: item[0].harga)
+        return hasil[:batas]
 
     try:
-        matriks_tfidf = vectorizer.fit_transform(seluruh_dokumen)
+        vectorizer = TfidfVectorizer(token_pattern=POLA_TOKEN)
+        matriks = vectorizer.fit_transform(dokumen_produk + [dokumen_preferensi])
+        skor = cosine_similarity(matriks[-1], matriks[:-1]).flatten().tolist()
     except ValueError:
-        return []
+        # Terjadi bila seluruh dokumen kosong setelah preprocessing.
+        skor = [0.0] * len(kandidat)
 
-    # Menghitung Cosine Similarity.
-    vektor_produk = matriks_tfidf[:-1]
-    vektor_preferensi = matriks_tfidf[-1]
+    hasil = list(zip(kandidat, skor))
+    # Skor tertinggi lebih dulu; jika sama, harga termurah lebih dulu.
+    hasil.sort(key=lambda item: (-item[1], item[0].harga))
+    return hasil[:batas]
 
-    skor = cosine_similarity(
-        vektor_preferensi,
-        vektor_produk,
-    ).flatten()
 
-    hasil = list(zip(produk_valid, skor))
+def buat_alasan_rekomendasi(produk, preferensi):
+    """Menyusun penjelasan singkat mengapa produk direkomendasikan."""
+    alasan = []
 
-    # Mengurutkan dari skor tertinggi.
-    hasil.sort(key=lambda item: item[1], reverse=True)
+    if preferensi.kategori_id and produk.kategori_id == preferensi.kategori_id:
+        alasan.append("Kategori sesuai dengan preferensi.")
 
-    return hasil[:10]
+    if (
+        preferensi.merek
+        and produk.merek
+        and preferensi.merek.lower() in produk.merek.lower()
+    ):
+        alasan.append("Merek sesuai dengan preferensi.")
+
+    if preferensi.ukuran is not None and produk.ukuran == preferensi.ukuran:
+        alasan.append("Ukuran produk sesuai.")
+
+    if (
+        preferensi.satuan
+        and produk.satuan
+        and preferensi.satuan.lower() == produk.satuan.lower()
+    ):
+        alasan.append("Satuan produk sesuai.")
+
+    if produk.harga <= preferensi.budget_max:
+        alasan.append("Harga sesuai dengan batas anggaran.")
+
+    if not alasan:
+        alasan.append(
+            "Produk memiliki kemiripan atribut dengan kebutuhan pengguna."
+        )
+
+    return " ".join(alasan)
+
+
+@transaction.atomic
+def simpan_rekomendasi(preferensi):
+    """
+    Menghitung rekomendasi lalu menyimpannya ke tabel Rekomendasi dan
+    DetailRekomendasi dalam satu transaksi.
+    """
+    hasil = hitung_rekomendasi(preferensi, ambil_kandidat_produk(preferensi))
+
+    rekomendasi = Rekomendasi.objects.create(
+        preferensi=preferensi,
+        jumlah_hasil=len(hasil),
+    )
+
+    DetailRekomendasi.objects.bulk_create([
+        DetailRekomendasi(
+            rekomendasi=rekomendasi,
+            produk=produk,
+            skor_kecocokan=Decimal(str(round(float(skor), 8))),
+            peringkat=peringkat,
+            alasan_rekomendasi=buat_alasan_rekomendasi(produk, preferensi),
+        )
+        for peringkat, (produk, skor) in enumerate(hasil, start=1)
+    ])
+
+    return rekomendasi

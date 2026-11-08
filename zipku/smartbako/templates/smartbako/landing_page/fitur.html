@@ -1,0 +1,145 @@
+{% extends 'smartbako/base_publik.html' %}
+
+{% block title %}Fitur | SmartBako{% endblock %}
+
+{% block content %}
+
+<section class="sb-pagehead">
+    <div class="sb-container sb-pagehead__inner">
+        <span class="sb-eyebrow">Fitur SmartBako</span>
+        <h1>Fitur untuk membantu perencanaan belanja sembako</h1>
+        <p>
+            SmartBako menyediakan katalog produk dan sistem rekomendasi untuk
+            membantu pengguna memilih bahan pokok berdasarkan kebutuhan serta
+            preferensi belanja.
+        </p>
+    </div>
+</section>
+
+<section class="sb-page">
+    <div class="sb-container">
+
+        <div class="sb-rows">
+
+            <article class="sb-row">
+                <div class="sb-row__text">
+                    <span class="sb-row__index">FITUR 1 DARI 3</span>
+                    <h2>Rekomendasi Produk</h2>
+                    <p>
+                        Sistem rekomendasi membantu pengguna menemukan produk sembako yang
+                        sesuai dengan preferensi yang telah ditentukan, memakai pendekatan
+                        Content-Based Filtering dan TF-IDF Vectorization sesuai rancangan
+                        pengembangan SmartBako.
+                    </p>
+                    <ul class="sb-check">
+                        <li>Pencocokan produk berdasarkan informasi produk.</li>
+                        <li>Rekomendasi berdasarkan preferensi pengguna.</li>
+                        <li>Pilihan produk alternatif yang relevan.</li>
+                    </ul>
+                </div>
+
+                <div class="sb-panel">
+                    <span class="sb-icon sb-icon--accent" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.1L20 9l-4 3.9.9 5.6-4.9-2.6-4.9 2.6.9-5.6L4 9l5.6-.9L12 3Z"/></svg>
+                    </span>
+                    <div>
+                        <strong>Sistem Rekomendasi</strong>
+                        <span>Pemrosesan informasi produk dan preferensi pengguna.</span>
+                    </div>
+                    <div class="sb-tags">
+                        <span class="sb-tag">Content-Based Filtering</span>
+                        <span class="sb-tag">TF-IDF</span>
+                        <span class="sb-tag">Cosine Similarity</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="sb-row">
+                <div class="sb-row__text">
+                    <span class="sb-row__index">FITUR 2 DARI 3</span>
+                    <h2>Katalog Produk Sembako</h2>
+                    <p>
+                        Pengguna dapat melihat berbagai produk bahan pokok yang tersedia di
+                        dalam sistem. Setiap produk dilengkapi informasi seperti nama, merek,
+                        kategori, ukuran kemasan, dan harga.
+                    </p>
+                    <ul class="sb-check">
+                        <li>Pencarian produk berdasarkan nama dan merek.</li>
+                        <li>Filter produk berdasarkan kategori.</li>
+                        <li>Informasi produk yang tersusun secara terstruktur.</li>
+                    </ul>
+                </div>
+
+                <div class="sb-panel">
+                    <span class="sb-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    </span>
+                    <div>
+                        <strong>Katalog Produk</strong>
+                        <span>Informasi produk bahan pokok dalam satu halaman.</span>
+                    </div>
+                    <div class="sb-tags">
+                        <span class="sb-tag">Pencarian</span>
+                        <span class="sb-tag">Filter kategori</span>
+                        <span class="sb-tag">Harga &amp; ukuran</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="sb-row">
+                <div class="sb-row__text">
+                    <span class="sb-row__index">FITUR 3 DARI 3</span>
+                    <h2>Pengelolaan Preferensi</h2>
+                    <p>
+                        Pengguna dapat mengatur preferensi belanja sebagai dasar dalam proses
+                        pemberian rekomendasi produk. Pengaturan ini membantu sistem
+                        menyesuaikan hasil dengan kebutuhan pengguna.
+                    </p>
+                    <ul class="sb-check">
+                        <li>Pengaturan preferensi melalui akun pengguna.</li>
+                        <li>Penyesuaian rekomendasi berdasarkan preferensi.</li>
+                        <li>Penyimpanan riwayat rekomendasi.</li>
+                    </ul>
+                </div>
+
+                <div class="sb-panel">
+                    <span class="sb-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+                    </span>
+                    <div>
+                        <strong>Preferensi Pengguna</strong>
+                        <span>Pengaturan kebutuhan sebagai dasar rekomendasi.</span>
+                    </div>
+                    <div class="sb-tags">
+                        <span class="sb-tag">Anggaran</span>
+                        <span class="sb-tag">Kategori</span>
+                        <span class="sb-tag">Merek</span>
+                        <span class="sb-tag">Riwayat</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="sb-section" style="padding-top: 0;">
+    <div class="sb-container">
+        <div class="sb-cta">
+            <span class="sb-eyebrow">Mulai sekarang</span>
+            <h2>Mulai gunakan SmartBako</h2>
+            <p>Buat akun untuk mengatur preferensi dan menggunakan fitur rekomendasi produk sembako.</p>
+
+            <div class="sb-cta__actions">
+                {% if request.user.is_authenticated and not request.user.is_staff %}
+                    <a href="{% url 'smartbako:atur_preferensi' %}" class="sb-btn sb-btn--light">Atur Preferensi</a>
+                {% else %}
+                    <a href="{% url 'smartbako:registrasi' %}" class="sb-btn sb-btn--light">Daftar Sekarang</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

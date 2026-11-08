@@ -1,10 +1,66 @@
+{% extends 'smartbako/base.html' %}
 
-venv/
-__pycache__/
-*.py[cod]
-.env
-db.sqlite3
-staticfiles/
-.idea/
-.vscode/
-smartbako_backup/
+{% block title %}Riwayat Rekomendasi | SmartBako{% endblock %}
+
+{% block content %}
+<div class="user-page">
+
+    <header class="user-page__heading">
+        <h1>Riwayat Rekomendasi</h1>
+        <p>Daftar rekomendasi yang pernah dihasilkan dari preferensi belanja Anda.</p>
+    </header>
+
+    {% if riwayat %}
+        <div class="user-table-wrap">
+            <table class="user-table user-table--stack">
+                <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Tanggal</th>
+                        <th scope="col">Kategori</th>
+                        <th scope="col">Anggaran</th>
+                        <th scope="col">Hasil</th>
+                        <th scope="col"><span class="sr-only">Aksi</span></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in riwayat %}
+                        <tr>
+                            <td data-label="No.">{{ forloop.counter }}</td>
+                            <td data-label="Tanggal">{{ item.tanggal_rekomendasi|date:"d M Y, H:i" }}</td>
+                            <td data-label="Kategori">{{ item.preferensi.kategori|default:"Semua kategori" }}</td>
+                            <td data-label="Anggaran">
+                                {% if item.preferensi.budget_min %}
+                                    Rp {{ item.preferensi.budget_min|floatformat:"0g" }} &ndash;
+                                {% else %}
+                                    Maks.
+                                {% endif %}
+                                Rp {{ item.preferensi.budget_max|floatformat:"0g" }}
+                            </td>
+                            <td data-label="Hasil">
+                                <span class="badge">{{ item.jumlah_hasil }} produk</span>
+                            </td>
+                            <td class="user-table__action">
+                                <a
+                                    href="{% url 'smartbako:rekomendasi' item.preferensi.id %}"
+                                    class="user-button user-button--outline user-button--sm"
+                                >
+                                    Lihat Kembali
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="user-empty">
+            <strong>Belum ada riwayat rekomendasi</strong>
+            <p>Rekomendasi yang Anda buat akan tersimpan di sini.</p>
+            <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button">Buat Rekomendasi</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

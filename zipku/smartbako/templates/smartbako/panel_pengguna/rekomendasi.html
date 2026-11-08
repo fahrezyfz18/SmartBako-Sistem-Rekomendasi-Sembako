@@ -1,0 +1,158 @@
+{% extends 'smartbako/base.html' %}
+
+{% block title %}Hasil Rekomendasi | SmartBako{% endblock %}
+
+{% block content %}
+<div class="user-page">
+
+    <header class="user-page__heading">
+        <h1>Hasil Rekomendasi Produk</h1>
+        <p>Produk berikut disusun dari kemiripan dengan preferensi belanja Anda.</p>
+    </header>
+
+    <section class="user-card">
+        <h2>Preferensi yang Digunakan</h2>
+
+        <dl class="user-facts">
+            <div>
+                <dt>Kategori</dt>
+                <dd>{{ preferensi.kategori|default:"Semua kategori" }}</dd>
+            </div>
+            <div>
+                <dt>Anggaran</dt>
+                <dd>
+                    {% if preferensi.budget_min %}
+                        Rp {{ preferensi.budget_min|floatformat:"0g" }} &ndash;
+                    {% else %}
+                        Maks.
+                    {% endif %}
+                    Rp {{ preferensi.budget_max|floatformat:"0g" }}
+                </dd>
+            </div>
+            <div>
+                <dt>Merek</dt>
+                <dd>{{ preferensi.merek|default:"Tidak ditentukan" }}</dd>
+            </div>
+            <div>
+                <dt>Ukuran</dt>
+                <dd>
+                    {% if preferensi.ukuran %}
+                        {{ preferensi.ukuran|floatformat:"-2" }} {{ preferensi.satuan }}
+                    {% else %}
+                        Tidak ditentukan
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+
+        {% if preferensi.kebutuhan_tambahan %}
+            <p class="user-help"><strong>Catatan:</strong> {{ preferensi.kebutuhan_tambahan }}</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <div class="user-section-head">
+            <h2>Produk yang Direkomendasikan</h2>
+            <span class="user-help">{{ rekomendasi.jumlah_hasil }} produk ditemukan</span>
+        </div>
+
+        {% if hasil_rekomendasi %}
+            <p class="user-help user-hint">
+                Centang &ldquo;Bandingkan&rdquo; pada produk yang ingin Anda bandingkan (maksimal 4).
+            </p>
+
+            <ol class="result-list">
+                {% for item in hasil_rekomendasi %}
+                    {% widthratio item.skor_kecocokan 1 100 as persen %}
+
+                    <li class="result-card{% if item.peringkat <= 3 %} result-card--top{% endif %}">
+                        <span class="result-card__rank" aria-label="Peringkat {{ item.peringkat }}">
+                            {{ item.peringkat }}
+                        </span>
+
+                        <div class="result-card__media">
+                            {% if item.produk.gambar %}
+                                <img src="{{ item.produk.gambar.url }}" alt="" loading="lazy">
+                            {% else %}
+                                <span>Tanpa gambar</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-card__main">
+                            <span class="product-card__category">{{ item.produk.kategori.nama }}</span>
+                            <h3>
+                                <a href="{% url 'smartbako:detail_produk' item.produk.id %}">{{ item.produk.nama }}</a>
+                            </h3>
+
+                            <p class="product-card__meta">
+                                {% if item.produk.merek %}{{ item.produk.merek }}{% else %}Tanpa merek{% endif %}
+                                {% if item.produk.ukuran %}
+                                    &middot; {{ item.produk.ukuran|floatformat:"-2" }} {{ item.produk.satuan }}
+                                {% endif %}
+                            </p>
+
+                            <p class="product-card__price">Rp {{ item.produk.harga|floatformat:"0g" }}</p>
+
+                            <div class="score" title="Skor kecocokan {{ item.skor_kecocokan|floatformat:4 }}">
+                                <div class="score__label">
+                                    <span>Skor kecocokan</span>
+                                    <strong>{{ item.skor_kecocokan|floatformat:4 }}</strong>
+                                </div>
+                                <div
+                                    class="score__bar"
+                                    role="progressbar"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    aria-valuenow="{{ persen }}"
+                                >
+                                    <span style="width: {{ persen }}%"></span>
+                                </div>
+                            </div>
+
+                            <p class="result-card__reason">
+                                <strong>Alasan:</strong> {{ item.alasan_rekomendasi }}
+                            </p>
+                        </div>
+
+                        <div class="result-card__actions">
+                            <a
+                                href="{% url 'smartbako:detail_produk' item.produk.id %}"
+                                class="user-button user-button--outline user-button--sm"
+                            >
+                                Lihat Detail
+                            </a>
+
+                            <label class="compare-toggle">
+                                <input
+                                    type="checkbox"
+                                    data-compare
+                                    data-id="{{ item.produk.id }}"
+                                    data-name="{{ item.produk.nama }}"
+                                >
+                                <span>Bandingkan</span>
+                            </label>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <div class="user-empty">
+                <strong>Belum ada produk yang cocok</strong>
+                <p>
+                    Tidak ditemukan produk dalam rentang anggaran dan preferensi yang dimasukkan.
+                    Coba naikkan anggaran atau kosongkan beberapa kolom.
+                </p>
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button">Ubah Preferensi</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <div class="user-actions">
+        <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button user-button--outline">
+            Ubah Preferensi
+        </a>
+        <a href="{% url 'smartbako:riwayat' %}" class="user-button">Lihat Riwayat</a>
+    </div>
+
+</div>
+{% endblock %}

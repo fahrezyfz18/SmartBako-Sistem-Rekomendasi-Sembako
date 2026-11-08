@@ -1,0 +1,153 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Kategori | SmartBako</title>
+    <link rel="stylesheet" href="{% static 'smartbako/css/admin.css' %}">
+</head>
+
+<body>
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <a href="{% url 'dashboard_admin' %}" class="admin-brand">
+            <img src="{% static 'smartbako/images/logo.jpeg' %}"
+                 alt="Logo SmartBako"
+                 class="admin-logo">
+            <span class="admin-brand-name">SmartBako</span>
+        </a>
+
+        <p class="admin-menu-label">MENU ADMIN</p>
+
+        <nav class="admin-nav">
+            <a href="{% url 'dashboard_admin' %}">
+                <span class="admin-nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">▤</span>
+                Kelola Produk
+            </a>
+
+            <a href="{% url 'daftar_kategori' %}" class="active">
+                <span class="admin-nav-icon">▧</span>
+                Kelola Kategori
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">♙</span>
+                Kelola Pengguna
+            </a>
+
+            <a href="#">
+                <span class="admin-nav-icon">◷</span>
+                Riwayat Preferensi
+            </a>
+
+            <a href="#" class="admin-logout">
+                <span class="admin-nav-icon">⇥</span>
+                Keluar
+            </a>
+        </nav>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="admin-main">
+
+        <!-- HEADER -->
+        <header class="admin-topbar">
+            <div class="admin-user">
+                <span class="admin-avatar">
+                    {{ request.user.username|default:"A"|first|upper }}
+                </span>
+                <span>Admin</span>
+                <span aria-hidden="true">▾</span>
+            </div>
+        </header>
+
+        <section class="admin-content">
+
+            <!-- JUDUL -->
+            <div class="admin-page-heading">
+                <div>
+                    <h1>Edit Kategori</h1>
+                    <p>Perbarui informasi kategori produk SmartBako.</p>
+                </div>
+            </div>
+
+            <!-- NOTIFIKASI -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="admin-alert
+                        {% if message.tags == 'error' %}admin-alert-error{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- FORM EDIT -->
+            <section class="admin-panel">
+
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Formulir Edit Kategori</h2>
+                        <p class="admin-caption">
+                            Ubah informasi kategori sesuai kebutuhan.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" class="admin-form">
+                    {% csrf_token %}
+
+                    <div class="admin-form-group full-width">
+                        <label for="nama">Nama Kategori</label>
+                        <input
+                            type="text"
+                            id="nama"
+                            name="nama"
+                            class="admin-form-control"
+                            value="{{ kategori.nama }}"
+                            maxlength="100"
+                            required
+                        >
+                    </div>
+
+                    <div class="admin-form-group full-width">
+                        <label for="deskripsi">Deskripsi Kategori</label>
+                        <textarea
+                            id="deskripsi"
+                            name="deskripsi"
+                            class="admin-form-control"
+                            placeholder="Masukkan deskripsi kategori..."
+                        >{{ kategori.deskripsi }}</textarea>
+                        <span class="admin-form-help">
+                            Deskripsi kategori bersifat opsional.
+                        </span>
+                    </div>
+
+                    <div class="admin-form-actions">
+                        <a href="{% url 'daftar_kategori' %}"
+                           class="admin-button admin-button-secondary">
+                            Batal
+                        </a>
+
+                        <button type="submit"
+                                class="admin-button admin-button-primary">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+        </section>
+    </main>
+</div>
+</body>
+</html>

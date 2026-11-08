@@ -1,13 +1,22 @@
-
-venv/
-**/venv/
+# Python
 __pycache__/
 *.py[cod]
-.env
-db.sqlite3
-staticfiles/
-.idea/
-.vscode/
-smartbako_backup/
 
+# Virtual environment
+venv/
 .venv/
+env/
+
+# Django
+db.sqlite3
+/media/
+/staticfiles/
+
+# Rahasia
+.env
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

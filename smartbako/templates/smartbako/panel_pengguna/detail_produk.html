@@ -1,0 +1,104 @@
+{% extends 'smartbako/base.html' %}
+
+{% block title %}{{ produk.nama }} | SmartBako{% endblock %}
+
+{% block content %}
+<div class="user-page">
+
+    <nav class="user-breadcrumb" aria-label="Jejak halaman">
+        <a href="{% url 'smartbako:katalog' %}">Katalog Produk</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ produk.kategori.nama }}</span>
+    </nav>
+
+    <section class="user-card user-detail">
+        <div class="user-detail__media">
+            {% if produk.gambar %}
+                <img src="{{ produk.gambar.url }}" alt="{{ produk.nama }}">
+            {% else %}
+                <div class="user-detail__placeholder">Gambar produk belum tersedia</div>
+            {% endif %}
+        </div>
+
+        <div class="user-detail__info">
+            <span class="badge">{{ produk.kategori.nama }}</span>
+            <h1>{{ produk.nama }}</h1>
+
+            <p class="user-detail__price">Rp {{ produk.harga|floatformat:"0g" }}</p>
+
+            <dl class="user-spec">
+                <div>
+                    <dt>Merek</dt>
+                    <dd>{{ produk.merek|default:"Tidak dicantumkan" }}</dd>
+                </div>
+                <div>
+                    <dt>Ukuran</dt>
+                    <dd>
+                        {% if produk.ukuran %}
+                            {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt>Ketersediaan</dt>
+                    <dd>
+                        {% if produk.stok > 10 %}
+                            <span class="badge badge--ok">Tersedia ({{ produk.stok }})</span>
+                        {% elif produk.stok > 0 %}
+                            <span class="badge badge--warn">Stok menipis ({{ produk.stok }})</span>
+                        {% else %}
+                            <span class="badge badge--off">Stok habis</span>
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+
+            <div class="user-actions">
+                <label class="compare-toggle compare-toggle--button">
+                    <input
+                        type="checkbox"
+                        data-compare
+                        data-id="{{ produk.id }}"
+                        data-name="{{ produk.nama }}"
+                    >
+                    <span>Tambah ke Perbandingan</span>
+                </label>
+
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="user-button">
+                    Cari Rekomendasi Serupa
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="user-card">
+        <h2>Deskripsi Produk</h2>
+        <p class="user-prose">
+            {{ produk.deskripsi|default:"Belum ada deskripsi produk."|linebreaksbr }}
+        </p>
+    </section>
+
+    {% if produk_terkait %}
+        <section>
+            <div class="user-section-head">
+                <h2>Produk dalam Kategori yang Sama</h2>
+            </div>
+
+            <div class="user-product-grid">
+                {% for item in produk_terkait %}
+                    {% include 'smartbako/components/kartu_produk.html' with produk=item bandingkan=True %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <div class="user-actions">
+        <a href="{% url 'smartbako:katalog' %}" class="user-button user-button--outline">
+            &larr; Kembali ke Katalog
+        </a>
+    </div>
+
+</div>
+{% endblock %}

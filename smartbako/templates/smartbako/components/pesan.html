@@ -1,0 +1,7 @@
+{% if messages %}
+<div class="sb-container sb-messages" role="status" aria-live="polite">
+    {% for message in messages %}
+        <div class="sb-notice sb-notice--{{ message.tags|default:'info' }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}

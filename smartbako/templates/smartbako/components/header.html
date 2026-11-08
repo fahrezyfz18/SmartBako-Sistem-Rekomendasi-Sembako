@@ -20,12 +20,16 @@
         <div class="flex items-center space-x-2 sm:space-x-4">
             {% if request.user.is_authenticated %}
                 <!-- Jika Pengguna Sudah Login -->
-                <a href="{% url 'smartbako:beranda' %}" class="text-xs sm:text-sm font-medium text-slate-700 hover:text-maroon-800 px-2 py-1">
+                <a href="{% if request.user.is_staff %}{% url 'smartbako:dashboard_admin' %}{% else %}{% url 'smartbako:beranda' %}{% endif %}" class="text-xs sm:text-sm font-medium text-slate-700 hover:text-maroon-800 px-2 py-1">
                     Halo, {{ request.user.first_name|default:request.user.username }}
                 </a>
-                <a href="{% url 'smartbako:logout' %}" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl transition duration-200 border border-rose-200">
-                    Keluar
-                </a>
+                <!-- Logout wajib memakai POST (view logout_pengguna memakai @require_POST). -->
+                <form method="post" action="{% url 'smartbako:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl transition duration-200 border border-rose-200">
+                        Keluar
+                    </button>
+                </form>
             {% else %}
                 <!-- Jika Pengguna Belum Login -->
                 <a href="{% url 'smartbako:login' %}" class="font-medium text-xs sm:text-sm text-slate-700 hover:text-maroon-800 px-2 sm:px-3 py-2 transition duration-200">
