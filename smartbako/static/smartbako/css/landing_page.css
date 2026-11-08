@@ -625,6 +625,128 @@ html {
     bottom: 12%;
 }
 
+/* ---------- Animasi hero ----------
+   1. Teks muncul bergantian dari bawah saat halaman dibuka.
+   2. Gambar melayang naik-turun, latar "blob" berubah bentuk pelan.
+   3. Kartu kecil (sb-float) bergoyang dengan jeda berbeda.
+   4. Titik pada badge berdenyut, garis bawah <em> tumbuh.
+   Semua dimatikan bila pengguna memilih "kurangi animasi" (lihat akhir file). */
+
+@keyframes sb-muncul {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes sb-muncul-skala {
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes sb-melayang {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-14px);
+    }
+}
+
+@keyframes sb-goyang {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(-1.5deg);
+    }
+}
+
+@keyframes sb-blob {
+    0%, 100% {
+        border-radius: 46% 54% 52% 48% / 52% 46% 54% 48%;
+        transform: rotate(0deg) scale(1);
+    }
+    33% {
+        border-radius: 58% 42% 44% 56% / 44% 58% 42% 56%;
+        transform: rotate(6deg) scale(1.03);
+    }
+    66% {
+        border-radius: 40% 60% 56% 44% / 58% 40% 60% 42%;
+        transform: rotate(-5deg) scale(0.98);
+    }
+}
+
+@keyframes sb-denyut {
+    0% {
+        box-shadow: 0 0 0 0 rgba(94, 28, 35, 0.35);
+    }
+    70% {
+        box-shadow: 0 0 0 9px rgba(94, 28, 35, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(94, 28, 35, 0);
+    }
+}
+
+@keyframes sb-garis {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.sb-hero__text > * {
+    animation: sb-muncul 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sb-hero__text > :nth-child(1) { animation-delay: 0.05s; }
+.sb-hero__text > :nth-child(2) { animation-delay: 0.15s; }
+.sb-hero__text > :nth-child(3) { animation-delay: 0.25s; }
+.sb-hero__text > :nth-child(4) { animation-delay: 0.35s; }
+.sb-hero__text > :nth-child(5) { animation-delay: 0.45s; }
+
+.sb-hero__art {
+    animation: sb-muncul-skala 0.9s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sb-hero__art img {
+    animation: sb-melayang 6s ease-in-out 1s infinite;
+}
+
+.sb-hero__blob {
+    animation: sb-blob 14s ease-in-out infinite;
+}
+
+.sb-float--a {
+    animation: sb-goyang 5s ease-in-out 0.6s infinite;
+}
+
+.sb-float--b {
+    animation: sb-goyang 5.5s ease-in-out 1.6s infinite;
+}
+
+.sb-hero__badge i {
+    animation: sb-denyut 2.2s ease-out infinite;
+}
+
+.sb-hero h1 em::after {
+    transform-origin: left center;
+    animation: sb-garis 0.8s 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ---------- Fitur ---------- */
 
 .sb-features {
@@ -1415,6 +1537,16 @@ html {
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
+    }
+
+    .sb-hero__text > *,
+    .sb-hero__art,
+    .sb-hero__art img,
+    .sb-hero__blob,
+    .sb-float,
+    .sb-hero__badge i,
+    .sb-hero h1 em::after {
+        animation: none;
     }
 
     .sb-btn,

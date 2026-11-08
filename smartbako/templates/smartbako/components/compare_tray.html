@@ -4,15 +4,17 @@
     data-max harus sama dengan BATAS_BANDINGKAN di views_pengguna.py.
 {% endcomment %}
 <div class="compare-tray" id="compare-tray" data-url="{% url 'smartbako:bandingkan_produk' %}" data-max="3" hidden>
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div class="min-w-0">
-            <strong><i class="bi bi-layout-three-columns me-1"></i><span id="compare-count">0</span> produk dipilih</strong>
-            <span class="small opacity-75 ms-1">(maks. 3)</span>
-            <ul class="compare-tray__list" id="compare-list"></ul>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3 min-w-0">
+            <span class="compare-tray__ikon"><i class="bi bi-layout-three-columns"></i></span>
+            <div class="min-w-0">
+                <strong><span id="compare-count">0</span> dari 3 produk dipilih</strong>
+                <ul class="compare-tray__list" id="compare-list"></ul>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-outline-light" id="compare-clear">Kosongkan</button>
-            <a href="#" class="btn btn-sm btn-light fw-semibold" id="compare-go" aria-disabled="true">Bandingkan</a>
+        <div class="d-flex gap-2 ms-auto">
+            <button type="button" class="btn btn-sm btn-ghost-light" id="compare-clear">Kosongkan</button>
+            <a href="#" class="btn btn-sm btn-light-accent px-3" id="compare-go" aria-disabled="true">Bandingkan <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
     </div>
     <p class="compare-tray__note small mt-2 mb-0 text-warning" id="compare-note" role="status"></p>

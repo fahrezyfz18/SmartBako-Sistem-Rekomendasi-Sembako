@@ -1,0 +1,23 @@
+{% comment %}
+    Kartu identitas dan menu samping halaman Profil & Ubah Kata Sandi (FR-15).
+    Parameter: aktif = 'profil' | 'password', total_riwayat (opsional).
+    Pakai: {% include 'smartbako/components/menu_profil.html' with aktif='profil' %}
+{% endcomment %}
+<div class="sb-card overflow-hidden">
+    <div class="sb-profil-cover"></div>
+    <div class="sb-profil-identitas text-center">
+        <span class="sb-avatar sb-avatar-lg mb-2">{{ request.user.first_name|default:request.user.email|first|upper }}</span>
+        <div class="fw-semibold fs-5 text-truncate">{{ request.user.first_name|default:"Pengguna" }}</div>
+        <small class="text-secondary d-block text-truncate">{{ request.user.email }}</small>
+        <span class="sb-badge text-bg-accent mt-2">Pengguna SmartBako</span>
+    </div>
+    <div class="list-group list-group-flush sb-menu-profil px-3 pb-3">
+        <a href="{% url 'smartbako:profil' %}" class="list-group-item list-group-item-action {% if aktif == 'profil' %}active{% endif %}" {% if aktif == 'profil' %}aria-current="page"{% endif %}><i class="bi bi-person"></i>Informasi Profil</a>
+        <a href="{% url 'smartbako:ubah_password' %}" class="list-group-item list-group-item-action {% if aktif == 'password' %}active{% endif %}" {% if aktif == 'password' %}aria-current="page"{% endif %}><i class="bi bi-shield-lock"></i>Ubah Kata Sandi</a>
+        <a href="{% url 'smartbako:riwayat' %}" class="list-group-item list-group-item-action"><i class="bi bi-clock-history"></i>Riwayat Rekomendasi</a>
+        <form action="{% url 'smartbako:logout' %}" method="post" class="mt-2 pt-2 border-top">
+            {% csrf_token %}
+            <button type="submit" class="list-group-item list-group-item-action text-danger w-100"><i class="bi bi-box-arrow-right text-danger"></i>Keluar</button>
+        </form>
+    </div>
+</div>

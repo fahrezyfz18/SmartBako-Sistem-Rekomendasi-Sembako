@@ -1,0 +1,11 @@
+{% comment %}
+    Foto produk; bila belum ada foto tampil ikon pengganti.
+    Parameter: produk (wajib), teks (True = tampilkan tulisan "Gambar belum tersedia").
+    Elemen pembungkus (ukuran dan bentuk) diatur oleh template pemanggil.
+    Pakai: <span class="sb-hasil-thumb">{% include 'smartbako/components/media_produk.html' with produk=item.produk %}</span>
+{% endcomment %}
+{% if produk.gambar %}
+    <img src="{{ produk.gambar.url }}" alt="Foto {{ produk.nama }}" loading="lazy">
+{% else %}
+    <span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i>{% if teks %}Gambar belum tersedia{% endif %}</span>
+{% endif %}

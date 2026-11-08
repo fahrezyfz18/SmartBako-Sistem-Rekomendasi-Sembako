@@ -1,0 +1,10 @@
+{% comment %}
+    Tombol pilih produk untuk dibandingkan (checkbox bergaya tombol).
+    Dibaca oleh static/smartbako/js/pengguna.js lewat atribut data-compare.
+    Parameter: produk (wajib), awalan (opsional, pembeda id bila produk muncul dua kali di satu halaman).
+    Pakai: {% include 'smartbako/components/tombol_bandingkan.html' with produk=produk awalan='hasil' %}
+{% endcomment %}
+<div class="sb-pilih-banding">
+    <input type="checkbox" id="banding-{{ awalan|default:'p' }}-{{ produk.id }}" data-compare data-id="{{ produk.id }}" data-name="{{ produk.nama }}">
+    <label for="banding-{{ awalan|default:'p' }}-{{ produk.id }}"><i class="bi bi-plus-lg"></i><i class="bi bi-check2"></i>Bandingkan</label>
+</div>

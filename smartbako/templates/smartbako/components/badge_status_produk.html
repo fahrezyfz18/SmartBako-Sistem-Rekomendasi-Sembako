@@ -1,0 +1,12 @@
+{% comment %}
+    Label status stok produk untuk panel pengguna (memakai Produk.status_stok).
+    Parameter: produk (wajib), angka (True = tampilkan jumlah stok saat terbatas).
+    Pakai: {% include 'smartbako/components/badge_status_produk.html' with produk=produk %}
+{% endcomment %}
+{% if produk.status_stok == 'habis' %}
+    <span class="sb-badge sb-badge-habis">Stok habis</span>
+{% elif produk.status_stok == 'terbatas' %}
+    <span class="sb-badge sb-badge-terbatas">Stok terbatas{% if angka %} ({{ produk.stok }}){% endif %}</span>
+{% else %}
+    <span class="sb-badge sb-badge-tersedia">Tersedia</span>
+{% endif %}

@@ -1,0 +1,10 @@
+{% comment %}
+    Judul halaman panel pengguna.
+    Parameter: judul (wajib), deskripsi (opsional), label (opsional, teks kecil di atas judul), ikon (opsional, nama Bootstrap Icon).
+    Pakai: {% include 'smartbako/components/judul_halaman.html' with label='Katalog' judul='Daftar Produk' deskripsi='...' ikon='bi-grid' %}
+{% endcomment %}
+<div class="min-w-0">
+    {% if label %}<span class="sb-eyebrow mb-1">{% if ikon %}<i class="bi {{ ikon }}"></i>{% endif %}{{ label }}</span>{% endif %}
+    <h1 class="sb-page-title">{{ judul }}</h1>
+    {% if deskripsi %}<p class="text-secondary mb-0">{{ deskripsi }}</p>{% endif %}
+</div>

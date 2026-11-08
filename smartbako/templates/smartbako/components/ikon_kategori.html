@@ -1,0 +1,8 @@
+{% comment %}
+    Ikon Bootstrap sesuai nama kategori produk sembako.
+    Parameter: nama (nama kategori).
+    Pakai: {% include 'smartbako/components/ikon_kategori.html' with nama=kategori.nama %}
+{% endcomment %}
+{% with n=nama|lower %}
+{% if 'beras' in n %}<i class="bi bi-basket"></i>{% elif 'minyak' in n %}<i class="bi bi-droplet"></i>{% elif 'gula' in n %}<i class="bi bi-cup-straw"></i>{% elif 'telur' in n %}<i class="bi bi-egg"></i>{% elif 'susu' in n %}<i class="bi bi-cup"></i>{% elif 'kopi' in n or 'teh' in n %}<i class="bi bi-cup-hot"></i>{% elif 'garam' in n or 'bumbu' in n %}<i class="bi bi-snow"></i>{% elif 'tepung' in n %}<i class="bi bi-cloud"></i>{% elif 'mie' in n %}<i class="bi bi-bowl"></i>{% else %}<i class="bi bi-bag"></i>{% endif %}
+{% endwith %}

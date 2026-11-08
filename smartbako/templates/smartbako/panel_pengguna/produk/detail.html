@@ -19,65 +19,54 @@
     {# ---------- Foto ---------- #}
     <div class="col-lg-5">
         <div class="sb-card p-3">
-            {% if produk.gambar %}
-                <img src="{{ produk.gambar.url }}" alt="Foto {{ produk.nama }}" class="sb-detail-image">
-            {% else %}
-                <div class="sb-detail-image position-relative">
+            <div class="sb-detail-media">
+                {% if produk.gambar %}
+                    <img src="{{ produk.gambar.url }}" alt="Foto {{ produk.nama }}" class="sb-detail-image">
+                {% else %}
                     <span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i>Gambar belum tersedia</span>
-                </div>
-            {% endif %}
+                {% endif %}
+                <span class="sb-produk-badge">{% include 'smartbako/components/badge_status_produk.html' with produk=produk angka=True %}</span>
+            </div>
         </div>
     </div>
 
     {# ---------- Informasi (FR-13) ---------- #}
     <div class="col-lg-7">
-        <div class="sb-card p-4 h-100 d-flex flex-column">
-            <span class="badge rounded-pill text-bg-soft align-self-start mb-2">{{ produk.kategori.nama }}</span>
-            <h1 class="h3 mb-1">{{ produk.nama }}</h1>
-            <p class="text-secondary mb-3">
-                {{ produk.merek|default:"Tanpa merek" }}{% if produk.ukuran %} · {{ produk.ukuran|floatformat:"-2" }} · {{ produk.satuan }}{% endif %}
-            </p>
+        <div class="sb-card p-4 p-lg-5 h-100 d-flex flex-column">
+            <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-eyebrow mb-2">{% include 'smartbako/components/ikon_kategori.html' with nama=produk.kategori.nama %}{{ produk.kategori.nama }}</a>
+            <h1 class="h2 mb-2">{{ produk.nama }}</h1>
+            <p class="text-secondary mb-4">{{ produk.merek|default:"Tanpa merek" }}{% if produk.ukuran %} · {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% endif %}</p>
 
-            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                <span class="sb-harga fs-2">Rp {{ produk.harga|floatformat:"0g" }}</span>
-                {% if produk.status_stok == 'habis' %}
-                    <span class="badge rounded-pill text-bg-danger">Stok habis</span>
-                {% elif produk.status_stok == 'terbatas' %}
-                    <span class="badge rounded-pill text-bg-warning">Stok terbatas ({{ produk.stok }})</span>
-                {% else %}
-                    <span class="badge rounded-pill text-bg-success">Stok tersedia</span>
+            <div class="sb-harga-box mb-4">
+                <div>
+                    <small class="text-secondary d-block">Harga</small>
+                    <span class="sb-harga fs-2">Rp {{ produk.harga|floatformat:"0g" }}</span>
+                </div>
+                {% if produk.harga_per_satuan %}
+                    <div class="text-sm-end">
+                        <small class="text-secondary d-block">Harga per satuan</small>
+                        <span class="fw-semibold">Rp {{ produk.harga_per_satuan|floatformat:"0g" }} / {{ produk.satuan }}</span>
+                    </div>
                 {% endif %}
             </div>
 
-            <h2 class="h6 text-uppercase text-secondary">Deskripsi Produk</h2>
-            <p class="mb-4">{{ produk.deskripsi|default:"Belum ada deskripsi untuk produk ini."|linebreaksbr }}</p>
+            <h2 class="h6 mb-2">Deskripsi Produk</h2>
+            <p class="text-secondary mb-4">{{ produk.deskripsi|default:"Belum ada deskripsi untuk produk ini."|linebreaksbr }}</p>
 
-            <h2 class="h6 text-uppercase text-secondary">Spesifikasi</h2>
-            <table class="table table-sm sb-table mb-4">
-                <tbody>
-                    <tr><th class="fw-normal text-secondary w-25">Nama</th><td>{{ produk.nama }}</td></tr>
-                    <tr><th class="fw-normal text-secondary">Kategori</th><td>{{ produk.kategori.nama }}</td></tr>
-                    <tr><th class="fw-normal text-secondary">Merek</th><td>{{ produk.merek|default:"-" }}</td></tr>
-                    <tr><th class="fw-normal text-secondary">Harga</th><td>Rp {{ produk.harga|floatformat:"0g" }}</td></tr>
-                    <tr><th class="fw-normal text-secondary">Ukuran</th><td>{{ produk.ukuran|floatformat:"-2"|default:"-" }}</td></tr>
-                    <tr><th class="fw-normal text-secondary">Satuan</th><td>{{ produk.satuan|default:"-" }}</td></tr>
-                    {% if produk.harga_per_satuan %}
-                        <tr><th class="fw-normal text-secondary">Harga per satuan</th><td>Rp {{ produk.harga_per_satuan|floatformat:"0g" }} / {{ produk.satuan }}</td></tr>
-                    {% endif %}
-                    <tr><th class="fw-normal text-secondary">Stok</th><td>{{ produk.stok }}</td></tr>
-                </tbody>
-            </table>
+            <h2 class="h6 mb-3">Spesifikasi</h2>
+            <dl class="sb-spek mb-4">
+                <div><dt>Kategori</dt><dd>{{ produk.kategori.nama }}</dd></div>
+                <div><dt>Merek</dt><dd>{{ produk.merek|default:"-" }}</dd></div>
+                <div><dt>Ukuran</dt><dd>{% if produk.ukuran %}{{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% else %}-{% endif %}</dd></div>
+                <div><dt>Stok</dt><dd>{{ produk.stok }}</dd></div>
+            </dl>
 
-            <div class="d-flex flex-wrap gap-2 mt-auto">
-                <a href="{% url 'smartbako:atur_preferensi' %}?kategori={{ produk.kategori_id }}{% if produk.ukuran %}&ukuran={{ produk.ukuran|unlocalize }}{% endif %}{% if produk.satuan %}&satuan={{ produk.satuan|urlencode }}{% endif %}{% if produk.merek %}&merek={{ produk.merek|urlencode }}{% endif %}"
-                   class="btn btn-primary">
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-auto">
+                <a href="{% url 'smartbako:atur_preferensi' %}?kategori={{ produk.kategori_id }}{% if produk.ukuran %}&ukuran={{ produk.ukuran|unlocalize }}{% endif %}{% if produk.satuan %}&satuan={{ produk.satuan|urlencode }}{% endif %}{% if produk.merek %}&merek={{ produk.merek|urlencode }}{% endif %}" class="btn btn-primary btn-lg">
                     <i class="bi bi-stars me-1"></i> Cari Rekomendasi Serupa
                 </a>
-                <a href="{% url 'smartbako:katalog' %}" class="btn btn-soft">Kembali ke Daftar</a>
-                <div class="form-check align-self-center ms-sm-2">
-                    <input class="form-check-input" type="checkbox" id="banding-detail" data-compare data-id="{{ produk.id }}" data-name="{{ produk.nama }}">
-                    <label class="form-check-label" for="banding-detail">Bandingkan</label>
-                </div>
+                {% include 'smartbako/components/tombol_bandingkan.html' with produk=produk awalan='detail' %}
+                <a href="{% url 'smartbako:katalog' %}" class="btn btn-link text-secondary ms-sm-auto"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
             </div>
         </div>
     </div>
@@ -86,7 +75,10 @@
 {# ---------- Produk serupa ---------- #}
 {% if produk_serupa %}
 <section>
-    <h2 class="sb-section-title mb-3">Produk Serupa</h2>
+    <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
+        <h2 class="sb-section-title mb-0">Produk Serupa</h2>
+        <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-link-more">Lihat kategori <i class="bi bi-arrow-right"></i></a>
+    </div>
     <div class="row g-3">
         {% for item in produk_serupa %}
             <div class="col-6 col-lg-3">

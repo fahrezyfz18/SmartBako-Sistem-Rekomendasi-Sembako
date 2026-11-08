@@ -3,76 +3,81 @@
 {% block title %}Daftar Produk{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h1 class="h3 mb-1">Daftar Produk</h1>
-    <p class="text-secondary mb-0">Jelajahi seluruh produk sembako yang tersedia.</p>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    {% include 'smartbako/components/judul_halaman.html' with label='Katalog' ikon='bi-grid' judul='Daftar Produk' deskripsi='Jelajahi seluruh produk sembako yang tersedia, lalu bandingkan sebelum memilih.' %}
+    <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary"><i class="bi bi-stars me-1"></i>Bantu Saya Memilih</a>
 </div>
 
 <form method="get" id="formKatalog">
     {# ---------- Pencarian (FR-09) ---------- #}
-    <div class="sb-card p-3 mb-4">
-        <div class="input-group">
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            {{ form.q }}
-            <button type="submit" class="btn btn-primary px-4">Cari</button>
-        </div>
+    <div class="sb-search mb-3">
+        <i class="bi bi-search"></i>
+        {{ form.q }}
+        <button type="submit" class="btn btn-primary px-4">Cari</button>
+    </div>
+
+    {# ---------- Kategori cepat ---------- #}
+    <div class="sb-scroll-x mb-4" aria-label="Kategori">
+        <a href="{% url 'smartbako:katalog' %}{% if request.GET.q %}?q={{ request.GET.q|urlencode }}{% endif %}" class="sb-chip {% if not request.GET.kategori %}active{% endif %}"><i class="bi bi-grid"></i>Semua</a>
+        {% for kategori in form.kategori.field.queryset %}
+            <a href="{% querystring kategori=kategori.id page=None %}" class="sb-chip {% if request.GET.kategori == kategori.id|stringformat:'s' %}active{% endif %}">{% include 'smartbako/components/ikon_kategori.html' with nama=kategori.nama %}{{ kategori.nama }}</a>
+        {% endfor %}
     </div>
 
     <div class="row g-4">
         {# ---------- Filter (FR-10) ---------- #}
         <aside class="col-lg-3">
-            <button class="btn btn-soft w-100 d-lg-none mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#panelFilter" aria-expanded="false" aria-controls="panelFilter">
-                <i class="bi bi-funnel me-1"></i> Filter Produk
+            <button class="btn btn-soft w-100 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#panelFilter" aria-expanded="false" aria-controls="panelFilter">
+                <i class="bi bi-sliders me-1"></i> Filter Produk{% if ada_filter %} <span class="badge rounded-pill text-bg-accent ms-1">aktif</span>{% endif %}
             </button>
-            <div class="collapse d-lg-block" id="panelFilter">
-                <div class="sb-card p-3">
-                    <h2 class="h6 mb-3"><i class="bi bi-funnel me-1"></i>Filter</h2>
+            <div class="collapse d-lg-block mt-3 mt-lg-0" id="panelFilter">
+                <div class="sb-card p-3 p-lg-4 sb-filter">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h6 mb-0"><i class="bi bi-sliders me-1"></i>Filter</h2>
+                        {% if ada_filter %}<a href="{% url 'smartbako:katalog' %}" class="small fw-medium">Reset</a>{% endif %}
+                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium" for="{{ form.kategori.id_for_label }}">Kategori</label>
+                    <div class="sb-filter-group">
+                        <label class="form-label" for="{{ form.kategori.id_for_label }}">Kategori</label>
                         {{ form.kategori }}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium" for="{{ form.merek.id_for_label }}">Merek</label>
+                    <div class="sb-filter-group">
+                        <label class="form-label" for="{{ form.merek.id_for_label }}">Merek</label>
                         {{ form.merek }}
                         <datalist id="daftar-merek">
                             {% for merek in merek_list %}<option value="{{ merek }}">{% endfor %}
                         </datalist>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium">Rentang harga (Rp)</label>
-                        <div class="d-flex gap-2">
+                    <div class="sb-filter-group">
+                        <label class="form-label" for="{{ form.harga_min.id_for_label }}">Rentang harga (Rp)</label>
+                        <div class="d-flex align-items-center gap-2">
                             {{ form.harga_min }}
+                            <span class="text-secondary">–</span>
                             {{ form.harga_max }}
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-medium" for="{{ form.ukuran.id_for_label }}">Ukuran</label>
+                    <div class="sb-filter-group">
+                        <label class="form-label" for="{{ form.ukuran.id_for_label }}">Ukuran</label>
                         {{ form.ukuran }}
                     </div>
 
                     {% for field in form %}
-                        {% for error in field.errors %}<div class="invalid-feedback d-block mb-2">{{ field.label|default:"" }} {{ error }}</div>{% endfor %}
+                        {% for error in field.errors %}<div class="invalid-feedback d-block mt-2">{{ field.label|default:"" }} {{ error }}</div>{% endfor %}
                     {% endfor %}
 
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary flex-grow-1">Terapkan</button>
-                        <a href="{% url 'smartbako:katalog' %}" class="btn btn-soft">Reset</a>
-                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-4">Terapkan Filter</button>
                 </div>
             </div>
         </aside>
 
         {# ---------- Daftar produk (FR-08) ---------- #}
         <section class="col-lg-9">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div class="sb-toolbar">
                 <p class="text-secondary small mb-0">
-                    {% if page_obj.paginator.count %}
-                        Menampilkan {{ page_obj.object_list|length }} dari {{ page_obj.paginator.count }} produk
-                    {% endif %}
+                    {% if page_obj.paginator.count %}<strong class="text-body">{{ page_obj.paginator.count }}</strong> produk ditemukan{% if request.GET.q %} untuk “{{ request.GET.q }}”{% endif %}{% endif %}
                 </p>
                 <div class="d-flex align-items-center gap-2">
-                    <label for="{{ form.urutkan.id_for_label }}" class="small text-secondary text-nowrap">Urutkan</label>
+                    <label for="{{ form.urutkan.id_for_label }}" class="small text-secondary text-nowrap"><i class="bi bi-arrow-down-up me-1"></i>Urutkan</label>
                     {{ form.urutkan }}
                 </div>
             </div>
@@ -80,19 +85,15 @@
             {% if page_obj.object_list %}
                 <div class="row g-3">
                     {% for produk in page_obj %}
-                        <div class="col-6 col-xl-4">
+                        <div class="col-6 col-md-4">
                             {% include 'smartbako/components/kartu_produk.html' with produk=produk bandingkan=True %}
                         </div>
                     {% endfor %}
                 </div>
                 {% include 'smartbako/components/pagination.html' with label='produk' %}
             {% else %}
-                <div class="sb-card sb-empty">
-                    <span class="sb-empty-icon"><i class="bi bi-search"></i></span>
-                    <h2 class="h6 text-body mb-2">Produk tidak ditemukan.</h2>
-                    <p class="small mb-3">Coba kata kunci atau filter lain.</p>
-                    <a href="{% url 'smartbako:katalog' %}" class="btn btn-outline-primary">Reset filter</a>
-                </div>
+                {% url 'smartbako:katalog' as url_katalog %}
+                {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-search' judul='Produk tidak ditemukan.' pesan='Coba kata kunci lain atau longgarkan filter yang dipakai.' url_utama=url_katalog teks_utama='Reset Filter' %}
             {% endif %}
         </section>
     </div>

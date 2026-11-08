@@ -3,7 +3,8 @@
    (Navbar dan menu HP ditangani Bootstrap.)
    1. Baki perbandingan produk (maks. 3, sesuai US-07)
    2. Penandaan harga termurah pada tabel perbandingan
-   3. Pilihan cepat anggaran pada formulir preferensi
+   3. Pilihan cepat anggaran pada formulir preferensi (tombol aktif ikut ditandai)
+   4. Angka berjalan pada statistik hero beranda
    ================================================== */
 
 (function () {
@@ -295,12 +296,76 @@
     var budgetField = document.getElementById('id_budget_max');
     var chips = document.querySelectorAll('[data-set-budget]');
 
+    function tandaiChipAktif() {
+        var nilai = budgetField ? String(parseFloat(budgetField.value)) : '';
+
+        Array.prototype.forEach.call(chips, function (chip) {
+            var aktif = chip.getAttribute('data-set-budget') === nilai;
+            chip.classList.toggle('active', aktif);
+            chip.setAttribute('aria-pressed', aktif ? 'true' : 'false');
+        });
+    }
+
     Array.prototype.forEach.call(chips, function (chip) {
         chip.addEventListener('click', function () {
             if (budgetField) {
                 budgetField.value = chip.getAttribute('data-set-budget');
                 budgetField.focus();
+                tandaiChipAktif();
             }
         });
     });
+
+    if (budgetField && chips.length) {
+        budgetField.addEventListener('input', tandaiChipAktif);
+        tandaiChipAktif();
+    }
+
+    /* ---------- 4. Angka berjalan pada statistik hero ----------
+       Elemen dengan atribut data-count dihitung dari 0 sampai nilainya
+       saat terlihat di layar. Tanpa JavaScript, angka asli tetap tampil. */
+
+    var angkaList = document.querySelectorAll('[data-count]');
+    var kurangiGerak = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function jalankanAngka(el) {
+        var target = parseInt(el.getAttribute('data-count'), 10);
+        var durasi = 1200;
+        var mulai = null;
+
+        if (isNaN(target) || target <= 0) {
+            return;
+        }
+
+        function langkah(waktu) {
+            if (mulai === null) {
+                mulai = waktu;
+            }
+            var progres = Math.min((waktu - mulai) / durasi, 1);
+            var halus = 1 - Math.pow(1 - progres, 3);
+            el.textContent = Math.round(target * halus).toLocaleString('id-ID');
+            if (progres < 1) {
+                window.requestAnimationFrame(langkah);
+            }
+        }
+
+        el.textContent = '0';
+        window.requestAnimationFrame(langkah);
+    }
+
+    if (angkaList.length && !kurangiGerak && 'IntersectionObserver' in window) {
+        var pengamat = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    jalankanAngka(entry.target);
+                    pengamat.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.4 });
+
+        Array.prototype.forEach.call(angkaList, function (el) {
+            pengamat.observe(el);
+        });
+    }
 })();

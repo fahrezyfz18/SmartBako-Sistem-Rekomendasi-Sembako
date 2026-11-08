@@ -4,33 +4,46 @@
 
 {% block content %}
 <div class="mb-4">
-    <h1 class="h3 mb-1">Profil dan Pengaturan Akun</h1>
-    <p class="text-secondary mb-0">Kelola informasi akun SmartBako Anda.</p>
+    {% include 'smartbako/components/judul_halaman.html' with label='Akun' ikon='bi-person' judul='Profil dan Pengaturan Akun' deskripsi='Kelola informasi akun SmartBako Anda.' %}
 </div>
 
 <div class="row g-4">
     <aside class="col-lg-4">
-        {% include 'smartbako/panel_pengguna/profil/menu_profil.html' with aktif='profil' %}
+        {% include 'smartbako/components/menu_profil.html' with aktif='profil' %}
     </aside>
 
     <div class="col-lg-8">
-        <form method="post" class="sb-card p-4" novalidate>
+        <form method="post" class="sb-card" novalidate>
             {% csrf_token %}
-            <h2 class="sb-section-title mb-3">Informasi Profil</h2>
-
-            <div class="row g-3">
-                {% include 'smartbako/components/field.html' with field=form.first_name %}
-                {% include 'smartbako/components/field.html' with field=form.email bantuan='Email dipakai untuk masuk ke SmartBako.' %}
+            <div class="sb-card-header">
+                <h2 class="sb-card-title"><i class="bi bi-person-vcard"></i>Informasi Profil</h2>
             </div>
 
-            <div class="row g-3 mt-1 small text-secondary">
-                <div class="col-sm-6"><i class="bi bi-calendar3 me-1"></i>Terdaftar sejak {{ request.user.date_joined|date:"d F Y" }}</div>
-                <div class="col-sm-6"><i class="bi bi-stars me-1"></i>{{ total_riwayat }} kali mendapatkan rekomendasi</div>
-            </div>
+            <div class="p-4">
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="sb-mini-stat">
+                            <small class="text-secondary">Terdaftar sejak</small>
+                            <strong>{{ request.user.date_joined|date:"d M Y" }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="sb-mini-stat">
+                            <small class="text-secondary">Total rekomendasi</small>
+                            <strong>{{ total_riwayat }} kali</strong>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-primary px-4">Simpan Perubahan</button>
-                <a href="{% url 'smartbako:profil' %}" class="btn btn-soft">Batal</a>
+                <div class="row g-3">
+                    {% include 'smartbako/components/field.html' with field=form.first_name kolom='col-md-6' %}
+                    {% include 'smartbako/components/field.html' with field=form.email kolom='col-md-6' bantuan='Email dipakai untuk masuk ke SmartBako.' %}
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check2 me-1"></i>Simpan Perubahan</button>
+                    <a href="{% url 'smartbako:profil' %}" class="btn btn-soft">Batal</a>
+                </div>
             </div>
         </form>
     </div>

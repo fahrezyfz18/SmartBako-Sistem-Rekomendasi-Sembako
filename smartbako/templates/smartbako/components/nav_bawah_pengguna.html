@@ -1,0 +1,13 @@
+{% comment %}
+    Navigasi bawah panel pengguna, hanya tampil di layar kecil (< 992px).
+    Dipakai oleh: panel_pengguna/base_pengguna.html
+{% endcomment %}
+{% with nama_url=request.resolver_match.url_name %}
+<nav class="sb-nav-bawah d-lg-none" aria-label="Navigasi utama (HP)">
+    <a href="{% url 'smartbako:beranda' %}" class="{% if nama_url == 'beranda' %}active{% endif %}"><i class="bi bi-house-door"></i>Beranda</a>
+    <a href="{% url 'smartbako:katalog' %}" class="{% if nama_url == 'katalog' or nama_url == 'detail_produk' or nama_url == 'bandingkan_produk' %}active{% endif %}"><i class="bi bi-grid"></i>Produk</a>
+    <a href="{% url 'smartbako:atur_preferensi' %}" class="{% if nama_url == 'atur_preferensi' or nama_url == 'rekomendasi' %}active{% endif %}"><i class="bi bi-stars"></i>Rekomendasi</a>
+    <a href="{% url 'smartbako:riwayat' %}" class="{% if nama_url == 'riwayat' %}active{% endif %}"><i class="bi bi-clock-history"></i>Riwayat</a>
+    <a href="{% url 'smartbako:profil' %}" class="{% if nama_url == 'profil' or nama_url == 'ubah_password' %}active{% endif %}"><i class="bi bi-person"></i>Profil</a>
+</nav>
+{% endwith %}

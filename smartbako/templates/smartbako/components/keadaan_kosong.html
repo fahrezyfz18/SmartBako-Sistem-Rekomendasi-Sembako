@@ -1,0 +1,18 @@
+{% comment %}
+    Tampilan saat data kosong.
+    Parameter: ikon (Bootstrap Icon, mis. 'bi-search'), judul, pesan (opsional),
+               url_utama + teks_utama (opsional), url_kedua + teks_kedua (opsional).
+    Pakai: {% url 'smartbako:katalog' as url_katalog %}
+           {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-search' judul='Produk tidak ditemukan' url_utama=url_katalog teks_utama='Reset filter' %}
+{% endcomment %}
+<div class="sb-card sb-empty">
+    <span class="sb-empty-icon"><i class="bi {{ ikon|default:'bi-inbox' }}"></i></span>
+    <h2 class="h5 text-body mb-2">{{ judul }}</h2>
+    {% if pesan %}<p class="mb-4 mx-auto" style="max-width: 460px;">{{ pesan }}</p>{% endif %}
+    {% if url_utama or url_kedua %}
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            {% if url_utama %}<a href="{{ url_utama }}" class="btn btn-primary px-4">{{ teks_utama }}</a>{% endif %}
+            {% if url_kedua %}<a href="{{ url_kedua }}" class="btn btn-soft px-4">{{ teks_kedua }}</a>{% endif %}
+        </div>
+    {% endif %}
+</div>

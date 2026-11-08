@@ -1,0 +1,14 @@
+{% comment %}
+    Tingkat kecocokan hasil TF-IDF + Cosine Similarity.
+    Parameter: skor (angka 0–1, wajib), besar (True = versi besar untuk pilihan terbaik).
+    Memakai elemen <progress> sehingga tidak perlu atribut style.
+    Pakai: {% include 'smartbako/components/skor_kecocokan.html' with skor=item.skor_kecocokan %}
+{% endcomment %}
+{% widthratio skor 1 100 as persen %}
+<div class="sb-skor {% if besar %}sb-skor-besar{% endif %}">
+    <div class="d-flex justify-content-between align-items-baseline gap-2 mb-1">
+        <span class="small text-secondary">Tingkat kecocokan</span>
+        <span class="sb-skor-angka">{{ persen }}%</span>
+    </div>
+    <progress class="sb-meter" value="{{ persen }}" max="100" aria-label="Tingkat kecocokan {{ persen }} persen">{{ persen }}%</progress>
+</div>

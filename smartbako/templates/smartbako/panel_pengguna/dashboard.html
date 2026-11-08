@@ -5,90 +5,127 @@
 
 {% block content %}
 
-{# ---------- Sambutan ---------- #}
-<section class="sb-hero p-4 p-lg-5 mb-4">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-7">
-            <span class="badge rounded-pill text-bg-accent mb-3">Halo, {{ request.user.first_name|default:"Pengguna" }} 👋</span>
-            <h1 class="mb-3">Selamat datang di SmartBako!</h1>
-            <p class="text-secondary mb-4">
-                Temukan produk sembako yang sesuai dengan kebutuhan dan budget Anda.
-                Isi preferensi, lalu biarkan sistem memberi pilihan terbaik.
-            </p>
+{# ---------- Sambutan (animasi diatur di bagian 15 pengguna_panel.css) ---------- #}
+<section class="sb-hero">
+    <span class="sb-hero-glow sb-hero-glow--1" aria-hidden="true"></span>
+    <span class="sb-hero-glow sb-hero-glow--2" aria-hidden="true"></span>
+
+    <div class="row align-items-center g-4 position-relative">
+        <div class="col-lg-7 sb-hero-teks">
+            <span class="sb-hero-sapa mb-3"><i class="bi bi-emoji-smile"></i>Halo, {{ request.user.first_name|default:"Pengguna" }}</span>
+            <h1 class="mb-3">Belanja sembako lebih tepat, sesuai kebutuhan dan budget.</h1>
+            <p class="mb-4">Isi preferensi Anda, lalu SmartBako mencarikan produk yang paling cocok dengan metode TF-IDF dan Cosine Similarity.</p>
             <div class="d-flex flex-wrap gap-2">
-                <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary btn-lg px-4">
-                    <i class="bi bi-stars me-1"></i> Mulai Rekomendasi
-                </a>
-                <a href="{% url 'smartbako:katalog' %}" class="btn btn-soft btn-lg px-4">Lihat Semua Produk</a>
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-light-accent btn-lg px-4 sb-btn-kilau"><i class="bi bi-stars me-1"></i> Mulai Rekomendasi</a>
+                <a href="{% url 'smartbako:katalog' %}" class="btn btn-ghost-light btn-lg px-4">Lihat Produk</a>
+            </div>
+
+            <div class="sb-hero-stat">
+                <div><strong data-count="{{ total_produk }}">{{ total_produk }}</strong><small>Produk tersedia</small></div>
+                <div><strong data-count="{{ kategori_list|length }}">{{ kategori_list|length }}</strong><small>Kategori</small></div>
+                <div><strong data-count="{{ total_riwayat }}">{{ total_riwayat }}</strong><small>Rekomendasi Anda</small></div>
             </div>
         </div>
-        <div class="col-lg-5 text-center d-none d-lg-block">
-            <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi produk sembako" class="sb-hero-image img-fluid">
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="sb-hero-art">
+                <img src="{% static 'smartbako/images/hero_image.png' %}" alt="Ilustrasi produk sembako" class="sb-hero-image img-fluid">
+
+                <div class="sb-hero-float sb-hero-float--a">
+                    <span class="sb-hero-float-ikon"><i class="bi bi-cpu"></i></span>
+                    <span><strong>TF-IDF + Cosine</strong><small>Rekomendasi cerdas</small></span>
+                </div>
+                <div class="sb-hero-float sb-hero-float--b">
+                    <span class="sb-hero-float-ikon"><i class="bi bi-wallet2"></i></span>
+                    <span><strong>Sesuai budget</strong><small>Belanja lebih terarah</small></span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 {# ---------- Cari produk (FR-09) ---------- #}
-<form action="{% url 'smartbako:katalog' %}" method="get" class="sb-card p-3 mb-5" role="search">
-    <div class="input-group input-group-lg">
-        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-        <input type="search" name="q" class="form-control border-start-0" placeholder="Cari produk, misalnya beras 5 kg atau minyak goreng" aria-label="Cari produk">
+<form action="{% url 'smartbako:katalog' %}" method="get" class="sb-hero-search" role="search">
+    <div class="sb-search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" class="form-control form-control-lg" placeholder="Cari produk, misalnya beras 5 kg atau minyak goreng" aria-label="Cari produk">
         <button type="submit" class="btn btn-primary px-4">Cari</button>
     </div>
 </form>
 
+{# ---------- Cara kerja ---------- #}
+<section class="mb-5">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="sb-langkah-card">
+                <span class="sb-langkah-nomor">01</span>
+                <span class="sb-langkah-ikon"><i class="bi bi-ui-checks"></i></span>
+                <h2 class="h6 mb-1">Isi preferensi</h2>
+                <p class="small text-secondary mb-0">Pilih kategori, budget, ukuran, dan merek yang Anda inginkan.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sb-langkah-card">
+                <span class="sb-langkah-nomor">02</span>
+                <span class="sb-langkah-ikon"><i class="bi bi-cpu"></i></span>
+                <h2 class="h6 mb-1">Sistem menghitung kecocokan</h2>
+                <p class="small text-secondary mb-0">TF-IDF dan Cosine Similarity membandingkan preferensi dengan data produk.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sb-langkah-card">
+                <span class="sb-langkah-nomor">03</span>
+                <span class="sb-langkah-ikon"><i class="bi bi-hand-thumbs-up"></i></span>
+                <h2 class="h6 mb-1">Bandingkan dan pilih</h2>
+                <p class="small text-secondary mb-0">Lihat tingkat kecocokan, bandingkan, lalu tentukan pilihan Anda.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {# ---------- Kategori produk (FR-08, FR-10) ---------- #}
 <section class="mb-5">
-    <div class="d-flex justify-content-between align-items-end mb-3">
+    <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
         <div>
             <h2 class="sb-section-title">Kategori Produk</h2>
             <p class="text-secondary small mb-0">Pilih kategori untuk langsung melihat produknya.</p>
         </div>
-        <a href="{% url 'smartbako:katalog' %}" class="small fw-medium">Lihat semua <i class="bi bi-arrow-right"></i></a>
+        <a href="{% url 'smartbako:katalog' %}" class="sb-link-more">Lihat semua <i class="bi bi-arrow-right"></i></a>
     </div>
 
     <div class="row g-3">
         {% for kategori in kategori_list %}
-            <div class="col-6 col-md-4 col-xl-3">
+            <div class="col-6 col-md-4 col-xl-2">
                 <a href="{% url 'smartbako:katalog' %}?kategori={{ kategori.id }}" class="sb-kategori">
-                    <span class="sb-kategori-icon">
-                        {% if 'beras' in kategori.nama|lower %}<i class="bi bi-basket"></i>
-                        {% elif 'minyak' in kategori.nama|lower %}<i class="bi bi-droplet"></i>
-                        {% elif 'gula' in kategori.nama|lower %}<i class="bi bi-cup-straw"></i>
-                        {% elif 'telur' in kategori.nama|lower %}<i class="bi bi-egg"></i>
-                        {% elif 'susu' in kategori.nama|lower %}<i class="bi bi-cup"></i>
-                        {% elif 'kopi' in kategori.nama|lower or 'teh' in kategori.nama|lower %}<i class="bi bi-cup-hot"></i>
-                        {% elif 'garam' in kategori.nama|lower %}<i class="bi bi-snow"></i>
-                        {% else %}<i class="bi bi-bag"></i>{% endif %}
-                    </span>
-                    <span class="min-w-0">
+                    <span class="sb-kategori-icon">{% include 'smartbako/components/ikon_kategori.html' with nama=kategori.nama %}</span>
+                    <span class="min-w-0 w-100">
                         <span class="fw-semibold d-block text-truncate">{{ kategori.nama }}</span>
                         <small class="text-secondary">{{ kategori.jumlah_produk }} produk</small>
                     </span>
                 </a>
             </div>
         {% empty %}
-            <div class="col-12"><div class="sb-card sb-empty">Belum ada kategori produk.</div></div>
+            <div class="col-12">
+                {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-tags' judul='Belum ada kategori produk.' %}
+            </div>
         {% endfor %}
     </div>
 </section>
 
 {# ---------- Rekomendasi untuk Anda (FR-12, FR-14) ---------- #}
 <section>
-    <div class="d-flex justify-content-between align-items-end mb-3">
-        <div>
+    <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
+        <div class="min-w-0">
             <h2 class="sb-section-title">Rekomendasi untuk Anda</h2>
             <p class="text-secondary small mb-0">
                 {% if rekomendasi_terakhir %}
-                    Dari preferensi terakhir: {{ rekomendasi_terakhir.preferensi.kategori.nama|default:"Semua kategori" }},
-                    budget maks Rp {{ rekomendasi_terakhir.preferensi.budget_max|floatformat:"0g" }}.
+                    Dari preferensi terakhir: {{ rekomendasi_terakhir.preferensi.kategori.nama|default:"Semua kategori" }}, budget maks Rp {{ rekomendasi_terakhir.preferensi.budget_max|floatformat:"0g" }}.
                 {% else %}
                     Hasil rekomendasi terakhir Anda akan tampil di sini.
                 {% endif %}
             </p>
         </div>
         {% if rekomendasi_terakhir %}
-            <a href="{% url 'smartbako:riwayat' %}" class="small fw-medium">Riwayat rekomendasi <i class="bi bi-arrow-right"></i></a>
+            <a href="{% url 'smartbako:rekomendasi' rekomendasi_terakhir.preferensi.id %}" class="sb-link-more">Lihat hasil lengkap <i class="bi bi-arrow-right"></i></a>
         {% endif %}
     </div>
 
@@ -96,19 +133,17 @@
         <div class="row g-3">
             {% for item in produk_rekomendasi %}
                 <div class="col-6 col-lg-3">
-                    {% include 'smartbako/components/kartu_produk.html' with produk=item.produk bandingkan=True %}
+                    {% include 'smartbako/components/kartu_produk.html' with produk=item.produk bandingkan=True skor=item.skor_kecocokan %}
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="sb-card sb-empty">
-            <span class="sb-empty-icon"><i class="bi bi-stars"></i></span>
-            <h3 class="h6 text-body mb-2">
-                {% if rekomendasi_terakhir %}Preferensi terakhir belum menemukan produk yang cocok.{% else %}Isi preferensi untuk mendapatkan rekomendasi pertama Anda.{% endif %}
-            </h3>
-            <p class="small mb-3">Masukkan kategori dan budget, sistem akan mencarikan produk yang paling sesuai.</p>
-            <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary">Isi Preferensi</a>
-        </div>
+        {% url 'smartbako:atur_preferensi' as url_preferensi %}
+        {% if rekomendasi_terakhir %}
+            {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-stars' judul='Preferensi terakhir belum menemukan produk yang cocok.' pesan='Coba ubah kategori atau naikkan budget, sistem akan mencarikan ulang.' url_utama=url_preferensi teks_utama='Isi Preferensi' %}
+        {% else %}
+            {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-stars' judul='Isi preferensi untuk mendapatkan rekomendasi pertama Anda.' pesan='Masukkan kategori dan budget, sistem akan mencarikan produk yang paling sesuai.' url_utama=url_preferensi teks_utama='Isi Preferensi' %}
+        {% endif %}
     {% endif %}
 </section>
 {% endblock %}

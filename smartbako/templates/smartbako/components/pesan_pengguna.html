@@ -1,0 +1,11 @@
+{% comment %}
+    Pesan notifikasi Django (messages) bergaya Bootstrap untuk panel pengguna.
+    Dipakai oleh: panel_pengguna/base_pengguna.html
+{% endcomment %}
+{% for message in messages %}
+    <div class="alert sb-alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+        <i class="bi {% if message.tags == 'error' %}bi-exclamation-circle{% elif message.tags == 'warning' %}bi-exclamation-triangle{% else %}bi-check-circle{% endif %} fs-5"></i>
+        <div>{{ message }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+    </div>
+{% endfor %}

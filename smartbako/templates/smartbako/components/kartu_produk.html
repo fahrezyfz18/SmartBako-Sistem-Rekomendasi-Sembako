@@ -1,35 +1,32 @@
 {% comment %}
     Kartu produk panel pengguna.
-    Parameter: produk (wajib), bandingkan (True = tampilkan pilihan Bandingkan).
+    Parameter: produk (wajib), bandingkan (True = tampilkan tombol Bandingkan),
+               skor (opsional, 0–1: tampilkan tingkat kecocokan dari rekomendasi).
+    Pakai: {% include 'smartbako/components/kartu_produk.html' with produk=produk bandingkan=True %}
 {% endcomment %}
 <article class="sb-produk">
     <a href="{% url 'smartbako:detail_produk' produk.id %}" class="sb-produk-media" tabindex="-1" aria-hidden="true">
-        {% if produk.gambar %}
-            <img src="{{ produk.gambar.url }}" alt="" loading="lazy">
-        {% else %}
-            <span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i>Gambar belum tersedia</span>
+        {% include 'smartbako/components/media_produk.html' with produk=produk teks=True %}
+        {% if produk.status_stok != 'tersedia' %}
+            <span class="sb-produk-badge">{% include 'smartbako/components/badge_status_produk.html' with produk=produk %}</span>
         {% endif %}
-        {% if produk.status_stok == 'terbatas' %}
-            <span class="badge rounded-pill text-bg-warning sb-produk-badge">Stok terbatas</span>
+        {% if skor is not None %}
+            <span class="sb-produk-badge-kanan"><span class="sb-badge text-bg-accent">{% widthratio skor 1 100 %}% cocok</span></span>
         {% endif %}
     </a>
 
-    <div class="p-3 d-flex flex-column flex-grow-1">
+    <div class="sb-produk-body">
         <span class="sb-produk-kategori">{{ produk.kategori.nama }}</span>
         <h3 class="sb-produk-nama"><a href="{% url 'smartbako:detail_produk' produk.id %}">{{ produk.nama }}</a></h3>
-        <p class="small text-secondary mb-2">
-            {{ produk.merek|default:"Tanpa merek" }}{% if produk.ukuran %} · {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% endif %}
-        </p>
-        <p class="sb-harga mb-3 mt-auto">Rp {{ produk.harga|floatformat:"0g" }}</p>
+        <p class="sb-produk-meta mb-0">{{ produk.merek|default:"Tanpa merek" }}{% if produk.ukuran %} · {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% endif %}</p>
 
-        <div class="d-flex align-items-center justify-content-between gap-2">
-            <a href="{% url 'smartbako:detail_produk' produk.id %}" class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+        <div class="sb-produk-footer">
+            <div class="min-w-0">
+                <span class="sb-harga">Rp {{ produk.harga|floatformat:"0g" }}</span>
+                {% if produk.harga_per_satuan %}<span class="sb-harga-satuan">Rp {{ produk.harga_per_satuan|floatformat:"0g" }}/{{ produk.satuan }}</span>{% endif %}
+            </div>
             {% if bandingkan %}
-                <div class="form-check mb-0">
-                    <input class="form-check-input" type="checkbox" id="banding-{{ produk.id }}"
-                           data-compare data-id="{{ produk.id }}" data-name="{{ produk.nama }}">
-                    <label class="form-check-label small" for="banding-{{ produk.id }}">Bandingkan</label>
-                </div>
+                {% include 'smartbako/components/tombol_bandingkan.html' with produk=produk %}
             {% endif %}
         </div>
     </div>
