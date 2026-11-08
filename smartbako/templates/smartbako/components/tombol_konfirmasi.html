@@ -1,0 +1,19 @@
+{% comment %}
+    Tombol yang membuka dialog konfirmasi (components/modal_konfirmasi.html).
+    Parameter:
+      aksi   : URL tujuan form POST (wajib)
+      judul  : judul dialog
+      pesan  : isi pesan dialog
+      teks   : teks tombol "lanjut" di dialog (default "Ya, Hapus")
+      ikon   : nama Bootstrap Icon tanpa "bi-" (default "trash")
+      label  : teks pada tombol (opsional)
+      kelas  : kelas tombol (default "btn btn-sm btn-outline-danger")
+      ringkas: True = label hanya tampil di layar lebar (xl)
+    Pakai: {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Hapus produk ini?' pesan=pesan label='Hapus' ringkas=True %}
+{% endcomment %}
+<button type="button" class="{{ kelas|default:'btn btn-sm btn-outline-danger' }}"
+        data-bs-toggle="modal" data-bs-target="#modalKonfirmasi"
+        data-aksi="{{ aksi }}" data-judul="{{ judul }}" data-pesan="{{ pesan }}" data-tombol="{{ teks|default:'Ya, Hapus' }}"
+        title="{{ label|default:judul }}">
+    <i class="bi bi-{{ ikon|default:'trash' }}"></i>{% if label %}<span class="{% if ringkas %}d-none d-xl-inline {% endif %}ms-1">{{ label }}</span>{% endif %}
+</button>

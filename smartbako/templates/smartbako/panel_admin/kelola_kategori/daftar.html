@@ -11,11 +11,9 @@
             <form method="get" class="p-3 border-bottom" role="search">
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                    <input type="search" name="q" value="{{ kata_kunci }}" class="form-control"
-                        placeholder="Cari nama kategori" aria-label="Cari kategori">
+                    <input type="search" name="q" value="{{ kata_kunci }}" class="form-control" placeholder="Cari nama kategori" aria-label="Cari kategori">
                     <button type="submit" class="btn btn-outline-primary">Cari</button>
-                    {% if kata_kunci %}<a href="{% url 'smartbako:daftar_kategori' %}"
-                        class="btn btn-light-subtle">Reset</a>{% endif %}
+                    {% if kata_kunci %}<a href="{% url 'smartbako:daftar_kategori' %}" class="btn btn-light-subtle">Reset</a>{% endif %}
                 </div>
             </form>
 
@@ -32,46 +30,36 @@
                     </thead>
                     <tbody>
                         {% for kategori in page_obj %}
-                        <tr>
-                            <td class="ps-3 text-secondary">{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                            <td class="fw-medium">{{ kategori.nama }}</td>
-                            <td class="text-secondary small">{{ kategori.deskripsi|default:"-"|truncatechars:70 }}</td>
-                            <td class="text-center">
-                                <a href="{% url 'smartbako:daftar_produk' %}?kategori={{ kategori.id }}"
-                                    class="badge rounded-pill text-bg-light border text-decoration-none">{{
-                                    kategori.jumlah_produk }}</a>
-                            </td>
-                            <td class="text-end pe-3 text-nowrap">
-                                <a href="{% url 'smartbako:edit_kategori' kategori.id %}"
-                                    class="btn btn-sm btn-light-subtle" title="Ubah"><i class="bi bi-pencil"></i></a>
-                                {% if kategori.jumlah_produk %}
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                    data-bs-target="#modalKonfirmasi"
-                                    data-aksi="{% url 'smartbako:hapus_kategori' kategori.id %}"
-                                    data-judul="Kategori masih memiliki produk"
-                                    data-pesan="Kategori &quot;{{ kategori.nama }}&quot; masih dipakai oleh {{ kategori.jumlah_produk }} produk sehingga tidak dapat dihapus. Pindahkan atau hapus produknya terlebih dahulu."
-                                    data-tombol="Tetap Coba Hapus" title="Hapus">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                {% else %}
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                    data-bs-target="#modalKonfirmasi"
-                                    data-aksi="{% url 'smartbako:hapus_kategori' kategori.id %}"
-                                    data-judul="Hapus kategori ini?"
-                                    data-pesan="Kategori &quot;{{ kategori.nama }}&quot; akan dihapus dan tidak dapat dikembalikan."
-                                    title="Hapus">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                {% endif %}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td class="ps-3 text-secondary">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                                <td class="fw-medium">{{ kategori.nama }}</td>
+                                <td class="text-secondary small">{{ kategori.deskripsi|default:"-"|truncatechars:70 }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'smartbako:daftar_produk' %}?kategori={{ kategori.id }}" class="badge rounded-pill text-bg-light border text-decoration-none">{{ kategori.jumlah_produk }}</a>
+                                </td>
+                                <td class="text-end pe-3 text-nowrap">
+                                    <a href="{% url 'smartbako:edit_kategori' kategori.id %}" class="btn btn-sm btn-light-subtle" title="Ubah"><i class="bi bi-pencil"></i></a>
+                                    {% url 'smartbako:hapus_kategori' kategori.id as url_hapus %}
+                                    {% if kategori.jumlah_produk %}
+                                        {% with jumlah=kategori.jumlah_produk|stringformat:"s" %}
+                                        {% with pesan='Kategori "'|add:kategori.nama|add:'" masih dipakai oleh '|add:jumlah|add:' produk sehingga tidak dapat dihapus. Pindahkan atau hapus produknya terlebih dahulu.' %}
+                                            {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Kategori masih memiliki produk' pesan=pesan teks='Tetap Coba Hapus' %}
+                                        {% endwith %}
+                                        {% endwith %}
+                                    {% else %}
+                                        {% with pesan='Kategori "'|add:kategori.nama|add:'" akan dihapus dan tidak dapat dikembalikan.' %}
+                                            {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Hapus kategori ini?' pesan=pesan %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </td>
+                            </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="5" class="sb-empty">
-                                <i class="bi bi-tags"></i>
-                                {% if kata_kunci %}Kategori tidak ditemukan.{% else %}Belum ada kategori.{% endif %}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td colspan="5" class="sb-empty">
+                                    <i class="bi bi-tags"></i>
+                                    {% if kata_kunci %}Kategori tidak ditemukan.{% else %}Belum ada kategori.{% endif %}
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -84,8 +72,7 @@
         <section class="sb-card p-4">
             <h2 class="h5 mb-3"><i class="bi bi-plus-circle me-2 text-primary"></i>Tambah Kategori</h2>
             {% url 'smartbako:tambah_kategori' as url_tambah %}
-            {% include 'smartbako/panel_admin/kelola_kategori/form_kategori.html' with aksi=url_tambah
-            label_tombol='Simpan' %}
+            {% include 'smartbako/panel_admin/kelola_kategori/form_kategori.html' with aksi=url_tambah label_tombol='Simpan' %}
         </section>
     </div>
 </div>

@@ -1,0 +1,11 @@
+{% comment %}
+    Breadcrumb satu tingkat: Induk / Halaman ini.
+    Pakai: {% url 'smartbako:daftar_produk' as url_induk %}
+           {% include 'smartbako/components/breadcrumb.html' with url_induk=url_induk induk='Kelola Produk' aktif='Detail' %}
+{% endcomment %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb small mb-1">
+        <li class="breadcrumb-item"><a href="{{ url_induk }}">{{ induk }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ aktif }}</li>
+    </ol>
+</nav>

@@ -1,67 +1,17 @@
 /* ==================================================
    SMARTBAKO - PANEL PENGGUNA
-   1. Sidebar geser (layar kecil)
-   2. Baki perbandingan produk
-   3. Penandaan harga termurah pada tabel perbandingan
-   4. Pilihan cepat anggaran pada formulir preferensi
+   (Navbar dan menu HP ditangani Bootstrap.)
+   1. Baki perbandingan produk (maks. 3, sesuai US-07)
+   2. Penandaan harga termurah pada tabel perbandingan
+   3. Pilihan cepat anggaran pada formulir preferensi
    ================================================== */
 
 (function () {
     'use strict';
 
-    /* ---------- 1. Sidebar geser ---------- */
-
     var body = document.body;
-    var toggle = document.querySelector('[data-sidebar-toggle]');
-    var overlay = document.querySelector('[data-sidebar-close]');
-    var sidebar = document.getElementById('sidebar-pengguna');
 
-    function setSidebar(open) {
-        body.classList.toggle('sidebar-open', open);
-
-        if (overlay) {
-            overlay.hidden = !open;
-        }
-
-        if (toggle) {
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            toggle.setAttribute(
-                'aria-label',
-                open ? 'Tutup menu navigasi' : 'Buka menu navigasi'
-            );
-        }
-    }
-
-    if (toggle) {
-        toggle.addEventListener('click', function () {
-            setSidebar(!body.classList.contains('sidebar-open'));
-        });
-    }
-
-    if (overlay) {
-        overlay.addEventListener('click', function () {
-            setSidebar(false);
-        });
-    }
-
-    if (sidebar) {
-        sidebar.addEventListener('click', function (event) {
-            if (event.target.closest('a')) {
-                setSidebar(false);
-            }
-        });
-    }
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && body.classList.contains('sidebar-open')) {
-            setSidebar(false);
-            if (toggle) {
-                toggle.focus();
-            }
-        }
-    });
-
-    /* ---------- 2. Baki perbandingan ---------- */
+    /* ---------- 1. Baki perbandingan ---------- */
 
     var STORAGE_KEY = 'smartbako_bandingkan';
 
@@ -73,7 +23,7 @@
     var noteEl = document.getElementById('compare-note');
     var badgeEl = document.querySelector('[data-compare-badge]');
 
-    var maxItems = tray ? parseInt(tray.getAttribute('data-max'), 10) || 4 : 4;
+    var maxItems = tray ? parseInt(tray.getAttribute('data-max'), 10) || 3 : 3;
     var compareUrl = tray ? tray.getAttribute('data-url') : '';
     var items = [];
 
@@ -144,6 +94,7 @@
 
         /* Baki disembunyikan jika kosong atau sedang di halaman perbandingan. */
         tray.hidden = total === 0 || onComparePage;
+        body.classList.toggle('has-tray', !tray.hidden);
 
         if (countEl) {
             countEl.textContent = total;
@@ -179,7 +130,7 @@
             goEl.setAttribute('href', ready ? buildCompareHref() : '#');
         }
 
-        /* Tautan "Bandingkan Produk" di sidebar membawa pilihan aktif. */
+        /* Tombol "Bandingkan" di navbar membawa pilihan aktif. */
         var navLink = badgeEl ? badgeEl.closest('a') : null;
         if (navLink) {
             navLink.setAttribute('href', buildCompareHref());
@@ -305,7 +256,7 @@
         refresh();
     }
 
-    /* ---------- 3. Harga termurah ---------- */
+    /* ---------- 2. Harga termurah ---------- */
 
     var bestRows = document.querySelectorAll('tr[data-best-row="min"]');
 
@@ -339,7 +290,7 @@
         });
     });
 
-    /* ---------- 4. Pilihan cepat anggaran ---------- */
+    /* ---------- 3. Pilihan cepat anggaran ---------- */
 
     var budgetField = document.getElementById('id_budget_max');
     var chips = document.querySelectorAll('[data-set-budget]');

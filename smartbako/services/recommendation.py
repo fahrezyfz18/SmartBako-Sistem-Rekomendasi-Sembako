@@ -165,12 +165,18 @@ def buat_alasan_rekomendasi(produk, preferensi):
 
 
 @transaction.atomic
-def simpan_rekomendasi(preferensi):
+def simpan_rekomendasi(preferensi, batas=BATAS_REKOMENDASI):
     """
     Menghitung rekomendasi lalu menyimpannya ke tabel Rekomendasi dan
     DetailRekomendasi dalam satu transaksi.
+
+    `batas` = jumlah produk yang diminta pengguna (5 atau 10).
     """
-    hasil = hitung_rekomendasi(preferensi, ambil_kandidat_produk(preferensi))
+    hasil = hitung_rekomendasi(
+        preferensi,
+        ambil_kandidat_produk(preferensi),
+        batas=batas,
+    )
 
     rekomendasi = Rekomendasi.objects.create(
         preferensi=preferensi,

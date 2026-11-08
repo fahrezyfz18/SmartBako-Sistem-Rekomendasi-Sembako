@@ -1,0 +1,13 @@
+{% comment %}
+    Kartu angka ringkasan yang bisa diklik (dashboard admin).
+    Parameter: url, ikon (nama Bootstrap Icon tanpa "bi-"), warna (accent|primary|green|amber|red),
+               label, nilai.
+    Pakai: {% include 'smartbako/components/kartu_statistik.html' with url=url_produk ikon='box-seam' warna='accent' label='Total Produk' nilai=total_produk %}
+{% endcomment %}
+<a href="{{ url }}" class="sb-card sb-stat">
+    <span class="sb-stat-icon sb-tone-{{ warna|default:'accent' }}"><i class="bi bi-{{ ikon }}"></i></span>
+    <div class="min-w-0">
+        <div class="sb-stat-label">{{ label }}</div>
+        <div class="sb-stat-value">{{ nilai }}</div>
+    </div>
+</a>

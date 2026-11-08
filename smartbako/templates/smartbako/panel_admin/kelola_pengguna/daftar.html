@@ -2,8 +2,7 @@
 
 {% block title %}Kelola Pengguna{% endblock %}
 {% block heading %}Kelola Data Pengguna{% endblock %}
-{% block subheading %}{{ total_pengguna }} pengguna terdaftar{% if total_nonaktif %} · {{ total_nonaktif }} akun
-nonaktif{% endif %}.{% endblock %}
+{% block subheading %}{{ total_pengguna }} pengguna terdaftar{% if total_nonaktif %} · {{ total_nonaktif }} akun nonaktif{% endif %}.{% endblock %}
 
 {% block content %}
 <section class="sb-card">
@@ -11,29 +10,27 @@ nonaktif{% endif %}.{% endblock %}
         <div class="col-md-6">
             <div class="input-group">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                <input type="search" name="q" value="{{ kata_kunci }}" class="form-control"
-                    placeholder="Cari nama atau email" aria-label="Cari pengguna">
+                <input type="search" name="q" value="{{ kata_kunci }}" class="form-control" placeholder="Cari nama atau email" aria-label="Cari pengguna">
             </div>
         </div>
         <div class="col-6 col-md-2">
             <select name="peran" class="form-select" aria-label="Filter peran">
                 <option value="">Semua peran</option>
-                <option value="pengguna" {% if peran_terpilih=='pengguna' %}selected{% endif %}>Pengguna</option>
-                <option value="admin" {% if peran_terpilih=='admin' %}selected{% endif %}>Admin</option>
+                <option value="pengguna" {% if peran_terpilih == 'pengguna' %}selected{% endif %}>Pengguna</option>
+                <option value="admin" {% if peran_terpilih == 'admin' %}selected{% endif %}>Admin</option>
             </select>
         </div>
         <div class="col-6 col-md-2">
             <select name="status" class="form-select" aria-label="Filter status">
                 <option value="">Semua status</option>
-                <option value="aktif" {% if status_terpilih=='aktif' %}selected{% endif %}>Aktif</option>
-                <option value="nonaktif" {% if status_terpilih=='nonaktif' %}selected{% endif %}>Nonaktif</option>
+                <option value="aktif" {% if status_terpilih == 'aktif' %}selected{% endif %}>Aktif</option>
+                <option value="nonaktif" {% if status_terpilih == 'nonaktif' %}selected{% endif %}>Nonaktif</option>
             </select>
         </div>
         <div class="col-md-2 d-flex gap-2">
             <button type="submit" class="btn btn-outline-primary flex-grow-1">Terapkan</button>
             {% if kata_kunci or peran_terpilih or status_terpilih %}
-            <a href="{% url 'smartbako:daftar_pengguna' %}" class="btn btn-light-subtle" title="Reset filter"><i
-                    class="bi bi-x-lg"></i></a>
+                <a href="{% url 'smartbako:daftar_pengguna' %}" class="btn btn-light-subtle" title="Reset filter"><i class="bi bi-x-lg"></i></a>
             {% endif %}
         </div>
     </form>
@@ -53,61 +50,49 @@ nonaktif{% endif %}.{% endblock %}
             </thead>
             <tbody>
                 {% for akun in page_obj %}
-                <tr>
-                    <td class="ps-3 text-secondary">{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="sb-avatar" style="width:32px;height:32px;font-size:.85rem">{{
-                                akun.first_name|default:akun.email|first|upper }}</span>
-                            <span class="fw-medium">{{ akun.first_name|default:"-" }}</span>
-                        </div>
-                    </td>
-                    <td>{{ akun.email|default:"-" }}</td>
-                    <td>
-                        {% if akun.is_superuser %}<span class="badge rounded-pill text-bg-accent">Admin Utama</span>
-                        {% elif akun.is_staff %}<span class="badge rounded-pill text-bg-accent">Admin</span>
-                        {% else %}<span class="badge rounded-pill text-bg-light border">Pengguna</span>{% endif %}
-                    </td>
-                    <td class="text-nowrap">{{ akun.date_joined|date:"d/m/Y" }}</td>
-                    <td>
-                        {% if akun.is_active %}<span class="badge rounded-pill text-bg-success">Aktif</span>
-                        {% else %}<span class="badge rounded-pill text-bg-secondary">Nonaktif</span>{% endif %}
-                    </td>
-                    <td class="text-end pe-3 text-nowrap">
-                        <a href="{% url 'smartbako:detail_pengguna' akun.id %}" class="btn btn-sm btn-light-subtle"
-                            title="Lihat"><i class="bi bi-eye"></i><span
-                                class="d-none d-xl-inline ms-1">Lihat</span></a>
-                        {% if not akun.is_superuser and akun.pk != request.user.pk %}
-                        <button type="button" class="btn btn-sm btn-light-subtle" data-bs-toggle="modal"
-                            data-bs-target="#modalKonfirmasi"
-                            data-aksi="{% url 'smartbako:ubah_status_pengguna' akun.id %}" {% if akun.is_active %}
-                            data-judul="Nonaktifkan akun ini?"
-                            data-pesan="Akun &quot;{{ akun.email }}&quot; tidak akan bisa login sampai diaktifkan kembali."
-                            data-tombol="Ya, Nonaktifkan" {% else %} data-judul="Aktifkan akun ini?"
-                            data-pesan="Akun &quot;{{ akun.email }}&quot; akan bisa login kembali."
-                            data-tombol="Ya, Aktifkan" {% endif %}
-                            title="{% if akun.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}">
-                            <i
-                                class="bi {% if akun.is_active %}bi-person-slash{% else %}bi-person-check{% endif %}"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#modalKonfirmasi" data-aksi="{% url 'smartbako:hapus_pengguna' akun.id %}"
-                            data-judul="Hapus akun ini?"
-                            data-pesan="Akun &quot;{{ akun.email }}&quot; beserta seluruh riwayat preferensi dan rekomendasinya akan dihapus permanen."
-                            title="Hapus">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        {% endif %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="ps-3 text-secondary">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="sb-avatar sb-avatar-sm">{{ akun.first_name|default:akun.email|first|upper }}</span>
+                                <span class="fw-medium">{{ akun.first_name|default:"-" }}</span>
+                            </div>
+                        </td>
+                        <td>{{ akun.email|default:"-" }}</td>
+                        <td>
+                            {% include 'smartbako/components/badge_peran.html' with akun=akun %}
+                        </td>
+                        <td class="text-nowrap">{{ akun.date_joined|date:"d/m/Y" }}</td>
+                        <td>
+                            {% include 'smartbako/components/badge_status_akun.html' with akun=akun %}
+                        </td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <a href="{% url 'smartbako:detail_pengguna' akun.id %}" class="btn btn-sm btn-light-subtle" title="Lihat"><i class="bi bi-eye"></i><span class="d-none d-xl-inline ms-1">Lihat</span></a>
+                            {% if not akun.is_superuser and akun.pk != request.user.pk %}
+                                {% url 'smartbako:ubah_status_pengguna' akun.id as url_status %}
+                                {% url 'smartbako:hapus_pengguna' akun.id as url_hapus %}
+                                {% if akun.is_active %}
+                                    {% with pesan='Akun "'|add:akun.email|add:'" tidak akan bisa login sampai diaktifkan kembali.' %}
+                                        {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_status judul='Nonaktifkan akun ini?' pesan=pesan teks='Ya, Nonaktifkan' ikon='person-slash' kelas='btn btn-sm btn-light-subtle' %}
+                                    {% endwith %}
+                                {% else %}
+                                    {% with pesan='Akun "'|add:akun.email|add:'" akan bisa login kembali.' %}
+                                        {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_status judul='Aktifkan akun ini?' pesan=pesan teks='Ya, Aktifkan' ikon='person-check' kelas='btn btn-sm btn-light-subtle' %}
+                                    {% endwith %}
+                                {% endif %}
+                                {% with pesan='Akun "'|add:akun.email|add:'" beserta seluruh riwayat preferensi dan rekomendasinya akan dihapus permanen.' %}
+                                    {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Hapus akun ini?' pesan=pesan %}
+                                {% endwith %}
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="7" class="sb-empty">
-                        <i class="bi bi-people"></i>
-                        {% if kata_kunci or peran_terpilih or status_terpilih %}Pengguna tidak ditemukan.{% else %}Belum
-                        ada pengguna terdaftar.{% endif %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td colspan="7" class="sb-empty">
+                            <i class="bi bi-people"></i>
+                            {% if kata_kunci or peran_terpilih or status_terpilih %}Pengguna tidak ditemukan.{% else %}Belum ada pengguna terdaftar.{% endif %}
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

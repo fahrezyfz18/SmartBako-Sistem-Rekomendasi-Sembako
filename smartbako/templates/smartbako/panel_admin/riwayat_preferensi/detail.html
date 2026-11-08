@@ -2,10 +2,8 @@
 
 {% block title %}Detail Preferensi{% endblock %}
 {% block breadcrumb %}
-    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-1">
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:riwayat_preferensi' %}">Riwayat Preferensi</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Detail</li>
-    </ol></nav>
+    {% url 'smartbako:riwayat_preferensi' as url_induk %}
+    {% include 'smartbako/components/breadcrumb.html' with url_induk=url_induk induk='Riwayat Preferensi' aktif='Detail' %}
 {% endblock %}
 {% block heading %}Detail Preferensi{% endblock %}
 {% block subheading %}Dimasukkan oleh {{ preferensi.pengguna.first_name|default:preferensi.pengguna.email }} pada {{ preferensi.tanggal_input|date:"d F Y, H:i" }}.{% endblock %}

@@ -174,7 +174,7 @@ class HakAksesTests(DataUjiMixin, TestCase):
     def test_pengguna_biasa_tidak_bisa_membuka_panel_admin(self):
         self.client.force_login(self.pengguna)
         respons = self.client.get(reverse("smartbako:daftar_produk"))
-        self.assertRedirects(respons, reverse("smartbako:beranda"))
+        self.assertRedirects(respons, reverse("smartbako:landing_page"))
 
     def test_halaman_admin_dapat_dibuka_admin(self):
         preferensi = Preferensi.objects.create(
@@ -203,6 +203,21 @@ class HakAksesTests(DataUjiMixin, TestCase):
             with self.subTest(nama=nama):
                 respons = self.client.get(reverse(f"smartbako:{nama}", args=args))
                 self.assertEqual(respons.status_code, 200)
+
+    def test_dashboard_menampilkan_stok_menipis(self):
+        self.client.force_login(self.admin)
+        respons = self.client.get(reverse("smartbako:dashboard_admin"))
+        stok_menipis = list(respons.context["stok_menipis"])
+        self.assertIn(self.minyak, stok_menipis)
+        self.assertIn(self.stok_habis, stok_menipis)
+
+    def test_tombol_konfirmasi_memuat_nama_data(self):
+        self.client.force_login(self.admin)
+        respons = self.client.get(reverse("smartbako:daftar_kategori"))
+        self.assertContains(respons, "Kategori &quot;Beras&quot; masih dipakai oleh 2 produk")
+
+        respons = self.client.get(reverse("smartbako:daftar_produk"))
+        self.assertContains(respons, "Data produk &quot;Beras Pandan Wangi&quot; akan dihapus")
 
     def test_filter_admin_dengan_nilai_aneh_tidak_error(self):
         self.client.force_login(self.admin)
@@ -285,10 +300,13 @@ class HalamanPenggunaTests(DataUjiMixin, TestCase):
     def setUp(self):
         self.client.force_login(self.pengguna)
 
+    def kirim_preferensi(self, **data):
+        isian = {"kategori": self.kategori_beras.pk, "budget_max": "100000", "jumlah_rekomendasi": "5"}
+        isian.update(data)
+        return self.client.post(reverse("smartbako:atur_preferensi"), isian)
+
     def test_membuka_hasil_rekomendasi_tidak_menambah_riwayat(self):
-        respons = self.client.post(reverse("smartbako:atur_preferensi"), {
-            "budget_max": "100000",
-        })
+        respons = self.kirim_preferensi()
         preferensi = Preferensi.objects.get(pengguna=self.pengguna)
         self.assertRedirects(
             respons,
@@ -299,16 +317,93 @@ class HalamanPenggunaTests(DataUjiMixin, TestCase):
         self.client.get(reverse("smartbako:rekomendasi", args=[preferensi.pk]))
         self.assertEqual(Rekomendasi.objects.count(), 1)
 
-    def test_bandingkan_mengabaikan_id_tidak_valid(self):
+    def test_preferensi_tanpa_kategori_ditolak(self):
+        respons = self.kirim_preferensi(kategori="")
+        self.assertEqual(respons.status_code, 200)
+        self.assertContains(respons, "Lengkapi data preferensi terlebih dahulu.")
+        self.assertFalse(Preferensi.objects.exists())
+
+    def test_jumlah_rekomendasi_membatasi_hasil(self):
+        for i in range(8):
+            Produk.objects.create(
+                nama=f"Beras Uji {i}", kategori=self.kategori_beras,
+                merek="Uji", harga=Decimal("50000"), stok=5,
+            )
+        self.kirim_preferensi(jumlah_rekomendasi="5")
+        self.assertEqual(Rekomendasi.objects.get().jumlah_hasil, 5)
+
+    def test_ulangi_mengisi_form_dari_preferensi_lama(self):
+        lama = Preferensi.objects.create(
+            pengguna=self.pengguna, kategori=self.kategori_minyak,
+            budget_max=Decimal("40000"), merek="Sania",
+        )
+        respons = self.client.get(reverse("smartbako:atur_preferensi"), {"ulangi": lama.pk})
+        form = respons.context["form"]
+        self.assertEqual(form.initial["kategori"], self.kategori_minyak.pk)
+        self.assertEqual(form.initial["merek"], "Sania")
+
+    def test_ulangi_tidak_bisa_memakai_preferensi_orang_lain(self):
+        orang_lain = User.objects.create_user(username="lain", email="lain@contoh.com", password=PASSWORD)
+        milik_lain = Preferensi.objects.create(
+            pengguna=orang_lain, kategori=self.kategori_minyak, budget_max=Decimal("40000"),
+        )
+        respons = self.client.get(reverse("smartbako:atur_preferensi"), {"ulangi": milik_lain.pk})
+        self.assertNotIn("kategori", respons.context["form"].initial)
+
+    def test_katalog_filter_harga_dan_merek(self):
+        respons = self.client.get(reverse("smartbako:katalog"), {"merek": "sania", "harga_max": "40000"})
+        produk = list(respons.context["page_obj"])
+        self.assertEqual(produk, [self.minyak])
+
+    def test_katalog_urutkan_termahal(self):
+        respons = self.client.get(reverse("smartbako:katalog"), {"urutkan": "termahal"})
+        self.assertEqual(list(respons.context["page_obj"])[0], self.beras)
+
+    def test_katalog_filter_tidak_valid_tidak_error(self):
+        respons = self.client.get(reverse("smartbako:katalog"), {"kategori": "abc", "harga_min": "x", "page": "99"})
+        self.assertEqual(respons.status_code, 200)
+
+    def test_detail_produk_tidak_ada_menampilkan_pesan(self):
+        respons = self.client.get(reverse("smartbako:detail_produk", args=[99999]))
+        self.assertEqual(respons.status_code, 404)
+        self.assertContains(respons, "Produk tidak ditemukan", status_code=404)
+
+    def test_bandingkan_maksimal_tiga_dan_abaikan_id_tidak_valid(self):
+        tambahan = [
+            Produk.objects.create(nama=f"Produk {i}", kategori=self.kategori_beras, harga=Decimal("1000"), stok=1)
+            for i in range(2)
+        ]
         respons = self.client.get(
             reverse("smartbako:bandingkan_produk"),
-            {"produk": [self.beras.pk, "abc", self.minyak.pk]},
+            {"produk": [self.beras.pk, "abc", self.minyak.pk, tambahan[0].pk, tambahan[1].pk]},
         )
         self.assertEqual(respons.status_code, 200)
-        self.assertEqual(len(respons.context["produk_dipilih"]), 2)
+        self.assertEqual(len(respons.context["produk_dipilih"]), 3)
 
     def test_halaman_pengguna_dapat_dibuka(self):
-        for nama in ["beranda", "katalog", "riwayat", "profil", "ubah_password"]:
+        self.kirim_preferensi()
+        for nama in ["beranda", "katalog", "atur_preferensi", "riwayat", "profil", "ubah_password", "bandingkan_produk"]:
             with self.subTest(nama=nama):
                 respons = self.client.get(reverse(f"smartbako:{nama}"))
                 self.assertEqual(respons.status_code, 200)
+        respons = self.client.get(reverse("smartbako:detail_produk", args=[self.beras.pk]))
+        self.assertEqual(respons.status_code, 200)
+
+    def test_rekomendasi_milik_orang_lain_tidak_bisa_dibuka(self):
+        orang_lain = User.objects.create_user(username="lain", email="lain@contoh.com", password=PASSWORD)
+        milik_lain = Preferensi.objects.create(pengguna=orang_lain, budget_max=Decimal("40000"))
+        respons = self.client.get(reverse("smartbako:rekomendasi", args=[milik_lain.pk]))
+        self.assertEqual(respons.status_code, 404)
+
+
+class ModelProdukTests(DataUjiMixin, TestCase):
+
+    def test_status_stok(self):
+        self.assertEqual(self.stok_habis.status_stok, "habis")
+        self.assertEqual(self.minyak.status_stok, "terbatas")
+        self.beras.stok = 50
+        self.assertEqual(self.beras.status_stok, "tersedia")
+
+    def test_harga_per_satuan(self):
+        self.assertEqual(self.beras.harga_per_satuan, Decimal("15000"))
+        self.assertIsNone(self.stok_habis.harga_per_satuan)

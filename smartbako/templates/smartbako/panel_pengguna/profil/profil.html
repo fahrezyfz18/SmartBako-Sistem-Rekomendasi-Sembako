@@ -1,72 +1,38 @@
-{% extends 'smartbako/base.html' %}
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
 
-{% block title %}Profil Saya | SmartBako{% endblock %}
+{% block title %}Profil Saya{% endblock %}
 
 {% block content %}
-<div class="user-page">
+<div class="mb-4">
+    <h1 class="h3 mb-1">Profil dan Pengaturan Akun</h1>
+    <p class="text-secondary mb-0">Kelola informasi akun SmartBako Anda.</p>
+</div>
 
-    <header class="user-page__heading">
-        <h1>Profil Saya</h1>
-        <p>Perbarui informasi akun yang digunakan pada SmartBako.</p>
-    </header>
+<div class="row g-4">
+    <aside class="col-lg-4">
+        {% include 'smartbako/panel_pengguna/profil/menu_profil.html' with aktif='profil' %}
+    </aside>
 
-    <div class="user-split">
+    <div class="col-lg-8">
+        <form method="post" class="sb-card p-4" novalidate>
+            {% csrf_token %}
+            <h2 class="sb-section-title mb-3">Informasi Profil</h2>
 
-        <section class="user-card user-profile">
-            <span class="avatar avatar--lg" aria-hidden="true">
-                {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
-            </span>
-            <h2>{{ request.user.first_name|default:request.user.username }}</h2>
-            <p class="user-help">@{{ request.user.username }}</p>
+            <div class="row g-3">
+                {% include 'smartbako/components/field.html' with field=form.first_name %}
+                {% include 'smartbako/components/field.html' with field=form.email bantuan='Email dipakai untuk masuk ke SmartBako.' %}
+            </div>
 
-            <dl class="user-spec user-spec--stack">
-                <div>
-                    <dt>Email</dt>
-                    <dd>{{ request.user.email|default:"-" }}</dd>
-                </div>
-                <div>
-                    <dt>Bergabung sejak</dt>
-                    <dd>{{ request.user.date_joined|date:"d F Y" }}</dd>
-                </div>
-            </dl>
-        </section>
+            <div class="row g-3 mt-1 small text-secondary">
+                <div class="col-sm-6"><i class="bi bi-calendar3 me-1"></i>Terdaftar sejak {{ request.user.date_joined|date:"d F Y" }}</div>
+                <div class="col-sm-6"><i class="bi bi-stars me-1"></i>{{ total_riwayat }} kali mendapatkan rekomendasi</div>
+            </div>
 
-        <section class="user-card">
-            <h2>Informasi Akun</h2>
-
-            <form method="post" class="user-form" novalidate>
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                    <div class="user-alert user-alert--error" role="alert">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-
-                {% for field in form %}
-                    <div class="user-form__group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-
-                        {% if field.help_text %}
-                            <span class="user-help">{{ field.help_text }}</span>
-                        {% endif %}
-
-                        {% for error in field.errors %}
-                            <p class="user-form__error">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-
-                <div class="user-actions">
-                    <button type="submit" class="user-button">Simpan Perubahan</button>
-                    <a href="{% url 'smartbako:ubah_password' %}" class="user-button user-button--outline">
-                        Ubah Kata Sandi
-                    </a>
-                </div>
-            </form>
-        </section>
-
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary px-4">Simpan Perubahan</button>
+                <a href="{% url 'smartbako:profil' %}" class="btn btn-soft">Batal</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

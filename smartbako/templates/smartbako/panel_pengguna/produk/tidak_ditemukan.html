@@ -1,0 +1,16 @@
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Produk Tidak Ditemukan{% endblock %}
+
+{% block content %}
+{# US-04 AC3: produk yang tidak ada menampilkan pesan "Produk tidak ditemukan". #}
+<div class="sb-card sb-empty py-5 mx-auto" style="max-width: 560px;">
+    <span class="sb-empty-icon"><i class="bi bi-question-lg"></i></span>
+    <h1 class="h4 text-body mb-2">Produk tidak ditemukan</h1>
+    <p class="mb-4">Produk yang Anda cari tidak tersedia atau sudah dihapus.</p>
+    <div class="d-flex justify-content-center gap-2">
+        <a href="{% url 'smartbako:katalog' %}" class="btn btn-primary">Lihat Semua Produk</a>
+        <a href="{% url 'smartbako:beranda' %}" class="btn btn-soft">Ke Beranda</a>
+    </div>
+</div>
+{% endblock %}

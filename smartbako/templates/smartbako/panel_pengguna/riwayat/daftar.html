@@ -1,0 +1,68 @@
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Riwayat Rekomendasi{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Riwayat Rekomendasi</h1>
+        <p class="text-secondary mb-0">Daftar rekomendasi produk yang pernah diberikan sistem untuk Anda.</p>
+    </div>
+    <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Rekomendasi Baru</a>
+</div>
+
+{% if page_obj.object_list %}
+<section class="sb-card">
+    <div class="table-responsive">
+        <table class="table sb-table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-4">Tanggal</th>
+                    <th>Preferensi yang dimasukkan</th>
+                    <th>Produk teratas</th>
+                    <th class="text-end pe-4">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td class="ps-4 text-nowrap">
+                            <div class="fw-medium">{{ item.tanggal_rekomendasi|date:"d/m/Y" }}</div>
+                            <small class="text-secondary">{{ item.jumlah_hasil }} hasil</small>
+                        </td>
+                        <td>
+                            <div class="fw-medium">{{ item.preferensi.kategori.nama|default:"Semua kategori" }}</div>
+                            <small class="text-secondary">
+                                Budget: maks Rp {{ item.preferensi.budget_max|floatformat:"0g" }}{% if item.preferensi.ukuran %} · Ukuran: {{ item.preferensi.ukuran|floatformat:"-2" }} {{ item.preferensi.satuan }}{% endif %}{% if item.preferensi.merek %} · {{ item.preferensi.merek }}{% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            {% with teratas=item.produk_teratas.0 %}
+                                {% if teratas %}
+                                    <div class="fw-medium text-truncate" style="max-width: 260px;">{{ teratas.produk.nama }}</div>
+                                    <small class="text-secondary">Kecocokan {% widthratio teratas.skor_kecocokan 1 100 %}%</small>
+                                {% else %}
+                                    <span class="text-secondary small">Tidak ada produk yang cocok</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-end pe-4 text-nowrap">
+                            <a href="{% url 'smartbako:rekomendasi' item.preferensi.id %}" class="btn btn-sm btn-outline-primary">Lihat Hasil</a>
+                            <a href="{% url 'smartbako:atur_preferensi' %}?ulangi={{ item.preferensi.id }}" class="btn btn-sm btn-soft" title="Isi ulang form dengan preferensi ini">Ulangi</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% include 'smartbako/components/pagination.html' with label='riwayat' %}
+{% else %}
+<div class="sb-card sb-empty">
+    <span class="sb-empty-icon"><i class="bi bi-clock-history"></i></span>
+    <h2 class="h5 text-body mb-2">Belum ada riwayat rekomendasi</h2>
+    <p class="mb-4">Riwayat akan tersimpan otomatis setiap kali Anda mencari rekomendasi.</p>
+    <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary">Mulai Rekomendasi</a>
+</div>
+{% endif %}
+{% endblock %}

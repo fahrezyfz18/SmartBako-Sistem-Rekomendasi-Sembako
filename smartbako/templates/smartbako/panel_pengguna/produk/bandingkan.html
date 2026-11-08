@@ -1,0 +1,109 @@
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Bandingkan Produk{% endblock %}
+
+{% block content %}
+<div class="mb-4" data-compare-page>
+    <h1 class="h3 mb-1">Bandingkan Produk</h1>
+    <p class="text-secondary mb-0">Bandingkan hingga {{ batas_bandingkan }} produk berdasarkan harga, ukuran, dan tingkat kecocokan.</p>
+</div>
+
+{% if produk_dipilih|length >= 2 %}
+<section class="sb-card">
+    <div class="table-responsive">
+        <table class="table sb-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4" style="width: 180px;">Atribut</th>
+                    {% for produk in produk_dipilih %}
+                        <th data-compare-col data-id="{{ produk.id }}" data-name="{{ produk.nama }}">Produk {{ forloop.counter }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Foto</th>
+                    {% for produk in produk_dipilih %}
+                        <td>
+                            {% if produk.gambar %}
+                                <img src="{{ produk.gambar.url }}" alt="" class="sb-compare-img">
+                            {% else %}
+                                <span class="sb-compare-img d-grid position-relative"><span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i></span></span>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Nama</th>
+                    {% for produk in produk_dipilih %}<td><a href="{% url 'smartbako:detail_produk' produk.id %}" class="fw-semibold text-reset">{{ produk.nama }}</a></td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Kategori</th>
+                    {% for produk in produk_dipilih %}<td>{{ produk.kategori.nama }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Merek</th>
+                    {% for produk in produk_dipilih %}<td>{{ produk.merek|default:"-" }}</td>{% endfor %}
+                </tr>
+                <tr data-best-row="min">
+                    <th class="ps-4 fw-normal text-secondary">Harga</th>
+                    {% for produk in produk_dipilih %}<td data-value="{{ produk.harga|stringformat:'s' }}">Rp {{ produk.harga|floatformat:"0g" }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Ukuran</th>
+                    {% for produk in produk_dipilih %}<td>{% if produk.ukuran %}{{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% else %}-{% endif %}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Harga per satuan</th>
+                    {% for produk in produk_dipilih %}<td>{% if produk.harga_per_satuan %}Rp {{ produk.harga_per_satuan|floatformat:"0g" }} / {{ produk.satuan }}{% else %}-{% endif %}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Tingkat kecocokan</th>
+                    {% for produk in produk_dipilih %}
+                        <td>{% if produk.skor_kecocokan is not None %}{% widthratio produk.skor_kecocokan 1 100 %}%{% else %}<span class="text-secondary small">Tidak ada di rekomendasi terakhir</span>{% endif %}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Stok</th>
+                    {% for produk in produk_dipilih %}
+                        <td>
+                            {% if produk.status_stok == 'habis' %}<span class="badge rounded-pill text-bg-danger">Habis</span>
+                            {% elif produk.status_stok == 'terbatas' %}<span class="badge rounded-pill text-bg-warning">Terbatas</span>
+                            {% else %}<span class="badge rounded-pill text-bg-success">Tersedia</span>{% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4 fw-normal text-secondary">Deskripsi</th>
+                    {% for produk in produk_dipilih %}<td class="small text-secondary">{{ produk.deskripsi|default:"-"|truncatewords:20 }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <th class="ps-4"></th>
+                    {% for produk in produk_dipilih %}
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-compare-remove="{{ produk.id }}">
+                                <i class="bi bi-x-lg me-1"></i>Hapus
+                            </button>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<p class="small text-secondary mt-3"><i class="bi bi-info-circle me-1"></i>Harga termurah ditandai hijau. Tingkat kecocokan diambil dari rekomendasi terakhir Anda.</p>
+{% else %}
+<div class="sb-card sb-empty">
+    <span class="sb-empty-icon"><i class="bi bi-layout-three-columns"></i></span>
+    <h2 class="h5 text-body mb-2">Pilih minimal 2 produk untuk dibandingkan</h2>
+    <p class="mb-4">Centang <strong>Bandingkan</strong> pada kartu produk atau hasil rekomendasi (maksimal {{ batas_bandingkan }} produk).</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <a href="{% url 'smartbako:katalog' %}" class="btn btn-primary">Lihat Daftar Produk</a>
+        <a href="{% url 'smartbako:riwayat' %}" class="btn btn-soft">Buka Riwayat Rekomendasi</a>
+    </div>
+    {% for produk in produk_dipilih %}
+        <span hidden data-compare-col data-id="{{ produk.id }}" data-name="{{ produk.nama }}"></span>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -2,10 +2,8 @@
 
 {% block title %}Ubah Kategori{% endblock %}
 {% block breadcrumb %}
-    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-1">
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:daftar_kategori' %}">Kelola Kategori</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Ubah</li>
-    </ol></nav>
+    {% url 'smartbako:daftar_kategori' as url_induk %}
+    {% include 'smartbako/components/breadcrumb.html' with url_induk=url_induk induk='Kelola Kategori' aktif='Ubah' %}
 {% endblock %}
 {% block heading %}Ubah Kategori{% endblock %}
 {% block subheading %}{{ kategori.nama }}{% endblock %}

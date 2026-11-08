@@ -1,0 +1,10 @@
+{% comment %}
+    Foto kecil produk; tampil ikon bila produk belum punya foto.
+    Parameter: produk, ukuran (px, default 48).
+    Pakai: {% include 'smartbako/components/thumbnail_produk.html' with produk=produk ukuran=40 %}
+{% endcomment %}
+{% if produk.gambar %}
+    <img src="{{ produk.gambar.url }}" alt="" class="sb-thumb" style="width:{{ ukuran|default:48 }}px;height:{{ ukuran|default:48 }}px" loading="lazy">
+{% else %}
+    <span class="sb-thumb sb-thumb-placeholder" style="width:{{ ukuran|default:48 }}px;height:{{ ukuran|default:48 }}px" aria-hidden="true"><i class="bi bi-image"></i></span>
+{% endif %}

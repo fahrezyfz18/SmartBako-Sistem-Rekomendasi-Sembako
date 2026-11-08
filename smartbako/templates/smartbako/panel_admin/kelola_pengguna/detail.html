@@ -2,34 +2,22 @@
 
 {% block title %}Detail Pengguna{% endblock %}
 {% block breadcrumb %}
-    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-1">
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:daftar_pengguna' %}">Kelola Pengguna</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Detail</li>
-    </ol></nav>
+    {% url 'smartbako:daftar_pengguna' as url_induk %}
+    {% include 'smartbako/components/breadcrumb.html' with url_induk=url_induk induk='Kelola Pengguna' aktif='Detail' %}
 {% endblock %}
 {% block heading %}{{ pengguna.first_name|default:pengguna.email }}{% endblock %}
 {% block subheading %}{{ pengguna.email }}{% endblock %}
 
 {% block heading_actions %}
     {% if not pengguna.is_superuser and pengguna.pk != request.user.pk %}
-        <button type="button" class="btn btn-light-subtle"
-                data-bs-toggle="modal" data-bs-target="#modalKonfirmasi"
-                data-aksi="{% url 'smartbako:ubah_status_pengguna' pengguna.id %}"
-                {% if pengguna.is_active %}
-                    data-judul="Nonaktifkan akun ini?" data-pesan="Akun ini tidak akan bisa login sampai diaktifkan kembali." data-tombol="Ya, Nonaktifkan"
-                {% else %}
-                    data-judul="Aktifkan akun ini?" data-pesan="Akun ini akan bisa login kembali." data-tombol="Ya, Aktifkan"
-                {% endif %}>
-            <i class="bi {% if pengguna.is_active %}bi-person-slash{% else %}bi-person-check{% endif %} me-1"></i>
-            {% if pengguna.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
-        </button>
-        <button type="button" class="btn btn-outline-danger"
-                data-bs-toggle="modal" data-bs-target="#modalKonfirmasi"
-                data-aksi="{% url 'smartbako:hapus_pengguna' pengguna.id %}"
-                data-judul="Hapus akun ini?"
-                data-pesan="Akun beserta seluruh riwayat preferensi dan rekomendasinya akan dihapus permanen.">
-            <i class="bi bi-trash me-1"></i>Hapus
-        </button>
+        {% url 'smartbako:ubah_status_pengguna' pengguna.id as url_status %}
+        {% url 'smartbako:hapus_pengguna' pengguna.id as url_hapus %}
+        {% if pengguna.is_active %}
+            {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_status judul='Nonaktifkan akun ini?' pesan='Akun ini tidak akan bisa login sampai diaktifkan kembali.' teks='Ya, Nonaktifkan' ikon='person-slash' label='Nonaktifkan' kelas='btn btn-light-subtle' %}
+        {% else %}
+            {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_status judul='Aktifkan akun ini?' pesan='Akun ini akan bisa login kembali.' teks='Ya, Aktifkan' ikon='person-check' label='Aktifkan' kelas='btn btn-light-subtle' %}
+        {% endif %}
+        {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Hapus akun ini?' pesan='Akun beserta seluruh riwayat preferensi dan rekomendasinya akan dihapus permanen.' label='Hapus' kelas='btn btn-outline-danger' %}
     {% endif %}
 {% endblock %}
 
@@ -37,12 +25,12 @@
 <div class="row g-4">
     <div class="col-lg-4">
         <section class="sb-card p-4 text-center h-100">
-            <span class="sb-avatar mb-3" style="width:72px;height:72px;font-size:1.8rem">{{ pengguna.first_name|default:pengguna.email|first|upper }}</span>
+            <span class="sb-avatar sb-avatar-lg mb-3">{{ pengguna.first_name|default:pengguna.email|first|upper }}</span>
             <h2 class="h5 mb-1">{{ pengguna.first_name|default:"-" }}</h2>
             <p class="text-secondary mb-3">{{ pengguna.email }}</p>
             <div class="d-flex justify-content-center gap-2 mb-4">
-                {% if pengguna.is_staff %}<span class="badge rounded-pill text-bg-accent">Admin</span>{% else %}<span class="badge rounded-pill text-bg-light border">Pengguna</span>{% endif %}
-                {% if pengguna.is_active %}<span class="badge rounded-pill text-bg-success">Aktif</span>{% else %}<span class="badge rounded-pill text-bg-secondary">Nonaktif</span>{% endif %}
+                {% include 'smartbako/components/badge_peran.html' with akun=pengguna %}
+                {% include 'smartbako/components/badge_status_akun.html' with akun=pengguna %}
             </div>
             <dl class="row text-start small mb-0">
                 <dt class="col-6 text-secondary fw-normal">Terdaftar</dt><dd class="col-6">{{ pengguna.date_joined|date:"d/m/Y" }}</dd>

@@ -2,23 +2,18 @@
 
 {% block title %}Detail Produk{% endblock %}
 {% block breadcrumb %}
-    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-1">
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:daftar_produk' %}">Kelola Produk</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Detail</li>
-    </ol></nav>
+    {% url 'smartbako:daftar_produk' as url_induk %}
+    {% include 'smartbako/components/breadcrumb.html' with url_induk=url_induk induk='Kelola Produk' aktif='Detail' %}
 {% endblock %}
 {% block heading %}{{ produk.nama }}{% endblock %}
 {% block subheading %}{{ produk.kategori.nama }} · {{ produk.merek|default:"Tanpa merek" }}{% endblock %}
 
 {% block heading_actions %}
     <a href="{% url 'smartbako:edit_produk' produk.id %}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Ubah</a>
-    <button type="button" class="btn btn-outline-danger"
-            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi"
-            data-aksi="{% url 'smartbako:hapus_produk' produk.id %}"
-            data-judul="Hapus produk ini?"
-            data-pesan="Data produk &quot;{{ produk.nama }}&quot; akan dihapus dan tidak dapat dikembalikan.">
-        <i class="bi bi-trash me-1"></i>Hapus
-    </button>
+    {% url 'smartbako:hapus_produk' produk.id as url_hapus %}
+    {% with pesan='Data produk "'|add:produk.nama|add:'" akan dihapus dan tidak dapat dikembalikan.' %}
+        {% include 'smartbako/components/tombol_konfirmasi.html' with aksi=url_hapus judul='Hapus produk ini?' pesan=pesan label='Hapus' kelas='btn btn-outline-danger' %}
+    {% endwith %}
 {% endblock %}
 
 {% block content %}
@@ -37,13 +32,7 @@
         <section class="sb-card p-4">
             <div class="d-flex align-items-baseline gap-3 mb-4">
                 <span class="sb-stat-value text-primary">Rp {{ produk.harga|floatformat:"0g" }}</span>
-                {% if produk.stok == 0 %}
-                    <span class="badge rounded-pill text-bg-danger">Stok habis</span>
-                {% elif produk.stok <= batas_stok_menipis %}
-                    <span class="badge rounded-pill text-bg-warning">Stok terbatas</span>
-                {% else %}
-                    <span class="badge rounded-pill text-bg-success">Tersedia</span>
-                {% endif %}
+                {% include 'smartbako/components/badge_stok.html' with stok=produk.stok batas=batas_stok_menipis gaya='label' %}
             </div>
 
             <h2 class="h6 text-uppercase text-secondary mb-3">Spesifikasi</h2>

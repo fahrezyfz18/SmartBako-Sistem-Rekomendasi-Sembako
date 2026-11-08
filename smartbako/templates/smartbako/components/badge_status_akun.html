@@ -1,0 +1,5 @@
+{% comment %}
+    Label status akun: Aktif atau Nonaktif.
+    Pakai: {% include 'smartbako/components/badge_status_akun.html' with akun=akun %}
+{% endcomment %}
+{% if akun.is_active %}<span class="badge rounded-pill text-bg-success">Aktif</span>{% else %}<span class="badge rounded-pill text-bg-secondary">Nonaktif</span>{% endif %}

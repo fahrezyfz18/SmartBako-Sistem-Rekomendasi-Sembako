@@ -1,117 +1,130 @@
 {% extends 'smartbako/panel_admin/base_admin.html' %}
 
 {% block title %}Dashboard{% endblock %}
-{% block heading %}Dashboard{% endblock %}
-{% block subheading %}Ringkasan data dan statistik hasil rekomendasi SmartBako.{% endblock %}
 
-{% block heading_actions %}
-    <a href="{% url 'smartbako:tambah_produk' %}" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i> Tambah Produk
-    </a>
+{# Dashboard memakai banner sambutan sebagai pengganti judul halaman biasa. #}
+{% block page_header %}
+<section class="sb-welcome mb-4">
+    <div class="row align-items-center g-3 position-relative" style="z-index: 1;">
+        <div class="col-lg-8">
+            <span class="sb-welcome-chip mb-3"><i class="bi bi-stars"></i> Sistem Rekomendasi Sembako</span>
+            <h1 class="mb-2">Halo, {{ request.user.first_name|default:"Admin" }}! 👋</h1>
+            <p class="mb-0">
+                Pantau data produk, kategori, pengguna, dan hasil rekomendasi
+                <strong class="text-white">TF-IDF &amp; Cosine Similarity</strong> SmartBako di sini.
+            </p>
+        </div>
+        <div class="col-lg-4 d-flex flex-wrap gap-2 justify-content-lg-end">
+            <a href="{% url 'smartbako:tambah_produk' %}" class="btn btn-light"><i class="bi bi-plus-lg me-1"></i>Tambah Produk</a>
+            <a href="{% url 'smartbako:riwayat_preferensi' %}" class="btn btn-outline-light"><i class="bi bi-clock-history me-1"></i>Riwayat</a>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
 
 {# ---------- Kartu statistik ---------- #}
+{% url 'smartbako:daftar_produk' as url_produk %}
+{% url 'smartbako:daftar_kategori' as url_kategori %}
+{% url 'smartbako:daftar_pengguna' as url_pengguna %}
+{% url 'smartbako:riwayat_preferensi' as url_riwayat %}
 <div class="row g-3 mb-4">
     <div class="col-6 col-xl-3">
-        <a href="{% url 'smartbako:daftar_produk' %}" class="sb-card d-flex align-items-center gap-3 p-3 h-100 text-decoration-none text-reset">
-            <span class="sb-stat-icon sb-tone-accent"><i class="bi bi-box-seam"></i></span>
-            <div>
-                <div class="text-secondary small">Total Produk</div>
-                <div class="sb-stat-value">{{ total_produk }}</div>
-                {% if total_stok_habis %}<small class="text-danger">{{ total_stok_habis }} stok habis</small>{% endif %}
-            </div>
-        </a>
+        {% include 'smartbako/components/kartu_statistik.html' with url=url_produk ikon='box-seam' warna='accent' label='Total Produk' nilai=total_produk %}
     </div>
     <div class="col-6 col-xl-3">
-        <a href="{% url 'smartbako:daftar_kategori' %}" class="sb-card d-flex align-items-center gap-3 p-3 h-100 text-decoration-none text-reset">
-            <span class="sb-stat-icon sb-tone-primary"><i class="bi bi-tags"></i></span>
-            <div>
-                <div class="text-secondary small">Total Kategori</div>
-                <div class="sb-stat-value">{{ total_kategori }}</div>
-            </div>
-        </a>
+        {% include 'smartbako/components/kartu_statistik.html' with url=url_kategori ikon='tags' warna='primary' label='Total Kategori' nilai=total_kategori %}
     </div>
     <div class="col-6 col-xl-3">
-        <a href="{% url 'smartbako:daftar_pengguna' %}" class="sb-card d-flex align-items-center gap-3 p-3 h-100 text-decoration-none text-reset">
-            <span class="sb-stat-icon sb-tone-green"><i class="bi bi-people"></i></span>
-            <div>
-                <div class="text-secondary small">Total Pengguna</div>
-                <div class="sb-stat-value">{{ total_pengguna }}</div>
-            </div>
-        </a>
+        {% include 'smartbako/components/kartu_statistik.html' with url=url_pengguna ikon='people' warna='green' label='Total Pengguna' nilai=total_pengguna %}
     </div>
     <div class="col-6 col-xl-3">
-        <a href="{% url 'smartbako:riwayat_preferensi' %}" class="sb-card d-flex align-items-center gap-3 p-3 h-100 text-decoration-none text-reset">
-            <span class="sb-stat-icon sb-tone-amber"><i class="bi bi-stars"></i></span>
-            <div>
-                <div class="text-secondary small">Total Rekomendasi</div>
-                <div class="sb-stat-value">{{ total_rekomendasi }}</div>
-            </div>
-        </a>
+        {% include 'smartbako/components/kartu_statistik.html' with url=url_riwayat ikon='stars' warna='amber' label='Total Rekomendasi' nilai=total_rekomendasi %}
     </div>
 </div>
+
+{# ---------- Peringatan stok ---------- #}
+{% if total_stok_habis or total_stok_menipis %}
+    <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div class="flex-grow-1">
+            {% if total_stok_habis %}<strong>{{ total_stok_habis }} produk stok habis</strong>{% endif %}{% if total_stok_habis and total_stok_menipis %} dan {% endif %}{% if total_stok_menipis %}<strong>{{ total_stok_menipis }} produk stok menipis</strong> (≤ {{ batas_stok_menipis }}){% endif %}.
+            Produk yang stoknya habis tidak ikut direkomendasikan.
+        </div>
+        <a href="{% url 'smartbako:daftar_produk' %}?stok={% if total_stok_habis %}habis{% else %}menipis{% endif %}" class="btn btn-sm btn-light-subtle">Lihat produk</a>
+    </div>
+{% endif %}
 
 <div class="row g-3 mb-4">
     {# ---------- Grafik rekomendasi per hari ---------- #}
     <div class="col-xl-8">
-        <section class="sb-card p-4 h-100">
-            <div class="d-flex justify-content-between align-items-start mb-3">
+        <section class="sb-card h-100">
+            <div class="sb-card-header">
                 <div>
-                    <h2 class="h5 mb-1">Statistik Hasil Rekomendasi</h2>
-                    <p class="text-secondary small mb-0">Jumlah rekomendasi yang dihasilkan per hari (7 hari terakhir).</p>
+                    <h2 class="sb-card-title">Statistik Hasil Rekomendasi</h2>
+                    <p class="text-secondary small mb-0">Jumlah rekomendasi yang dihasilkan per hari, 7 hari terakhir.</p>
                 </div>
+                <span class="badge rounded-pill text-bg-accent px-3 py-2"><i class="bi bi-bar-chart me-1"></i>7 hari</span>
             </div>
-            <div class="sb-chart">
-                <canvas id="grafikRekomendasi" aria-label="Grafik jumlah rekomendasi per hari" role="img"></canvas>
+            <div class="px-4 pb-4">
+                <div class="sb-chart">
+                    <canvas id="grafikRekomendasi" aria-label="Grafik jumlah rekomendasi per hari" role="img"></canvas>
+                </div>
             </div>
         </section>
     </div>
 
     {# ---------- Kategori paling sering dicari ---------- #}
     <div class="col-xl-4">
-        <section class="sb-card p-4 h-100">
-            <h2 class="h5 mb-1">Kategori Paling Sering Dicari</h2>
-            <p class="text-secondary small mb-4">Berdasarkan riwayat preferensi pengguna.</p>
-
-            {% for item in kategori_populer %}
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span class="fw-medium">{{ item.nama }}</span>
-                        <span class="text-secondary">{{ item.persentase }}%</span>
-                    </div>
-                    <div class="progress" role="progressbar" aria-valuenow="{{ item.persentase }}" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar" style="width: {{ item.persentase }}%"></div>
-                    </div>
+        <section class="sb-card h-100">
+            <div class="sb-card-header">
+                <div>
+                    <h2 class="sb-card-title">Kategori Paling Dicari</h2>
+                    <p class="text-secondary small mb-0">Berdasarkan preferensi pengguna.</p>
                 </div>
-            {% empty %}
-                <div class="sb-empty py-4">
-                    <i class="bi bi-bar-chart"></i>
-                    Belum ada data preferensi.
-                </div>
-            {% endfor %}
+            </div>
+            <div class="px-4 pb-4">
+                {% for item in kategori_populer %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="fw-medium">{{ item.nama }}</span>
+                            <span class="text-secondary">{{ item.jumlah }}× · {{ item.persentase }}%</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="{{ item.nama }}" aria-valuenow="{{ item.persentase }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: {{ item.persentase }}%"></div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="sb-empty py-4">
+                        <i class="bi bi-pie-chart"></i>
+                        Belum ada data preferensi.
+                    </div>
+                {% endfor %}
+            </div>
         </section>
     </div>
 </div>
 
 <div class="row g-3">
     {# ---------- Produk paling sering direkomendasikan ---------- #}
-    <div class="col-xl-6">
+    <div class="col-xl-4">
         <section class="sb-card h-100">
-            <div class="p-4 pb-2">
-                <h2 class="h5 mb-1">Produk Paling Sering Direkomendasikan</h2>
-                <p class="text-secondary small mb-0">Data diambil dari riwayat rekomendasi seluruh pengguna.</p>
+            <div class="sb-card-header">
+                <div>
+                    <h2 class="sb-card-title">Produk Terpopuler</h2>
+                    <p class="text-secondary small mb-0">Paling sering muncul di hasil rekomendasi.</p>
+                </div>
             </div>
             <ul class="list-group list-group-flush">
                 {% for produk in produk_populer %}
                     <li class="list-group-item d-flex align-items-center gap-3 px-4 py-3">
-                        <span class="sb-rank-number">{{ forloop.counter }}</span>
+                        <span class="sb-rank-number {% if forloop.first %}is-top{% endif %}">{{ forloop.counter }}</span>
                         <div class="flex-grow-1 min-w-0">
                             <a href="{% url 'smartbako:detail_produk_admin' produk.id %}" class="fw-medium text-reset text-decoration-none d-block text-truncate">{{ produk.nama }}</a>
                             <small class="text-secondary">{{ produk.kategori.nama }} · {{ produk.merek|default:"-" }}</small>
                         </div>
-                        <span class="badge rounded-pill text-bg-accent">{{ produk.jumlah_rekomendasi }}x</span>
+                        <span class="badge rounded-pill text-bg-accent">{{ produk.jumlah_rekomendasi }}×</span>
                     </li>
                 {% empty %}
                     <li class="list-group-item sb-empty border-0">
@@ -124,35 +137,62 @@
     </div>
 
     {# ---------- Preferensi terbaru ---------- #}
-    <div class="col-xl-6">
+    <div class="col-xl-4">
         <section class="sb-card h-100">
-            <div class="p-4 pb-2 d-flex justify-content-between align-items-start">
+            <div class="sb-card-header">
                 <div>
-                    <h2 class="h5 mb-1">Preferensi Terbaru</h2>
-                    <p class="text-secondary small mb-0">Kebutuhan terakhir yang dimasukkan pengguna.</p>
+                    <h2 class="sb-card-title">Preferensi Terbaru</h2>
+                    <p class="text-secondary small mb-0">Kebutuhan terakhir dari pengguna.</p>
                 </div>
-                <a href="{% url 'smartbako:riwayat_preferensi' %}" class="btn btn-sm btn-light-subtle">Lihat semua</a>
+                <a href="{% url 'smartbako:riwayat_preferensi' %}" class="btn btn-sm btn-light-subtle">Semua</a>
             </div>
-            <ul class="list-group list-group-flush">
+            <div class="list-group list-group-flush">
                 {% for item in preferensi_terbaru %}
-                    <li class="list-group-item px-4 py-3">
-                        <a href="{% url 'smartbako:detail_preferensi' item.id %}" class="d-flex justify-content-between gap-3 text-reset text-decoration-none">
-                            <div class="min-w-0">
-                                <div class="fw-medium text-truncate">{{ item.pengguna.first_name|default:item.pengguna.email }}</div>
-                                <small class="text-secondary">
-                                    {{ item.kategori.nama|default:"Semua kategori" }} · maks Rp {{ item.budget_max|floatformat:"0g" }}
-                                </small>
-                            </div>
-                            <small class="text-secondary text-nowrap">{{ item.tanggal_input|timesince }} lalu</small>
-                        </a>
-                    </li>
+                    <a href="{% url 'smartbako:detail_preferensi' item.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3">
+                        <span class="sb-avatar sb-avatar-sm">{{ item.pengguna.first_name|default:item.pengguna.email|first|upper }}</span>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-medium text-truncate">{{ item.pengguna.first_name|default:item.pengguna.email }}</div>
+                            <small class="text-secondary">{{ item.kategori.nama|default:"Semua kategori" }} · maks Rp {{ item.budget_max|floatformat:"0g" }}</small>
+                        </div>
+                        <small class="text-secondary text-nowrap">{{ item.tanggal_input|timesince }}</small>
+                    </a>
                 {% empty %}
-                    <li class="list-group-item sb-empty border-0">
+                    <div class="list-group-item sb-empty border-0">
                         <i class="bi bi-clock-history"></i>
                         Belum ada preferensi yang masuk.
-                    </li>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
+        </section>
+    </div>
+
+    {# ---------- Stok perlu perhatian ---------- #}
+    <div class="col-xl-4">
+        <section class="sb-card h-100">
+            <div class="sb-card-header">
+                <div>
+                    <h2 class="sb-card-title">Stok Perlu Perhatian</h2>
+                    <p class="text-secondary small mb-0">Produk dengan stok ≤ {{ batas_stok_menipis }}.</p>
+                </div>
+                <a href="{% url 'smartbako:daftar_produk' %}?stok={% if total_stok_habis %}habis{% else %}menipis{% endif %}" class="btn btn-sm btn-light-subtle">Semua</a>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for produk in stok_menipis %}
+                    <a href="{% url 'smartbako:edit_produk' produk.id %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3">
+                        {% include 'smartbako/components/thumbnail_produk.html' with produk=produk ukuran=40 %}
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-medium text-truncate">{{ produk.nama }}</div>
+                            <small class="text-secondary">{{ produk.kategori.nama }}</small>
+                        </div>
+                        {% include 'smartbako/components/badge_stok.html' with stok=produk.stok batas=batas_stok_menipis gaya='angka' %}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item sb-empty border-0">
+                        <i class="bi bi-check2-circle"></i>
+                        Semua stok produk aman.
+                    </div>
+                {% endfor %}
+            </div>
         </section>
     </div>
 </div>
@@ -165,17 +205,22 @@
 <script>
     (function () {
         const data = JSON.parse(document.getElementById('data-grafik').textContent);
-        new Chart(document.getElementById('grafikRekomendasi'), {
+        const kanvas = document.getElementById('grafikRekomendasi');
+        const gradasi = kanvas.getContext('2d').createLinearGradient(0, 0, 0, 270);
+        gradasi.addColorStop(0, 'rgba(94, 28, 35, 0.85)');
+        gradasi.addColorStop(1, 'rgba(132, 154, 173, 0.55)');
+
+        new Chart(kanvas, {
             type: 'bar',
             data: {
                 labels: data.map(item => item.hari),
                 datasets: [{
                     label: 'Rekomendasi',
                     data: data.map(item => item.jumlah),
-                    backgroundColor: '#849AAD',
+                    backgroundColor: gradasi,
                     hoverBackgroundColor: '#5E1C23',
-                    borderRadius: 8,
-                    maxBarThickness: 44,
+                    borderRadius: 10,
+                    maxBarThickness: 42,
                 }],
             },
             options: {
@@ -183,6 +228,8 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        backgroundColor: '#2E2A27',
+                        padding: 10,
                         callbacks: {
                             title: items => data[items[0].dataIndex].hari + ', ' + data[items[0].dataIndex].tanggal,
                             label: item => item.raw + ' rekomendasi',
@@ -190,8 +237,8 @@
                     },
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#EFEBE5' } },
-                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { precision: 0, color: '#7A6E64' }, grid: { color: '#F1EDE7' }, border: { display: false } },
+                    x: { ticks: { color: '#7A6E64' }, grid: { display: false }, border: { display: false } },
                 },
             },
         });

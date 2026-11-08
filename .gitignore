@@ -20,3 +20,9 @@ db.sqlite3
 .idea/
 .DS_Store
 Thumbs.db
+
+# Salinan / cadangan lokal
+*.sqlite3
+.env.txt
+zipku/
+*.zip

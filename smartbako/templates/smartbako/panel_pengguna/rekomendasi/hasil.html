@@ -1,0 +1,143 @@
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Hasil Rekomendasi{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+        <h1 class="h3 mb-1">Hasil Rekomendasi</h1>
+        <p class="text-secondary mb-0">
+            Berikut produk yang paling sesuai dengan preferensi Anda
+            <span class="text-nowrap">· {{ rekomendasi.tanggal_rekomendasi|date:"d F Y, H:i" }}</span>
+        </p>
+    </div>
+    <a href="{% url 'smartbako:atur_preferensi' %}?ulangi={{ preferensi.id }}" class="btn btn-soft"><i class="bi bi-sliders me-1"></i>Ubah Preferensi</a>
+</div>
+
+{# ---------- Ringkasan preferensi ---------- #}
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="sb-chip"><i class="bi bi-tag"></i> {{ preferensi.kategori.nama|default:"Semua kategori" }}</span>
+    <span class="sb-chip"><i class="bi bi-wallet2"></i>
+        {% if preferensi.budget_min %}Rp {{ preferensi.budget_min|floatformat:"0g" }} – {% else %}maks {% endif %}Rp {{ preferensi.budget_max|floatformat:"0g" }}
+    </span>
+    {% if preferensi.ukuran %}<span class="sb-chip"><i class="bi bi-rulers"></i> {{ preferensi.ukuran|floatformat:"-2" }} {{ preferensi.satuan }}</span>{% endif %}
+    {% if preferensi.merek %}<span class="sb-chip"><i class="bi bi-award"></i> {{ preferensi.merek }}</span>{% endif %}
+    {% if preferensi.kebutuhan_tambahan %}<span class="sb-chip"><i class="bi bi-chat-left-text"></i> {{ preferensi.kebutuhan_tambahan|truncatechars:40 }}</span>{% endif %}
+</div>
+
+{% if hasil_rekomendasi %}
+    {# ---------- Daftar hasil ---------- #}
+    <div class="d-flex flex-column gap-3 mb-5">
+        {% for item in hasil_rekomendasi %}
+            {% widthratio item.skor_kecocokan 1 100 as persen %}
+            <article class="sb-card p-3 p-md-4">
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center">
+                    <div class="d-flex gap-3 align-items-center flex-grow-1 min-w-0">
+                        <span class="sb-peringkat {% if forloop.first %}is-top{% endif %}">{{ item.peringkat }}</span>
+                        {% if item.produk.gambar %}
+                            <img src="{{ item.produk.gambar.url }}" alt="" class="sb-hasil-thumb d-none d-sm-block" loading="lazy">
+                        {% else %}
+                            <span class="sb-hasil-thumb d-none d-sm-grid position-relative"><span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i></span></span>
+                        {% endif %}
+                        <div class="min-w-0">
+                            <div class="d-flex flex-wrap gap-2 mb-1">
+                                <span class="badge rounded-pill text-bg-soft">{{ item.produk.kategori.nama }}</span>
+                                {% if item.produk.status_stok == 'habis' %}
+                                    <span class="badge rounded-pill text-bg-danger">Stok habis</span>
+                                {% elif item.produk.status_stok == 'terbatas' %}
+                                    <span class="badge rounded-pill text-bg-warning">Stok terbatas</span>
+                                {% else %}
+                                    <span class="badge rounded-pill text-bg-success">Stok tersedia</span>
+                                {% endif %}
+                            </div>
+                            <h2 class="h6 mb-1"><a href="{% url 'smartbako:detail_produk' item.produk.id %}" class="text-reset text-decoration-none">{{ item.produk.nama }}</a></h2>
+                            <p class="small text-secondary mb-1">
+                                {{ item.produk.merek|default:"Tanpa merek" }}{% if item.produk.ukuran %} · {{ item.produk.ukuran|floatformat:"-2" }} · {{ item.produk.satuan }}{% endif %}
+                            </p>
+                            <p class="small mb-0"><i class="bi bi-lightbulb text-warning me-1"></i><span class="text-secondary">Alasan:</span> {{ item.alasan_rekomendasi }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-md-column align-items-center align-items-md-end justify-content-between gap-2 text-md-end" style="min-width: 190px;">
+                        <span class="sb-harga fs-5">Rp {{ item.produk.harga|floatformat:"0g" }}</span>
+                        <div class="w-100" style="max-width: 190px;">
+                            <div class="d-flex justify-content-between small text-secondary mb-1">
+                                <span>Tingkat kecocokan</span><span class="fw-semibold text-body">{{ persen }}%</span>
+                            </div>
+                            <div class="progress" role="progressbar" aria-label="Tingkat kecocokan" aria-valuenow="{{ persen }}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width: {{ persen }}%"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="banding-hasil-{{ item.produk.id }}" data-compare data-id="{{ item.produk.id }}" data-name="{{ item.produk.nama }}">
+                                <label class="form-check-label small" for="banding-hasil-{{ item.produk.id }}">Bandingkan</label>
+                            </div>
+                            <a href="{% url 'smartbako:detail_produk' item.produk.id %}" class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    {# ---------- Perbandingan hasil (wireframe) ---------- #}
+    {% if hasil_perbandingan|length > 1 %}
+    <section class="sb-card mb-4">
+        <div class="p-4 pb-2">
+            <h2 class="sb-section-title">Perbandingan Hasil</h2>
+            <p class="text-secondary small mb-0">{{ hasil_perbandingan|length }} pilihan teratas. Harga termurah ditandai hijau.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table sb-table align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Atribut</th>
+                        {% for item in hasil_perbandingan %}<th>Pilihan {{ forloop.counter }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="ps-4 fw-normal text-secondary">Produk</th>
+                        {% for item in hasil_perbandingan %}<td class="fw-medium">{{ item.produk.nama }}</td>{% endfor %}
+                    </tr>
+                    <tr data-best-row="min">
+                        <th class="ps-4 fw-normal text-secondary">Harga</th>
+                        {% for item in hasil_perbandingan %}<td data-value="{{ item.produk.harga|stringformat:'s' }}">Rp {{ item.produk.harga|floatformat:"0g" }}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="ps-4 fw-normal text-secondary">Ukuran</th>
+                        {% for item in hasil_perbandingan %}<td>{% if item.produk.ukuran %}{{ item.produk.ukuran|floatformat:"-2" }} {{ item.produk.satuan }}{% else %}-{% endif %}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="ps-4 fw-normal text-secondary">Harga per satuan</th>
+                        {% for item in hasil_perbandingan %}<td>{% if item.produk.harga_per_satuan %}Rp {{ item.produk.harga_per_satuan|floatformat:"0g" }} / {{ item.produk.satuan }}{% else %}-{% endif %}</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="ps-4 fw-normal text-secondary">Tingkat kecocokan</th>
+                        {% for item in hasil_perbandingan %}{% widthratio item.skor_kecocokan 1 100 as persen %}<td class="fw-semibold">{{ persen }}%</td>{% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="ps-4 fw-normal text-secondary">Stok</th>
+                        {% for item in hasil_perbandingan %}<td>{{ item.produk.status_stok|capfirst }}</td>{% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    <p class="small text-secondary"><i class="bi bi-check2-circle me-1"></i>Hasil ini otomatis tersimpan ke Riwayat Rekomendasi.</p>
+{% else %}
+    {# ---------- Tidak ada hasil (US-05 AC6) ---------- #}
+    <div class="sb-card sb-empty">
+        <span class="sb-empty-icon"><i class="bi bi-inbox"></i></span>
+        <h2 class="h5 text-body mb-2">Rekomendasi yang sesuai belum tersedia</h2>
+        <p class="mb-4">Coba naikkan budget, ganti kategori, atau kosongkan ukuran dan merek.</p>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            <a href="{% url 'smartbako:atur_preferensi' %}?ulangi={{ preferensi.id }}" class="btn btn-primary">Ubah Preferensi</a>
+            <a href="{% url 'smartbako:katalog' %}" class="btn btn-soft">Lihat Semua Produk</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

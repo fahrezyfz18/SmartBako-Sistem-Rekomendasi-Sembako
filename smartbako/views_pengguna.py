@@ -1,88 +1,201 @@
-"""View panel pengguna SmartBako."""
+"""
+View panel pengguna SmartBako.
+
+Mencakup use case pengguna: Melihat Daftar Produk, Mencari & Memfilter
+Produk, Melihat Detail Produk, Mengisi Preferensi, Melihat Hasil
+Rekomendasi, Membandingkan Produk, Melihat Riwayat, dan Mengelola Profil.
+"""
 
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count, Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import PasswordPenggunaForm, PreferensiForm, ProfilForm
-from .models import Kategori, Preferensi, Produk, Rekomendasi
+from .forms import (
+    FilterKatalogForm,
+    PasswordPenggunaForm,
+    PreferensiForm,
+    ProfilForm,
+)
+from .models import DetailRekomendasi, Kategori, Preferensi, Produk, Rekomendasi
 from .services.recommendation import simpan_rekomendasi
-from .views import filter_katalog
 
-# Jumlah maksimal produk pada halaman perbandingan
-# (harus sama dengan data-max di compare_tray.html / pengguna.js).
-BATAS_BANDINGKAN = 4
+# US-04 AC1: maksimal 12 produk per halaman.
+PRODUK_PER_HALAMAN = 12
+RIWAYAT_PER_HALAMAN = 10
+
+# US-07 AC1: maksimal 3 produk dibandingkan sekaligus
+# (harus sama dengan data-max di components/compare_tray.html).
+BATAS_BANDINGKAN = 3
+
+# Jumlah produk pada tabel "Perbandingan Hasil" di halaman rekomendasi.
+JUMLAH_PERBANDINGAN_HASIL = 3
 
 
 # ==================================================
-# DASHBOARD PENGGUNA
+# FUNGSI PENDUKUNG
+# ==================================================
+
+def daftar_merek(produk_queryset):
+    """Daftar merek unik (untuk saran isian merek)."""
+    return (
+        produk_queryset
+        .exclude(merek="")
+        .order_by("merek")
+        .values_list("merek", flat=True)
+        .distinct()
+    )
+
+
+def rekomendasi_milik(user):
+    """Queryset rekomendasi milik pengguna yang sedang login."""
+    return Rekomendasi.objects.filter(preferensi__pengguna=user)
+
+
+# ==================================================
+# BERANDA (wireframe "Beranda")
 # ==================================================
 
 @login_required
 def beranda(request):
-    produk_tersedia = Produk.objects.filter(stok__gt=0)
+    rekomendasi_terakhir = (
+        rekomendasi_milik(request.user)
+        .select_related("preferensi", "preferensi__kategori")
+        .first()
+    )
+    produk_rekomendasi = (
+        rekomendasi_terakhir.detail.select_related("produk", "produk__kategori")[:4]
+        if rekomendasi_terakhir
+        else []
+    )
 
     context = {
-        "total_produk": produk_tersedia.count(),
-        "total_kategori": Kategori.objects.count(),
-        "total_riwayat": Rekomendasi.objects.filter(
-            preferensi__pengguna=request.user
-        ).count(),
-        "preferensi_terakhir": (
-            Preferensi.objects
-            .filter(pengguna=request.user)
-            .select_related("kategori")
-            .first()
+        "kategori_list": Kategori.objects.annotate(
+            jumlah_produk=Count("produk", filter=Q(produk__stok__gt=0))
         ),
-        "produk_terbaru": (
-            produk_tersedia
-            .select_related("kategori")
-            .order_by("-tanggal_dibuat")[:6]
-        ),
+        "rekomendasi_terakhir": rekomendasi_terakhir,
+        "produk_rekomendasi": produk_rekomendasi,
+        "total_produk": Produk.objects.filter(stok__gt=0).count(),
+        "total_riwayat": rekomendasi_milik(request.user).count(),
     }
     return render(request, "smartbako/panel_pengguna/dashboard.html", context)
 
 
 # ==================================================
-# KATALOG DAN DETAIL PRODUK
+# DAFTAR PRODUK (US-04, US-08 / FR-08–FR-10)
 # ==================================================
 
 @login_required
 def katalog(request):
     produk_list = Produk.objects.filter(stok__gt=0).select_related("kategori")
-    produk_list, kata_kunci, kategori_id = filter_katalog(request, produk_list)
+    form = FilterKatalogForm(request.GET or None)
+
+    urutan = "nama"
+    if form.is_valid():
+        data = form.cleaned_data
+
+        if data["q"]:
+            produk_list = produk_list.filter(
+                Q(nama__icontains=data["q"])
+                | Q(merek__icontains=data["q"])
+                | Q(deskripsi__icontains=data["q"])
+            )
+        if data["kategori"]:
+            produk_list = produk_list.filter(kategori=data["kategori"])
+        if data["merek"]:
+            produk_list = produk_list.filter(merek__icontains=data["merek"])
+        if data["harga_min"] is not None:
+            produk_list = produk_list.filter(harga__gte=data["harga_min"])
+        if data["harga_max"] is not None:
+            produk_list = produk_list.filter(harga__lte=data["harga_max"])
+        if data["ukuran"] is not None:
+            produk_list = produk_list.filter(ukuran=data["ukuran"])
+
+        urutan = data["urutkan"] or "nama"
+
+    produk_list = produk_list.order_by({
+        "termurah": "harga",
+        "termahal": "-harga",
+        "terbaru": "-tanggal_dibuat",
+    }.get(urutan, "nama"))
+
+    page_obj = Paginator(produk_list, PRODUK_PER_HALAMAN).get_page(
+        request.GET.get("page")
+    )
 
     context = {
-        "produk_list": produk_list,
-        "kategori_list": Kategori.objects.all(),
-        "kata_kunci": kata_kunci,
-        "kategori_terpilih": kategori_id,
+        "form": form,
+        "page_obj": page_obj,
+        "merek_list": daftar_merek(Produk.objects.filter(stok__gt=0)),
+        "ada_filter": bool(request.GET.dict().keys() - {"page", "urutkan"}),
     }
-    return render(request, "smartbako/panel_pengguna/katalog.html", context)
+    return render(request, "smartbako/panel_pengguna/produk/daftar.html", context)
 
+
+# ==================================================
+# DETAIL PRODUK (US-04 AC2–AC3 / FR-13)
+# ==================================================
 
 @login_required
 def detail_produk(request, pk):
-    produk = get_object_or_404(Produk.objects.select_related("kategori"), pk=pk)
+    produk = (
+        Produk.objects
+        .select_related("kategori")
+        .filter(pk=pk)
+        .first()
+    )
 
-    produk_terkait = (
+    # US-04 AC3: produk yang tidak ada menampilkan pesan khusus.
+    if produk is None:
+        return render(
+            request,
+            "smartbako/panel_pengguna/produk/tidak_ditemukan.html",
+            status=404,
+        )
+
+    produk_serupa = (
         Produk.objects
         .filter(kategori=produk.kategori, stok__gt=0)
-        .exclude(id=produk.id)
+        .exclude(pk=produk.pk)
         .select_related("kategori")[:4]
     )
 
     context = {
         "produk": produk,
-        "produk_terkait": produk_terkait,
+        "produk_serupa": produk_serupa,
     }
-    return render(request, "smartbako/panel_pengguna/detail_produk.html", context)
+    return render(request, "smartbako/panel_pengguna/produk/detail.html", context)
 
 
 # ==================================================
-# PREFERENSI DAN REKOMENDASI
+# PREFERENSI DAN REKOMENDASI (US-05, US-06 / FR-11, FR-12)
 # ==================================================
+
+def nilai_awal_preferensi(request):
+    """
+    Nilai awal form preferensi dari:
+    - ?ulangi=<id>  : menyalin preferensi lama milik pengguna (tombol "Ulangi");
+    - ?kategori=..&ukuran=..&satuan=..&merek=.. (tombol "Cari Rekomendasi Serupa").
+    """
+    id_ulangi = request.GET.get("ulangi", "")
+    if id_ulangi.isdigit():
+        lama = Preferensi.objects.filter(pk=int(id_ulangi), pengguna=request.user).first()
+        if lama:
+            return {
+                "kategori": lama.kategori_id,
+                "budget_min": lama.budget_min,
+                "budget_max": lama.budget_max,
+                "ukuran": lama.ukuran,
+                "satuan": lama.satuan,
+                "merek": lama.merek,
+                "kebutuhan_tambahan": lama.kebutuhan_tambahan,
+            }
+
+    kunci = ("kategori", "budget_max", "ukuran", "satuan", "merek")
+    return {k: request.GET[k] for k in kunci if request.GET.get(k)}
+
 
 @login_required
 def atur_preferensi(request):
@@ -97,17 +210,26 @@ def atur_preferensi(request):
             preferensi.pengguna = request.user
             preferensi.save()
 
-            simpan_rekomendasi(preferensi)
-
-            messages.success(request, "Preferensi berhasil disimpan.")
+            simpan_rekomendasi(
+                preferensi,
+                batas=form.cleaned_data["jumlah_rekomendasi"],
+            )
             return redirect("smartbako:rekomendasi", pk=preferensi.pk)
-    else:
-        form = PreferensiForm()
 
+        # Pesan sesuai wireframe bila kategori/budget belum diisi.
+        if "kategori" in form.errors or "budget_max" in form.errors:
+            messages.error(request, "Lengkapi data preferensi terlebih dahulu.")
+    else:
+        form = PreferensiForm(initial=nilai_awal_preferensi(request))
+
+    context = {
+        "form": form,
+        "merek_list": daftar_merek(Produk.objects.filter(stok__gt=0)),
+    }
     return render(
         request,
-        "smartbako/panel_pengguna/preferensi/atur_preferensi.html",
-        {"form": form},
+        "smartbako/panel_pengguna/rekomendasi/atur_preferensi.html",
+        context,
     )
 
 
@@ -115,10 +237,7 @@ def atur_preferensi(request):
 def rekomendasi(request, pk):
     """
     Menampilkan hasil rekomendasi terakhir milik sebuah preferensi.
-
-    Sebelumnya setiap kali halaman dibuka (termasuk dari menu Riwayat)
-    data rekomendasi baru dibuat sehingga riwayat terus bertambah.
-    Sekarang hasil yang sudah ada cukup ditampilkan ulang.
+    Membuka halaman ini (misalnya dari Riwayat) tidak membuat data baru.
     """
     preferensi = get_object_or_404(
         Preferensi.objects.select_related("kategori"),
@@ -131,36 +250,48 @@ def rekomendasi(request, pk):
         # Untuk data lama yang belum pernah dihitung.
         rekomendasi_obj = simpan_rekomendasi(preferensi)
 
-    hasil_rekomendasi = rekomendasi_obj.detail.select_related(
-        "produk",
-        "produk__kategori",
+    hasil_rekomendasi = list(
+        rekomendasi_obj.detail.select_related("produk", "produk__kategori")
     )
 
     context = {
         "preferensi": preferensi,
         "rekomendasi": rekomendasi_obj,
         "hasil_rekomendasi": hasil_rekomendasi,
+        "hasil_perbandingan": hasil_rekomendasi[:JUMLAH_PERBANDINGAN_HASIL],
     }
-    return render(request, "smartbako/panel_pengguna/rekomendasi.html", context)
+    return render(request, "smartbako/panel_pengguna/rekomendasi/hasil.html", context)
 
+
+# ==================================================
+# RIWAYAT REKOMENDASI (US-10 / FR-14)
+# ==================================================
 
 @login_required
 def riwayat_rekomendasi(request):
     riwayat = (
-        Rekomendasi.objects
-        .filter(preferensi__pengguna=request.user)
+        rekomendasi_milik(request.user)
         .select_related("preferensi", "preferensi__kategori")
+        .prefetch_related(
+            Prefetch(
+                "detail",
+                queryset=DetailRekomendasi.objects.filter(peringkat=1).select_related("produk"),
+                to_attr="produk_teratas",
+            )
+        )
         .order_by("-tanggal_rekomendasi")
     )
+
+    page_obj = Paginator(riwayat, RIWAYAT_PER_HALAMAN).get_page(request.GET.get("page"))
     return render(
         request,
-        "smartbako/panel_pengguna/riwayat.html",
-        {"riwayat": riwayat},
+        "smartbako/panel_pengguna/riwayat/daftar.html",
+        {"page_obj": page_obj},
     )
 
 
 # ==================================================
-# PERBANDINGAN PRODUK
+# PERBANDINGAN PRODUK (US-07)
 # ==================================================
 
 @login_required
@@ -173,18 +304,30 @@ def bandingkan_produk(request):
     ]
     daftar_id = list(dict.fromkeys(daftar_id))[:BATAS_BANDINGKAN]
 
-    produk_dipilih = Produk.objects.filter(id__in=daftar_id).select_related(
-        "kategori"
-    )
-    return render(
-        request,
-        "smartbako/panel_pengguna/bandingkan.html",
-        {"produk_dipilih": produk_dipilih},
-    )
+    produk_map = Produk.objects.select_related("kategori").in_bulk(daftar_id)
+    produk_dipilih = [produk_map[i] for i in daftar_id if i in produk_map]
+
+    # Tingkat kecocokan diambil dari rekomendasi terakhir pengguna (bila ada).
+    skor_map = {}
+    rekomendasi_terakhir = rekomendasi_milik(request.user).first()
+    if rekomendasi_terakhir:
+        skor_map = dict(
+            rekomendasi_terakhir.detail
+            .filter(produk_id__in=daftar_id)
+            .values_list("produk_id", "skor_kecocokan")
+        )
+    for produk in produk_dipilih:
+        produk.skor_kecocokan = skor_map.get(produk.pk)
+
+    context = {
+        "produk_dipilih": produk_dipilih,
+        "batas_bandingkan": BATAS_BANDINGKAN,
+    }
+    return render(request, "smartbako/panel_pengguna/produk/bandingkan.html", context)
 
 
 # ==================================================
-# PROFIL DAN KATA SANDI
+# PROFIL DAN KATA SANDI (US-12 / FR-15)
 # ==================================================
 
 @login_required
@@ -195,14 +338,16 @@ def profil_pengguna(request):
             form.save()
             messages.success(request, "Profil berhasil diperbarui.")
             return redirect("smartbako:profil")
+        # Kembalikan nama asli agar header tidak menampilkan data yang ditolak.
+        request.user.refresh_from_db()
     else:
         form = ProfilForm(instance=request.user)
 
-    return render(
-        request,
-        "smartbako/panel_pengguna/profil/profil.html",
-        {"form": form},
-    )
+    context = {
+        "form": form,
+        "total_riwayat": rekomendasi_milik(request.user).count(),
+    }
+    return render(request, "smartbako/panel_pengguna/profil/profil.html", context)
 
 
 @login_required

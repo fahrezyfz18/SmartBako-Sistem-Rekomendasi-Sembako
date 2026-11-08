@@ -1,0 +1,13 @@
+{% comment %}
+    Label status stok produk.
+    Parameter: stok (angka), batas (batas stok menipis),
+               gaya: 'lengkap' (default, mis. "8 · Terbatas") | 'label' (mis. "Stok terbatas") | 'angka' (mis. "8").
+    Pakai: {% include 'smartbako/components/badge_stok.html' with stok=produk.stok batas=batas_stok_menipis %}
+{% endcomment %}
+{% if stok == 0 %}
+    <span class="badge rounded-pill text-bg-danger">{% if gaya == 'label' %}Stok habis{% else %}Habis{% endif %}</span>
+{% elif stok <= batas %}
+    <span class="badge rounded-pill text-bg-warning">{% if gaya == 'label' %}Stok terbatas{% elif gaya == 'angka' %}{{ stok }}{% else %}{{ stok }} · Terbatas{% endif %}</span>
+{% else %}
+    <span class="badge rounded-pill text-bg-success">{% if gaya == 'label' %}Tersedia{% elif gaya == 'angka' %}{{ stok }}{% else %}{{ stok }} · Tersedia{% endif %}</span>
+{% endif %}

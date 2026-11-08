@@ -1,0 +1,5 @@
+{% comment %}
+    Label peran akun: Admin Utama, Admin, atau Pengguna.
+    Pakai: {% include 'smartbako/components/badge_peran.html' with akun=akun %}
+{% endcomment %}
+{% if akun.is_superuser %}<span class="badge rounded-pill text-bg-accent">Admin Utama</span>{% elif akun.is_staff %}<span class="badge rounded-pill text-bg-accent">Admin</span>{% else %}<span class="badge rounded-pill text-bg-light border">Pengguna</span>{% endif %}

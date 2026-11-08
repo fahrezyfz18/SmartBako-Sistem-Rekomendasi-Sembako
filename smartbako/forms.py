@@ -16,6 +16,7 @@ BATAS_UKURAN_GAMBAR = 2 * 1024 * 1024
 
 # Kelas CSS input form.
 KELAS_INPUT_PENGGUNA = "form-control"
+KELAS_SELECT_PENGGUNA = "form-select"
 KELAS_INPUT_ADMIN = "form-control"      # Bootstrap 5
 KELAS_SELECT_ADMIN = "form-select"      # Bootstrap 5
 
@@ -120,7 +121,22 @@ class CustomUserCreationForm(UserCreationForm):
 # ==========================================================
 
 class PreferensiForm(forms.ModelForm):
-    """Form isian kebutuhan pengguna untuk proses rekomendasi."""
+    """
+    Form isian kebutuhan pengguna untuk proses rekomendasi.
+    Sesuai wireframe "Cari Rekomendasi Produk" dan US-05/US-06:
+    kategori dan budget wajib; ukuran, satuan, merek, kebutuhan opsional.
+    """
+
+    PILIHAN_JUMLAH = [(5, "5 produk"), (10, "10 produk")]
+
+    # Bukan kolom tabel; hanya mengatur banyaknya hasil (US-05 AC3: 5–10).
+    jumlah_rekomendasi = forms.TypedChoiceField(
+        label="Jumlah rekomendasi",
+        choices=PILIHAN_JUMLAH,
+        coerce=int,
+        initial=5,
+        widget=forms.Select(attrs={"class": KELAS_SELECT_PENGGUNA}),
+    )
 
     class Meta:
         model = Preferensi
@@ -133,17 +149,28 @@ class PreferensiForm(forms.ModelForm):
             "merek",
             "kebutuhan_tambahan",
         ]
+        labels = {
+            "kategori": "Kategori produk",
+            "budget_min": "Budget minimum (Rp)",
+            "budget_max": "Budget maksimum (Rp)",
+            "ukuran": "Ukuran atau jumlah",
+            "satuan": "Satuan",
+            "merek": "Merek yang disukai",
+            "kebutuhan_tambahan": "Kebutuhan tambahan",
+        }
         widgets = {
-            "kategori": forms.Select(attrs={"class": KELAS_INPUT_PENGGUNA}),
+            "kategori": forms.Select(attrs={"class": KELAS_SELECT_PENGGUNA}),
             "budget_min": forms.NumberInput(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
-                "placeholder": "Anggaran minimum",
+                "placeholder": "0",
                 "min": "0",
+                "step": "500",
             }),
             "budget_max": forms.NumberInput(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
-                "placeholder": "Anggaran maksimum",
+                "placeholder": "Contoh: 100000",
                 "min": "0",
+                "step": "500",
             }),
             "ukuran": forms.NumberInput(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
@@ -153,22 +180,27 @@ class PreferensiForm(forms.ModelForm):
             }),
             "satuan": forms.TextInput(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
-                "placeholder": "Contoh: kg, liter, pcs",
+                "placeholder": "kg, liter, pcs",
+                "list": "daftar-satuan",
             }),
             "merek": forms.TextInput(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
-                "placeholder": "Merek yang diinginkan",
+                "placeholder": "Opsional",
+                "list": "daftar-merek",
             }),
             "kebutuhan_tambahan": forms.Textarea(attrs={
                 "class": KELAS_INPUT_PENGGUNA,
                 "rows": 3,
-                "placeholder": "Tuliskan kebutuhan tambahan",
+                "placeholder": "Contoh: beras pulen untuk nasi uduk",
             }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["kategori"].empty_label = "Semua kategori"
+        # Wireframe: kategori dan budget wajib diisi.
+        self.fields["kategori"].required = True
+        self.fields["kategori"].empty_label = "Pilih kategori"
+        self.fields["budget_max"].required = True
 
     def clean_satuan(self):
         return self.cleaned_data["satuan"].strip().lower()
@@ -188,9 +220,75 @@ class PreferensiForm(forms.ModelForm):
         ):
             self.add_error(
                 "budget_min",
-                "Anggaran minimum tidak boleh melebihi anggaran maksimum.",
+                "Budget minimum tidak boleh melebihi budget maksimum.",
             )
         return cleaned_data
+
+
+class FilterKatalogForm(forms.Form):
+    """Pencarian, filter, dan urutan halaman Daftar Produk (FR-08–FR-10)."""
+
+    URUTAN = [
+        ("nama", "Nama A–Z"),
+        ("termurah", "Harga termurah"),
+        ("termahal", "Harga termahal"),
+        ("terbaru", "Terbaru"),
+    ]
+
+    q = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": KELAS_INPUT_PENGGUNA,
+            "placeholder": "Cari nama, merek, atau deskripsi produk",
+            "type": "search",
+        }),
+    )
+    kategori = forms.ModelChoiceField(
+        queryset=Kategori.objects.all(),
+        required=False,
+        empty_label="Semua kategori",
+        widget=forms.Select(attrs={"class": KELAS_SELECT_PENGGUNA}),
+    )
+    merek = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": KELAS_INPUT_PENGGUNA,
+            "placeholder": "Semua merek",
+            "list": "daftar-merek",
+        }),
+    )
+    harga_min = forms.DecimalField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            "class": KELAS_INPUT_PENGGUNA,
+            "placeholder": "Min",
+            "step": "500",
+        }),
+    )
+    harga_max = forms.DecimalField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            "class": KELAS_INPUT_PENGGUNA,
+            "placeholder": "Maks",
+            "step": "500",
+        }),
+    )
+    ukuran = forms.DecimalField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            "class": KELAS_INPUT_PENGGUNA,
+            "placeholder": "Contoh: 5",
+            "step": "0.01",
+        }),
+    )
+    urutkan = forms.ChoiceField(
+        required=False,
+        choices=URUTAN,
+        widget=forms.Select(attrs={"class": KELAS_SELECT_PENGGUNA}),
+    )
 
 
 # ==========================================================

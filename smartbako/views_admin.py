@@ -38,7 +38,7 @@ def admin_required(view_func):
     """
     Membatasi view hanya untuk akun staff yang aktif.
     - Belum login -> diarahkan ke halaman login (dengan ?next=).
-    - Bukan staff -> diarahkan ke dashboard pengguna.
+    - Bukan staff -> diarahkan ke halaman utama (landing page).
     """
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
@@ -167,6 +167,16 @@ def dashboard_admin(request):
         "total_pengguna": User.objects.filter(is_staff=False).count(),
         "total_rekomendasi": Rekomendasi.objects.count(),
         "total_stok_habis": Produk.objects.filter(stok=0).count(),
+        "total_stok_menipis": Produk.objects.filter(
+            stok__gt=0, stok__lte=BATAS_STOK_MENIPIS
+        ).count(),
+        "stok_menipis": (
+            Produk.objects
+            .select_related("kategori")
+            .filter(stok__lte=BATAS_STOK_MENIPIS)
+            .order_by("stok", "nama")[:5]
+        ),
+        "batas_stok_menipis": BATAS_STOK_MENIPIS,
         "grafik_rekomendasi": data_grafik_rekomendasi(),
         "kategori_populer": data_kategori_populer(),
         "produk_populer": (
@@ -191,7 +201,11 @@ def dashboard_admin(request):
 
 @admin_required
 def daftar_kategori(request):
-    kategori_list = Kategori.objects.annotate(jumlah_produk=Count("produk"))
+    kategori_list = (
+        Kategori.objects
+        .annotate(jumlah_produk=Count("produk"))
+        .order_by("nama")
+    )
 
     kata_kunci = request.GET.get("q", "").strip()
     if kata_kunci:

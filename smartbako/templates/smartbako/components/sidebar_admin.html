@@ -1,0 +1,70 @@
+{% load static %}
+{% comment %}
+    Sidebar panel admin (navigasi utama). Dipanggil oleh panel_admin/base_admin.html.
+    Menu aktif ditentukan dari nama URL yang sedang dibuka.
+{% endcomment %}
+{% with nama_url=request.resolver_match.url_name %}
+<aside class="sb-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebarAdmin" aria-labelledby="judulSidebar">
+    <div class="offcanvas-header border-bottom px-4 py-3">
+        <a href="{% url 'smartbako:dashboard_admin' %}" class="sb-brand" id="judulSidebar">
+            <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako">
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarAdmin" aria-label="Tutup menu"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column px-3 py-4">
+        {# Logo untuk layar lebar (header offcanvas disembunyikan Bootstrap di lg+). #}
+        <div class="d-none d-lg-block px-2 mb-2">
+            <a href="{% url 'smartbako:dashboard_admin' %}" class="sb-brand d-block">
+                <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako">
+            </a>
+            <span class="sb-brand-tag">PANEL ADMIN</span>
+        </div>
+
+        <nav class="sb-nav nav flex-column gap-1" aria-label="Navigasi admin">
+            <p class="sb-menu-label">Utama</p>
+            <a class="nav-link {% if nama_url == 'dashboard_admin' %}active{% endif %}"
+               href="{% url 'smartbako:dashboard_admin' %}"
+               {% if nama_url == 'dashboard_admin' %}aria-current="page"{% endif %}>
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+
+            <p class="sb-menu-label">Data Master</p>
+            <a class="nav-link {% if nama_url in 'daftar_produk tambah_produk edit_produk detail_produk_admin' %}active{% endif %}"
+               href="{% url 'smartbako:daftar_produk' %}">
+                <i class="bi bi-box-seam"></i> Kelola Produk
+            </a>
+            <a class="nav-link {% if nama_url in 'daftar_kategori tambah_kategori edit_kategori' %}active{% endif %}"
+               href="{% url 'smartbako:daftar_kategori' %}">
+                <i class="bi bi-tags"></i> Kelola Kategori
+            </a>
+
+            <p class="sb-menu-label">Pengguna</p>
+            <a class="nav-link {% if nama_url in 'daftar_pengguna detail_pengguna' %}active{% endif %}"
+               href="{% url 'smartbako:daftar_pengguna' %}">
+                <i class="bi bi-people"></i> Kelola Pengguna
+            </a>
+            <a class="nav-link {% if nama_url in 'riwayat_preferensi detail_preferensi' %}active{% endif %}"
+               href="{% url 'smartbako:riwayat_preferensi' %}">
+                <i class="bi bi-clock-history"></i> Riwayat Preferensi
+            </a>
+        </nav>
+
+        <div class="sb-sidebar-footer">
+            <div class="sb-sidebar-user mb-2">
+                <span class="sb-avatar sb-avatar-sm">{{ request.user.first_name|default:request.user.email|first|upper }}</span>
+                <div class="min-w-0 lh-sm">
+                    <div class="fw-semibold text-truncate">{{ request.user.first_name|default:"Admin" }}</div>
+                    <small class="text-secondary text-truncate d-block">{{ request.user.email }}</small>
+                </div>
+            </div>
+            <form action="{% url 'smartbako:logout_admin' %}" method="post" class="sb-nav">
+                {% csrf_token %}
+                <button type="submit" class="nav-link sb-logout w-100 border-0 bg-transparent">
+                    <i class="bi bi-box-arrow-left"></i> Keluar
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>
+{% endwith %}

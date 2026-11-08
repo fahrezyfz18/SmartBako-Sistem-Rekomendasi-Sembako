@@ -1,0 +1,105 @@
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Cari Rekomendasi{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Cari Rekomendasi Produk</h1>
+    <p class="text-secondary mb-0">Isi kebutuhan dan budget Anda. Sistem akan memberi beberapa pilihan produk yang paling sesuai.</p>
+</div>
+
+<div class="row g-4">
+    {# ---------- Form preferensi (FR-11) ---------- #}
+    <div class="col-lg-8">
+        <form method="post" class="sb-card p-4" novalidate>
+            {% csrf_token %}
+
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+
+            <div class="row g-3">
+                {% include 'smartbako/components/field.html' with field=form.kategori kolom='col-md-6' %}
+
+                <div class="col-md-6">
+                    <label class="form-label fw-medium" for="{{ form.ukuran.id_for_label }}">{{ form.ukuran.label }}</label>
+                    <div class="input-group {% if form.ukuran.errors or form.satuan.errors %}sb-invalid{% endif %}">
+                        {{ form.ukuran }}
+                        {{ form.satuan }}
+                    </div>
+                    <datalist id="daftar-satuan">
+                        <option value="kg"><option value="gram"><option value="liter"><option value="ml">
+                        <option value="pcs"><option value="butir"><option value="sachet">
+                    </datalist>
+                    {% for error in form.ukuran.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    {% for error in form.satuan.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text">Opsional, misalnya 5 kg atau 2 liter.</div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-medium" for="{{ form.budget_max.id_for_label }}">Budget (Rp) <span class="text-danger">*</span></label>
+                    <div class="d-flex align-items-center gap-2 {% if form.budget_min.errors or form.budget_max.errors %}sb-invalid{% endif %}">
+                        {{ form.budget_min }}
+                        <span class="text-secondary">sampai</span>
+                        {{ form.budget_max }}
+                    </div>
+                    {% for error in form.budget_min.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    {% for error in form.budget_max.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text">Isi budget maksimum agar rekomendasi sesuai kemampuan belanja.</div>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-soft" data-set-budget="25000">Rp 25.000</button>
+                        <button type="button" class="btn btn-sm btn-soft" data-set-budget="50000">Rp 50.000</button>
+                        <button type="button" class="btn btn-sm btn-soft" data-set-budget="100000">Rp 100.000</button>
+                        <button type="button" class="btn btn-sm btn-soft" data-set-budget="200000">Rp 200.000</button>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-medium" for="{{ form.merek.id_for_label }}">{{ form.merek.label }} <span class="text-secondary fw-normal">(opsional)</span></label>
+                    {{ form.merek }}
+                    <datalist id="daftar-merek">
+                        {% for merek in merek_list %}<option value="{{ merek }}">{% endfor %}
+                    </datalist>
+                    {% for error in form.merek.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+
+                {% include 'smartbako/components/field.html' with field=form.jumlah_rekomendasi kolom='col-md-6' %}
+
+                <div class="col-12">
+                    <label class="form-label fw-medium" for="{{ form.kebutuhan_tambahan.id_for_label }}">{{ form.kebutuhan_tambahan.label }} <span class="text-secondary fw-normal">(opsional)</span></label>
+                    {{ form.kebutuhan_tambahan }}
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-4"><i class="bi bi-stars me-1"></i> Cari Rekomendasi</button>
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-soft btn-lg">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    {# ---------- Cara kerja singkat ---------- #}
+    <aside class="col-lg-4">
+        <div class="sb-card p-4">
+            <h2 class="h6 mb-3">Cara kerja singkat</h2>
+            <ol class="list-unstyled mb-4">
+                <li class="d-flex gap-3 mb-3">
+                    <span class="sb-langkah">1</span>
+                    <span>Anda mengisi kebutuhan dan budget.</span>
+                </li>
+                <li class="d-flex gap-3 mb-3">
+                    <span class="sb-langkah">2</span>
+                    <span>Sistem membandingkan preferensi dengan data produk menggunakan <strong>TF-IDF</strong> dan <strong>Cosine Similarity</strong>.</span>
+                </li>
+                <li class="d-flex gap-3">
+                    <span class="sb-langkah">3</span>
+                    <span>Anda menerima daftar produk dengan tingkat kecocokan, lalu memilih sendiri.</span>
+                </li>
+            </ol>
+            <div class="alert alert-light border small mb-0">
+                <i class="bi bi-info-circle me-1"></i> Hasil bersifat saran. Keputusan akhir tetap di tangan pengguna.
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}
