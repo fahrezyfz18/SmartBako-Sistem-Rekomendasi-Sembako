@@ -1,35 +1,29 @@
+
 """
-Pengaturan Django untuk proyek SmartBako.
-
-Nilai rahasia dan nilai yang berbeda antar lingkungan (SECRET_KEY, DEBUG,
-ALLOWED_HOSTS) dibaca dari file .env melalui python-decouple.
-
-Dokumentasi:
-https://docs.djangoproject.com/en/5.2/topics/settings/
-https://docs.djangoproject.com/en/5.2/ref/settings/
+Pengaturan utama proyek SmartBako.
 """
 
 from pathlib import Path
-
 from decouple import Csv, config
 
-# Folder utama proyek (folder yang berisi manage.py).
+# Menentukan lokasi folder utama proyek.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# ==========================================================
+# ==================================================
 # KEAMANAN
-# ==========================================================
+# ==================================================
 
-# SECURITY WARNING: jangan gunakan key default ini di produksi.
+# SECRET_KEY digunakan Django untuk kebutuhan keamanan.
 SECRET_KEY = config(
     "SECRET_KEY",
     default="django-insecure-smartbako-development-key-2026",
 )
 
-# SECURITY WARNING: matikan DEBUG di produksi (DEBUG=False di .env).
+# DEBUG digunakan saat proses pengembangan.
 DEBUG = config("DEBUG", default=True, cast=bool)
 
+# Daftar alamat yang boleh mengakses aplikasi.
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="127.0.0.1,localhost",
@@ -37,10 +31,11 @@ ALLOWED_HOSTS = config(
 )
 
 
-# ==========================================================
+# ==================================================
 # APLIKASI
-# ==========================================================
+# ==================================================
 
+# Daftar aplikasi yang digunakan dalam proyek.
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -52,6 +47,7 @@ INSTALLED_APPS = [
     "smartbako",
 ]
 
+# Middleware digunakan untuk memproses setiap permintaan pengguna.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -62,8 +58,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Menentukan file URL utama.
 ROOT_URLCONF = "config.urls"
 
+# Mengatur lokasi dan proses pemanggilan template HTML.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -79,14 +77,16 @@ TEMPLATES = [
     },
 ]
 
+# Pengaturan server WSGI dan ASGI.
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 
-# ==========================================================
+# ==================================================
 # DATABASE
-# ==========================================================
+# ==================================================
 
+# SmartBako menggunakan SQLite sebagai database.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -95,10 +95,11 @@ DATABASES = {
 }
 
 
-# ==========================================================
+# ==================================================
 # VALIDASI KATA SANDI
-# ==========================================================
+# ==================================================
 
+# Mengatur aturan kata sandi ketika pengguna membuat akun.
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
@@ -119,65 +120,68 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# ==========================================================
-# BAHASA DAN ZONA WAKTU
-# ==========================================================
+# ==================================================
+# BAHASA DAN WAKTU
+# ==================================================
 
+# Mengatur bahasa dan zona waktu aplikasi.
 LANGUAGE_CODE = "id"
 TIME_ZONE = "Asia/Jakarta"
 USE_I18N = True
 USE_TZ = True
 
 
-# ==========================================================
+# ==================================================
 # FILE STATIS DAN MEDIA
-# ==========================================================
+# ==================================================
 
+# Lokasi file CSS, JavaScript, dan gambar tampilan.
 STATIC_URL = "/static/"
-# Tujuan perintah `collectstatic` saat deploy.
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Gambar produk yang diunggah admin disimpan di <BASE_DIR>/media/produk/.
+# Lokasi penyimpanan gambar produk yang diunggah admin.
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Batas ukuran unggahan (2 MB) agar server tidak terbebani.
+# Membatasi ukuran file yang diunggah menjadi 2 MB.
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 
+# Mengatur tipe ID utama pada model database.
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# ==========================================================
+# ==================================================
 # AUTENTIKASI SMARTBAKO
-# ==========================================================
+# ==================================================
 
-# Memakai nama URL agar tidak perlu diubah bila path berubah.
+# Mengatur halaman tujuan untuk proses login dan logout.
 LOGIN_URL = "smartbako:login"
 LOGIN_REDIRECT_URL = "smartbako:beranda"
 LOGOUT_REDIRECT_URL = "smartbako:landing_page"
 
-# Sesi berakhir setelah 1 hari tanpa aktivitas.
+# Sesi pengguna berakhir setelah satu hari.
 SESSION_COOKIE_AGE = 60 * 60 * 24
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-# ==========================================================
+# ==================================================
 # EMAIL
-# ==========================================================
+# ==================================================
 
-# Saat pengembangan, email (misalnya reset kata sandi) ditampilkan di
-# terminal. Ganti ke SMTP lewat .env ketika sudah siap.
+# Email ditampilkan di terminal saat pengembangan.
+# Pengaturan SMTP dapat digunakan melalui file .env.
 EMAIL_BACKEND = config(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
 )
 
 
-# ==========================================================
+# ==================================================
 # PENGATURAN PRODUKSI
-# ==========================================================
+# ==================================================
 
+# Pengaturan keamanan tambahan ketika DEBUG dimatikan.
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

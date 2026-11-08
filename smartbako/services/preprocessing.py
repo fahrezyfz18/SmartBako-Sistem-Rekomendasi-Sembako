@@ -1,8 +1,12 @@
+
 """Preprocessing teks untuk sistem rekomendasi SmartBako."""
 
 import re
 import unicodedata
 
+
+# Kata-kata yang tidak terlalu berpengaruh dalam pencarian produk.
+# Kata ini akan dihapus agar sistem lebih fokus pada informasi penting.
 STOPWORDS = {
     "dan", "atau", "yang", "di", "ke",
     "dari", "untuk", "dengan", "pada",
@@ -15,24 +19,40 @@ STOPWORDS = {
 
 def preprocessing_teks(teks):
     """
-    Membersihkan teks produk/preferensi tanpa menghilangkan angka ukuran.
+    Membersihkan teks produk dan preferensi pengguna.
 
-    Tahapan: normalisasi unicode, case folding, pembersihan karakter,
-    tokenisasi, dan penghapusan stopword.
+    Tahapannya:
+    1. Menyamakan bentuk teks.
+    2. Mengubah huruf menjadi huruf kecil.
+    3. Menghapus karakter yang tidak diperlukan.
+    4. Memisahkan kata.
+    5. Menghapus kata yang tidak penting.
     """
+
+    # Jika teks kosong, langsung mengembalikan string kosong.
     if not teks:
         return ""
 
+    # Menyamakan bentuk karakter dan mengubah huruf menjadi kecil.
     teks = unicodedata.normalize("NFKC", str(teks)).lower()
 
-    # Koma desimal (2,5) diseragamkan menjadi titik (2.5).
+    # Mengubah koma desimal menjadi titik.
+    # Contoh: 2,5 menjadi 2.5.
     teks = re.sub(r"(?<=\d),(?=\d)", ".", teks)
 
-    # Hanya huruf, angka, dan titik desimal yang dipertahankan.
+    # Mempertahankan huruf, angka, dan titik desimal.
     teks = re.sub(r"[^a-z0-9.]+", " ", teks)
 
-    # Titik yang bukan bagian dari angka dibuang.
+    # Menghapus titik yang bukan bagian dari angka.
     teks = re.sub(r"(?<!\d)\.|\.(?!\d)", " ", teks)
 
-    token = [kata for kata in teks.split() if kata not in STOPWORDS]
+    # Memisahkan teks menjadi beberapa kata.
+    # Kata yang termasuk stopwords tidak dimasukkan.
+    token = [
+        kata
+        for kata in teks.split()
+        if kata not in STOPWORDS
+    ]
+
+    # Menggabungkan kembali kata-kata yang sudah dibersihkan.
     return " ".join(token)

@@ -1,54 +1,126 @@
+
 {% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
 
 {% block title %}Riwayat Rekomendasi{% endblock %}
 
 {% block content %}
+
+{# Judul halaman dan tombol membuat rekomendasi baru #}
 <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+
     {% include 'smartbako/components/judul_halaman.html' with label='Riwayat' ikon='bi-clock-history' judul='Riwayat Rekomendasi' deskripsi='Daftar rekomendasi produk yang pernah diberikan sistem untuk Anda.' %}
-    <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Rekomendasi Baru</a>
+
+    <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Rekomendasi Baru
+    </a>
 </div>
 
+{# Memeriksa apakah pengguna sudah memiliki riwayat #}
 {% if page_obj.object_list %}
-<div class="d-flex flex-column gap-3">
-    {% for item in page_obj %}
-        <article class="sb-card sb-riwayat">
-            <div class="sb-tanggal" title="{{ item.tanggal_rekomendasi|date:'d F Y, H:i' }}">
-                <strong>{{ item.tanggal_rekomendasi|date:"d" }}</strong>
-                <small>{{ item.tanggal_rekomendasi|date:"M Y" }}</small>
-            </div>
 
-            <div class="min-w-0">
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                    <h2 class="h6 mb-0">{{ item.preferensi.kategori.nama|default:"Semua kategori" }}</h2>
-                    <span class="sb-badge text-bg-accent">{{ item.jumlah_hasil }} hasil</span>
-                    <small class="text-secondary">{{ item.tanggal_rekomendasi|date:"H:i" }}</small>
+    <div class="d-flex flex-column gap-3">
+
+        {# Mengulang setiap data riwayat rekomendasi #}
+        {% for item in page_obj %}
+
+            <article class="sb-card sb-riwayat">
+
+                {# Menampilkan tanggal rekomendasi #}
+                <div class="sb-tanggal" title="{{ item.tanggal_rekomendasi|date:'d F Y, H:i' }}">
+                    <strong>{{ item.tanggal_rekomendasi|date:"d" }}</strong>
+                    <small>{{ item.tanggal_rekomendasi|date:"M Y" }}</small>
                 </div>
-                <p class="small text-secondary mb-2">
-                    Budget maks Rp {{ item.preferensi.budget_max|floatformat:"0g" }}{% if item.preferensi.ukuran %} · {{ item.preferensi.ukuran|floatformat:"-2" }} {{ item.preferensi.satuan }}{% endif %}{% if item.preferensi.merek %} · {{ item.preferensi.merek }}{% endif %}
-                </p>
-                {% with teratas=item.produk_teratas.0 %}
-                    {% if teratas %}
-                        <span class="sb-riwayat-teratas">
-                            <i class="bi bi-trophy-fill text-warning"></i>
-                            <span class="text-truncate"><span class="text-secondary">Teratas:</span> <strong>{{ teratas.produk.nama }}</strong></span>
-                            <span class="sb-badge sb-badge-tersedia flex-shrink-0">{% widthratio teratas.skor_kecocokan 1 100 %}% cocok</span>
-                        </span>
-                    {% else %}
-                        <span class="small text-secondary"><i class="bi bi-inbox me-1"></i>Tidak ada produk yang cocok</span>
-                    {% endif %}
-                {% endwith %}
-            </div>
 
-            <div class="sb-riwayat-aksi d-flex gap-2 justify-content-md-end">
-                <a href="{% url 'smartbako:rekomendasi' item.preferensi.id %}" class="btn btn-sm btn-primary">Lihat Hasil</a>
-                <a href="{% url 'smartbako:atur_preferensi' %}?ulangi={{ item.preferensi.id }}" class="btn btn-sm btn-soft" title="Isi ulang form dengan preferensi ini"><i class="bi bi-arrow-repeat me-1"></i>Ulangi</a>
-            </div>
-        </article>
-    {% endfor %}
-</div>
-{% include 'smartbako/components/pagination.html' with label='riwayat' %}
+                <div class="min-w-0">
+
+                    {# Menampilkan kategori, jumlah hasil, dan waktu rekomendasi #}
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                        <h2 class="h6 mb-0">
+                            {{ item.preferensi.kategori.nama|default:"Semua kategori" }}
+                        </h2>
+
+                        <span class="sb-badge text-bg-accent">
+                            {{ item.jumlah_hasil }} hasil
+                        </span>
+
+                        <small class="text-secondary">
+                            {{ item.tanggal_rekomendasi|date:"H:i" }}
+                        </small>
+                    </div>
+
+                    {# Menampilkan informasi preferensi pengguna #}
+                    <p class="small text-secondary mb-2">
+                        Budget maks Rp {{ item.preferensi.budget_max|floatformat:"0g" }}
+
+                        {% if item.preferensi.ukuran %}
+                            · {{ item.preferensi.ukuran|floatformat:"-2" }} {{ item.preferensi.satuan }}
+                        {% endif %}
+
+                        {% if item.preferensi.merek %}
+                            · {{ item.preferensi.merek }}
+                        {% endif %}
+                    </p>
+
+                    {# Mengambil produk dengan peringkat pertama #}
+                    {% with teratas=item.produk_teratas.0 %}
+
+                        {% if teratas %}
+
+                            {# Menampilkan produk dengan skor kecocokan tertinggi #}
+                            <span class="sb-riwayat-teratas">
+                                <i class="bi bi-trophy-fill text-warning"></i>
+
+                                <span class="text-truncate">
+                                    <span class="text-secondary">Teratas:</span>
+                                    <strong>{{ teratas.produk.nama }}</strong>
+                                </span>
+
+                                <span class="sb-badge sb-badge-tersedia flex-shrink-0">
+                                    {% widthratio teratas.skor_kecocokan 1 100 %}% cocok
+                                </span>
+                            </span>
+
+                        {% else %}
+
+                            {# Ditampilkan jika tidak ada produk yang cocok #}
+                            <span class="small text-secondary">
+                                <i class="bi bi-inbox me-1"></i>
+                                Tidak ada produk yang cocok
+                            </span>
+
+                        {% endif %}
+
+                    {% endwith %}
+                </div>
+
+                {# Tombol untuk melihat hasil atau mengulangi pencarian #}
+                <div class="sb-riwayat-aksi d-flex gap-2 justify-content-md-end">
+
+                    <a href="{% url 'smartbako:rekomendasi' item.preferensi.id %}" class="btn btn-sm btn-primary">
+                        Lihat Hasil
+                    </a>
+
+                    <a href="{% url 'smartbako:atur_preferensi' %}?ulangi={{ item.preferensi.id }}" class="btn btn-sm btn-soft" title="Isi ulang form dengan preferensi ini">
+                        <i class="bi bi-arrow-repeat me-1"></i>Ulangi
+                    </a>
+
+                </div>
+            </article>
+
+        {% endfor %}
+
+    </div>
+
+    {# Membagi riwayat menjadi beberapa halaman #}
+    {% include 'smartbako/components/pagination.html' with label='riwayat' %}
+
 {% else %}
+
+    {# Jika belum ada riwayat, arahkan pengguna ke form rekomendasi #}
     {% url 'smartbako:atur_preferensi' as url_preferensi %}
+
     {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-clock-history' judul='Belum ada riwayat rekomendasi' pesan='Riwayat akan tersimpan otomatis setiap kali Anda mencari rekomendasi.' url_utama=url_preferensi teks_utama='Mulai Rekomendasi' %}
+
 {% endif %}
+
 {% endblock %}

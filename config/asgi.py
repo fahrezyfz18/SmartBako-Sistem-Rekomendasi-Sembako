@@ -1,16 +1,21 @@
+
 """
-ASGI config for config project.
+Pengaturan ASGI untuk proyek SmartBako.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
+File ini digunakan untuk menjalankan aplikasi
+Django melalui server yang mendukung ASGI.
 """
 
 import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
+# Menghubungkan Django dengan file settings.py.
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "config.settings"
+)
+
+# Membuat aplikasi ASGI.
 application = get_asgi_application()

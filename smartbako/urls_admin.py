@@ -1,13 +1,26 @@
-"""URL panel admin SmartBako (khusus akun staff)."""
+
+"""URL untuk halaman panel admin SmartBako."""
 
 from django.urls import path
 
 from . import views_admin as views
 
-urlpatterns = [
-    path("admin-dashboard/", views.dashboard_admin, name="dashboard_admin"),
 
-    # Kategori
+urlpatterns = [
+    # ==============================
+    # DASHBOARD ADMIN
+    # ==============================
+
+    path(
+        "admin-dashboard/",
+        views.dashboard_admin,
+        name="dashboard_admin",
+    ),
+
+    # ==============================
+    # KELOLA KATEGORI
+    # ==============================
+
     path(
         "panel-admin/kategori/",
         views.daftar_kategori,
@@ -29,7 +42,10 @@ urlpatterns = [
         name="hapus_kategori",
     ),
 
-    # Produk
+    # ==============================
+    # KELOLA PRODUK
+    # ==============================
+
     path(
         "panel-admin/produk/",
         views.daftar_produk,
@@ -56,7 +72,10 @@ urlpatterns = [
         name="hapus_produk",
     ),
 
-    # Pengguna
+    # ==============================
+    # KELOLA PENGGUNA
+    # ==============================
+
     path(
         "panel-admin/pengguna/",
         views.daftar_pengguna,
@@ -78,7 +97,10 @@ urlpatterns = [
         name="hapus_pengguna",
     ),
 
-    # Riwayat preferensi (US-13 / FR-06)
+    # ==============================
+    # RIWAYAT PREFERENSI
+    # ==============================
+
     path(
         "panel-admin/riwayat-preferensi/",
         views.riwayat_preferensi,
@@ -89,6 +111,10 @@ urlpatterns = [
         views.detail_preferensi,
         name="detail_preferensi",
     ),
+
+    # ==============================
+    # LOGOUT ADMIN
+    # ==============================
 
     path(
         "panel-admin/keluar/",

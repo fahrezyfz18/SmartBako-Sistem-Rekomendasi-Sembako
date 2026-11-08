@@ -1,91 +1,198 @@
+
 {% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
 {% load l10n %}
 
+{# Judul halaman mengikuti nama produk yang dibuka #}
 {% block title %}{{ produk.nama }}{% endblock %}
 
+{# Menampilkan urutan halaman atau breadcrumb #}
 {% block breadcrumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb small mb-4">
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:beranda' %}">Beranda</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:katalog' %}">Produk</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}">{{ produk.kategori.nama }}</a></li>
-        <li class="breadcrumb-item active text-truncate" aria-current="page">{{ produk.nama }}</li>
+
+        <li class="breadcrumb-item">
+            <a href="{% url 'smartbako:beranda' %}">Beranda</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{% url 'smartbako:katalog' %}">Produk</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}">
+                {{ produk.kategori.nama }}
+            </a>
+        </li>
+
+        {# Menampilkan nama produk yang sedang dibuka #}
+        <li class="breadcrumb-item active text-truncate" aria-current="page">
+            {{ produk.nama }}
+        </li>
     </ol>
 </nav>
 {% endblock %}
 
 {% block content %}
+
 <div class="row g-4 mb-5">
-    {# ---------- Foto ---------- #}
+
+    {# BAGIAN 1: Foto produk #}
     <div class="col-lg-5">
         <div class="sb-card p-3">
             <div class="sb-detail-media">
+
+                {# Memeriksa apakah produk memiliki gambar #}
                 {% if produk.gambar %}
+
                     <img src="{{ produk.gambar.url }}" alt="Foto {{ produk.nama }}" class="sb-detail-image">
+
                 {% else %}
-                    <span class="sb-produk-placeholder"><i class="bi bi-box-seam"></i>Gambar belum tersedia</span>
+
+                    {# Menampilkan ikon jika gambar belum tersedia #}
+                    <span class="sb-produk-placeholder">
+                        <i class="bi bi-box-seam"></i>Gambar belum tersedia
+                    </span>
+
                 {% endif %}
-                <span class="sb-produk-badge">{% include 'smartbako/components/badge_status_produk.html' with produk=produk angka=True %}</span>
+
+                {# Menampilkan kondisi stok produk #}
+                <span class="sb-produk-badge">
+                    {% include 'smartbako/components/badge_status_produk.html' with produk=produk angka=True %}
+                </span>
             </div>
         </div>
     </div>
 
-    {# ---------- Informasi (FR-13) ---------- #}
+    {# BAGIAN 2: Informasi lengkap produk #}
     <div class="col-lg-7">
         <div class="sb-card p-4 p-lg-5 h-100 d-flex flex-column">
-            <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-eyebrow mb-2">{% include 'smartbako/components/ikon_kategori.html' with nama=produk.kategori.nama %}{{ produk.kategori.nama }}</a>
-            <h1 class="h2 mb-2">{{ produk.nama }}</h1>
-            <p class="text-secondary mb-4">{{ produk.merek|default:"Tanpa merek" }}{% if produk.ukuran %} · {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% endif %}</p>
 
+            {# Kategori produk #}
+            <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-eyebrow mb-2">
+                {% include 'smartbako/components/ikon_kategori.html' with nama=produk.kategori.nama %}
+                {{ produk.kategori.nama }}
+            </a>
+
+            {# Nama dan merek produk #}
+            <h1 class="h2 mb-2">{{ produk.nama }}</h1>
+
+            <p class="text-secondary mb-4">
+                {{ produk.merek|default:"Tanpa merek" }}
+
+                {% if produk.ukuran %}
+                    · {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}
+                {% endif %}
+            </p>
+
+            {# BAGIAN 3: Informasi harga #}
             <div class="sb-harga-box mb-4">
+
                 <div>
                     <small class="text-secondary d-block">Harga</small>
-                    <span class="sb-harga fs-2">Rp {{ produk.harga|floatformat:"0g" }}</span>
+                    <span class="sb-harga fs-2">
+                        Rp {{ produk.harga|floatformat:"0g" }}
+                    </span>
                 </div>
+
+                {# Harga per satuan ditampilkan jika tersedia #}
                 {% if produk.harga_per_satuan %}
                     <div class="text-sm-end">
-                        <small class="text-secondary d-block">Harga per satuan</small>
-                        <span class="fw-semibold">Rp {{ produk.harga_per_satuan|floatformat:"0g" }} / {{ produk.satuan }}</span>
+                        <small class="text-secondary d-block">
+                            Harga per satuan
+                        </small>
+
+                        <span class="fw-semibold">
+                            Rp {{ produk.harga_per_satuan|floatformat:"0g" }} / {{ produk.satuan }}
+                        </span>
                     </div>
                 {% endif %}
             </div>
 
+            {# BAGIAN 4: Deskripsi produk #}
             <h2 class="h6 mb-2">Deskripsi Produk</h2>
-            <p class="text-secondary mb-4">{{ produk.deskripsi|default:"Belum ada deskripsi untuk produk ini."|linebreaksbr }}</p>
 
+            <p class="text-secondary mb-4">
+                {{ produk.deskripsi|default:"Belum ada deskripsi untuk produk ini."|linebreaksbr }}
+            </p>
+
+            {# BAGIAN 5: Spesifikasi produk #}
             <h2 class="h6 mb-3">Spesifikasi</h2>
+
             <dl class="sb-spek mb-4">
-                <div><dt>Kategori</dt><dd>{{ produk.kategori.nama }}</dd></div>
-                <div><dt>Merek</dt><dd>{{ produk.merek|default:"-" }}</dd></div>
-                <div><dt>Ukuran</dt><dd>{% if produk.ukuran %}{{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}{% else %}-{% endif %}</dd></div>
-                <div><dt>Stok</dt><dd>{{ produk.stok }}</dd></div>
+
+                <div>
+                    <dt>Kategori</dt>
+                    <dd>{{ produk.kategori.nama }}</dd>
+                </div>
+
+                <div>
+                    <dt>Merek</dt>
+                    <dd>{{ produk.merek|default:"-" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Ukuran</dt>
+                    <dd>
+                        {% if produk.ukuran %}
+                            {{ produk.ukuran|floatformat:"-2" }} {{ produk.satuan }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Stok</dt>
+                    <dd>{{ produk.stok }}</dd>
+                </div>
+
             </dl>
 
+            {# BAGIAN 6: Tombol tindakan produk #}
             <div class="d-flex flex-wrap align-items-center gap-2 mt-auto">
+
+                {# Mengarahkan pengguna ke form rekomendasi serupa #}
                 <a href="{% url 'smartbako:atur_preferensi' %}?kategori={{ produk.kategori_id }}{% if produk.ukuran %}&ukuran={{ produk.ukuran|unlocalize }}{% endif %}{% if produk.satuan %}&satuan={{ produk.satuan|urlencode }}{% endif %}{% if produk.merek %}&merek={{ produk.merek|urlencode }}{% endif %}" class="btn btn-primary btn-lg">
                     <i class="bi bi-stars me-1"></i> Cari Rekomendasi Serupa
                 </a>
+
+                {# Tombol untuk memasukkan produk ke daftar perbandingan #}
                 {% include 'smartbako/components/tombol_bandingkan.html' with produk=produk awalan='detail' %}
-                <a href="{% url 'smartbako:katalog' %}" class="btn btn-link text-secondary ms-sm-auto"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+
+                {# Tombol kembali ke katalog #}
+                <a href="{% url 'smartbako:katalog' %}" class="btn btn-link text-secondary ms-sm-auto">
+                    <i class="bi bi-arrow-left me-1"></i>Kembali
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-{# ---------- Produk serupa ---------- #}
+{# BAGIAN 7: Menampilkan produk dengan kategori yang sama #}
 {% if produk_serupa %}
+
 <section>
     <div class="d-flex justify-content-between align-items-end gap-3 mb-3">
+
         <h2 class="sb-section-title mb-0">Produk Serupa</h2>
-        <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-link-more">Lihat kategori <i class="bi bi-arrow-right"></i></a>
+
+        <a href="{% url 'smartbako:katalog' %}?kategori={{ produk.kategori_id }}" class="sb-link-more">
+            Lihat kategori <i class="bi bi-arrow-right"></i>
+        </a>
     </div>
+
     <div class="row g-3">
+
+        {# Mengulang produk yang memiliki kategori sama #}
         {% for item in produk_serupa %}
             <div class="col-6 col-lg-3">
                 {% include 'smartbako/components/kartu_produk.html' with produk=item bandingkan=True %}
             </div>
         {% endfor %}
+
     </div>
 </section>
+
 {% endif %}
+
 {% endblock %}

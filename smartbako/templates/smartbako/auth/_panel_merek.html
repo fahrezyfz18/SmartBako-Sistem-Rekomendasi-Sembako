@@ -1,39 +1,57 @@
+
 {% load static %}
+
 {% comment %}
     Panel merek di sisi kiri halaman autentikasi.
-    Parameter: judul, deskripsi
+
+    Parameter yang digunakan:
+    - judul: judul informasi pada panel.
+    - deskripsi: penjelasan singkat tentang SmartBako.
 {% endcomment %}
 
 <aside class="au-brand" aria-label="Tentang SmartBako">
+
+    {# Logo SmartBako yang mengarah ke halaman utama #}
     <a href="{% url 'smartbako:landing_page' %}" class="sb-logo-chip au-brand__logo" aria-label="SmartBako - Beranda">
         <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako" width="140" height="38">
     </a>
 
     <div class="au-brand__body">
+
+        {# Judul dan deskripsi diambil dari halaman yang memanggil komponen ini #}
         <h2>{{ judul }}</h2>
         <p>{{ deskripsi }}</p>
 
+        {# Menampilkan keunggulan atau fitur SmartBako #}
         <ul class="au-points">
+
+            {# Keunggulan pertama: rekomendasi produk #}
             <li>
                 <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.1L20 9l-4 3.9.9 5.6-4.9-2.6-4.9 2.6.9-5.6L4 9l5.6-.9L12 3Z"/></svg>
                 </span>
                 Rekomendasi sesuai kebutuhan Anda
             </li>
+
+            {# Keunggulan kedua: penyesuaian anggaran #}
             <li>
                 <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg>
                 </span>
                 Pilihan produk yang pas dengan anggaran
             </li>
+
+            {# Keunggulan ketiga: perbandingan produk #}
             <li>
                 <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/></svg>
                 </span>
                 Bandingkan produk sebelum memutuskan
             </li>
+
         </ul>
     </div>
 
+    {# Slogan SmartBako #}
     <p class="au-brand__foot">Pas harganya, pas butuhnya.</p>
 </aside>

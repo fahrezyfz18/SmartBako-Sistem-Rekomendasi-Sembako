@@ -1,16 +1,21 @@
+
 """
-WSGI config for config project.
+Pengaturan WSGI untuk proyek SmartBako.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
+File ini digunakan untuk menjalankan aplikasi
+Django melalui server yang mendukung WSGI.
 """
 
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
+# Menghubungkan Django dengan file settings.py.
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "config.settings"
+)
+
+# Membuat aplikasi WSGI.
 application = get_wsgi_application()

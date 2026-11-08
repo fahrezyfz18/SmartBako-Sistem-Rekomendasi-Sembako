@@ -1,51 +1,81 @@
+
 {% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
 
 {% block title %}Profil Saya{% endblock %}
 
 {% block content %}
+
+{# Judul halaman profil pengguna #}
 <div class="mb-4">
     {% include 'smartbako/components/judul_halaman.html' with label='Akun' ikon='bi-person' judul='Profil dan Pengaturan Akun' deskripsi='Kelola informasi akun SmartBako Anda.' %}
 </div>
 
 <div class="row g-4">
+
+    {# Bagian menu samping profil #}
     <aside class="col-lg-4">
         {% include 'smartbako/components/menu_profil.html' with aktif='profil' %}
     </aside>
 
     <div class="col-lg-8">
+
+        {# Form untuk mengubah informasi profil #}
         <form method="post" class="sb-card" novalidate>
             {% csrf_token %}
+
+            {# Judul formulir #}
             <div class="sb-card-header">
-                <h2 class="sb-card-title"><i class="bi bi-person-vcard"></i>Informasi Profil</h2>
+                <h2 class="sb-card-title">
+                    <i class="bi bi-person-vcard"></i>Informasi Profil
+                </h2>
             </div>
 
             <div class="p-4">
+
+                {# Menampilkan informasi akun pengguna #}
                 <div class="row g-3 mb-4">
+
                     <div class="col-sm-6">
                         <div class="sb-mini-stat">
                             <small class="text-secondary">Terdaftar sejak</small>
                             <strong>{{ request.user.date_joined|date:"d M Y" }}</strong>
                         </div>
                     </div>
+
                     <div class="col-sm-6">
                         <div class="sb-mini-stat">
                             <small class="text-secondary">Total rekomendasi</small>
                             <strong>{{ total_riwayat }} kali</strong>
                         </div>
                     </div>
+
                 </div>
 
+                {# Form nama depan dan email pengguna #}
                 <div class="row g-3">
+
                     {% include 'smartbako/components/field.html' with field=form.first_name kolom='col-md-6' %}
+
                     {% include 'smartbako/components/field.html' with field=form.email kolom='col-md-6' bantuan='Email dipakai untuk masuk ke SmartBako.' %}
+
                 </div>
 
+                {# Tombol menyimpan perubahan atau membatalkan proses #}
                 <div class="d-flex gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check2 me-1"></i>Simpan Perubahan</button>
-                    <a href="{% url 'smartbako:profil' %}" class="btn btn-soft">Batal</a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check2 me-1"></i>Simpan Perubahan
+                    </button>
+
+                    <a href="{% url 'smartbako:profil' %}" class="btn btn-soft">
+                        Batal
+                    </a>
+
                 </div>
+
             </div>
         </form>
     </div>
 </div>
+
 {% endblock %}

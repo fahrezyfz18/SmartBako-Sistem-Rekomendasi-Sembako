@@ -1,12 +1,21 @@
+
 {% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
 
+{# Judul halaman #}
 {% block title %}Produk Tidak Ditemukan{% endblock %}
 
 {% block content %}
-{# US-04 AC3: produk yang tidak ada menampilkan pesan "Produk tidak ditemukan". #}
+
+{# Membatasi lebar tampilan agar pesan berada di tengah halaman #}
 <div class="mx-auto py-lg-4" style="max-width: 620px;">
+
+    {# Menentukan alamat halaman katalog dan beranda #}
     {% url 'smartbako:katalog' as url_katalog %}
     {% url 'smartbako:beranda' as url_beranda %}
+
+    {# Menampilkan pesan jika produk tidak ditemukan #}
     {% include 'smartbako/components/keadaan_kosong.html' with ikon='bi-question-lg' judul='Produk tidak ditemukan' pesan='Produk yang Anda cari tidak tersedia atau sudah dihapus.' url_utama=url_katalog teks_utama='Lihat Semua Produk' url_kedua=url_beranda teks_kedua='Ke Beranda' %}
+
 </div>
+
 {% endblock %}

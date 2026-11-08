@@ -1,13 +1,16 @@
+
 {% extends 'smartbako/base_publik.html' %}
 {% load static %}
 
+{# Mengatur judul halaman login #}
 {% block title %}Masuk | SmartBako{% endblock %}
 
+{# Memanggil CSS khusus halaman autentikasi #}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'smartbako/css/auth.css' %}">
 {% endblock %}
 
-{# Halaman autentikasi tampil penuh, tanpa navbar dan footer. #}
+{# Halaman login tidak menggunakan navbar, pesan utama, dan footer publik #}
 {% block navbar %}{% endblock %}
 {% block messages %}{% endblock %}
 {% block footer %}{% endblock %}
@@ -15,10 +18,12 @@
 {% block content %}
 <div class="au-shell">
 
+    {# Menampilkan panel informasi merek SmartBako #}
     {% include 'smartbako/auth/_panel_merek.html' with judul='Belanja sembako lebih terarah.' deskripsi='Masuk untuk melanjutkan atur preferensi dan melihat rekomendasi produk Anda.' %}
 
     <section class="au-panel">
 
+        {# Tombol kembali ke halaman utama #}
         <a href="{% url 'smartbako:landing_page' %}" class="au-back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
             Kembali ke beranda
@@ -26,27 +31,32 @@
 
         <div class="au-card">
 
+            {# Logo yang ditampilkan pada tampilan perangkat kecil #}
             <a href="{% url 'smartbako:landing_page' %}" class="au-mobile-logo" aria-label="SmartBako">
                 <img src="{% static 'smartbako/images/logo1.png' %}" alt="SmartBako">
             </a>
 
+            {# Judul dan penjelasan halaman login #}
             <div class="au-head">
                 <h1>Selamat datang kembali</h1>
                 <p>Masuk ke akun SmartBako Anda.</p>
             </div>
 
+            {# Menampilkan pesan berhasil atau gagal dari Django #}
             {% for message in messages %}
                 <div class="sb-notice sb-notice--{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
             {% endfor %}
 
+            {# Form login menggunakan metode POST #}
             <form method="post" novalidate>
                 {% csrf_token %}
 
-                {# Halaman tujuan setelah login (dikirim dari view). #}
+                {# Menyimpan alamat halaman tujuan setelah login #}
                 {% if tujuan %}
                     <input type="hidden" name="next" value="{{ tujuan }}">
                 {% endif %}
 
+                {# Input email pengguna #}
                 <div class="au-field">
                     <label for="email">Email</label>
                     <div class="au-field__control">
@@ -64,6 +74,7 @@
                     </div>
                 </div>
 
+                {# Input kata sandi pengguna #}
                 <div class="au-field au-field--password">
                     <label for="password">Kata sandi</label>
                     <div class="au-field__control">
@@ -75,6 +86,8 @@
                             autocomplete="current-password"
                             required
                         >
+
+                        {# Tombol untuk melihat kata sandi yang diketik #}
                         <button
                             type="button"
                             class="au-toggle"
@@ -84,9 +97,11 @@
                     </div>
                 </div>
 
+                {# Tombol mengirim data login #}
                 <button type="submit" class="sb-btn sb-btn--primary au-submit">Masuk</button>
             </form>
 
+            {# Tautan menuju halaman pendaftaran akun #}
             <p class="au-switch">
                 Belum punya akun?
                 <a href="{% url 'smartbako:registrasi' %}">Daftar sekarang</a>

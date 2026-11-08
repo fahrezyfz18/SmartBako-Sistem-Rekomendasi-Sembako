@@ -1,117 +1,202 @@
-{% extends 'smartbako/base.html' %}
 
-{% block title %}Atur Preferensi | SmartBako{% endblock %}
+{% extends 'smartbako/panel_pengguna/base_pengguna.html' %}
+
+{% block title %}Cari Rekomendasi{% endblock %}
 
 {% block content %}
-<div class="user-page">
 
-    <header class="user-page__heading">
-        <h1>Atur Preferensi Belanja</h1>
-        <p>
-            Masukkan kebutuhan dan anggaran sebagai dasar sistem
-            dalam menyusun rekomendasi produk. Hanya anggaran maksimum
-            yang wajib diisi.
-        </p>
-    </header>
+{# Judul halaman pencarian rekomendasi #}
+<div class="mb-4">
+    {% include 'smartbako/components/judul_halaman.html' with label='Rekomendasi' ikon='bi-stars' judul='Cari Rekomendasi Produk' deskripsi='Isi kebutuhan dan budget Anda. Sistem akan memberi beberapa pilihan produk yang paling sesuai.' %}
+</div>
 
-    <div class="user-split">
+<div class="row g-4">
 
-        <form method="post" class="user-card user-form" novalidate>
+    {# Form untuk mengisi preferensi produk #}
+    <div class="col-lg-8">
+        <form method="post" class="sb-card p-4 p-lg-5" novalidate>
             {% csrf_token %}
 
-            {% if form.non_field_errors %}
-                <div class="user-alert user-alert--error" role="alert">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
+            {# Menampilkan pesan kesalahan jika ada #}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
 
-            <fieldset class="user-fieldset">
-                <legend>1. Anggaran</legend>
-
-                <div class="user-form__row">
-                    <div class="user-form__group">
-                        <label for="{{ form.budget_min.id_for_label }}">Anggaran Minimum (Rp)</label>
-                        {{ form.budget_min }}
-                        {% for error in form.budget_min.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
-                    </div>
-
-                    <div class="user-form__group">
-                        <label for="{{ form.budget_max.id_for_label }}">
-                            Anggaran Maksimum (Rp) <span class="required" aria-hidden="true">*</span>
-                        </label>
-                        {{ form.budget_max }}
-                        {% for error in form.budget_max.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
+            {# BAGIAN 1: Produk yang ingin dicari #}
+            <div class="sb-form-bagian">
+                <div class="sb-form-bagian-judul">
+                    <span class="sb-langkah">1</span>
+                    <div>
+                        <h2>Produk yang dicari</h2>
+                        <small class="text-secondary">Kategori wajib diisi.</small>
                     </div>
                 </div>
 
-                <div class="chip-row" aria-label="Pilihan cepat anggaran maksimum">
-                    <span class="user-help">Pilihan cepat:</span>
-                    <button type="button" class="chip" data-set-budget="25000">Rp 25.000</button>
-                    <button type="button" class="chip" data-set-budget="50000">Rp 50.000</button>
-                    <button type="button" class="chip" data-set-budget="100000">Rp 100.000</button>
-                    <button type="button" class="chip" data-set-budget="250000">Rp 250.000</button>
-                </div>
-            </fieldset>
+                <div class="row g-3">
 
-            <fieldset class="user-fieldset">
-                <legend>2. Spesifikasi Produk</legend>
+                    {# Pengguna memilih kategori produk #}
+                    {% include 'smartbako/components/field.html' with field=form.kategori kolom='col-md-6' %}
 
-                <div class="user-form__group">
-                    <label for="{{ form.kategori.id_for_label }}">Kategori Produk</label>
-                    {{ form.kategori }}
-                    {% for error in form.kategori.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
-                </div>
+                    {# Pengguna mengisi ukuran dan satuan produk #}
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium" for="{{ form.ukuran.id_for_label }}">{{ form.ukuran.label }} <span class="text-secondary fw-normal">(opsional)</span></label>
 
-                <div class="user-form__row">
-                    <div class="user-form__group">
-                        <label for="{{ form.ukuran.id_for_label }}">Ukuran</label>
-                        {{ form.ukuran }}
-                        {% for error in form.ukuran.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
-                    </div>
+                        <div class="input-group {% if form.ukuran.errors or form.satuan.errors %}sb-invalid{% endif %}">
+                            {{ form.ukuran }}
+                            {{ form.satuan }}
+                        </div>
 
-                    <div class="user-form__group">
-                        <label for="{{ form.satuan.id_for_label }}">Satuan</label>
-                        {{ form.satuan }}
-                        {% for error in form.satuan.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
+                        {# Pilihan satuan yang dapat digunakan #}
+                        <datalist id="daftar-satuan">
+                            <option value="kg"><option value="gram"><option value="liter"><option value="ml">
+                            <option value="pcs"><option value="butir"><option value="sachet">
+                        </datalist>
+
+                        {# Menampilkan kesalahan pada ukuran atau satuan #}
+                        {% for error in form.ukuran.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        {% for error in form.satuan.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+                        <div class="form-text">Misalnya 5 kg atau 2 liter.</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="user-form__group">
-                    <label for="{{ form.merek.id_for_label }}">Merek yang Diinginkan</label>
-                    {{ form.merek }}
-                    {% for error in form.merek.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
+            {# BAGIAN 2: Anggaran belanja pengguna #}
+            <div class="sb-form-bagian">
+                <div class="sb-form-bagian-judul">
+                    <span class="sb-langkah">2</span>
+                    <div>
+                        <h2>Budget belanja</h2>
+                        <small class="text-secondary">Budget maksimum wajib diisi.</small>
+                    </div>
                 </div>
-            </fieldset>
 
-            <fieldset class="user-fieldset">
-                <legend>3. Kebutuhan Tambahan</legend>
+                <div class="row g-3 {% if form.budget_min.errors or form.budget_max.errors %}sb-invalid{% endif %}">
 
-                <div class="user-form__group">
-                    <label for="{{ form.kebutuhan_tambahan.id_for_label }}">Catatan</label>
-                    {{ form.kebutuhan_tambahan }}
-                    {% for error in form.kebutuhan_tambahan.errors %}<p class="user-form__error">{{ error }}</p>{% endfor %}
-                    <span class="user-help">
-                        Contoh: &ldquo;beras pulen kemasan kecil&rdquo; atau &ldquo;minyak goreng untuk keluarga besar&rdquo;.
-                    </span>
+                    {# Anggaran minimum bersifat opsional #}
+                    <div class="col-sm-6">
+                        <label class="form-label fw-medium" for="{{ form.budget_min.id_for_label }}">Minimum <span class="text-secondary fw-normal">(opsional)</span></label>
+
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            {{ form.budget_min }}
+                        </div>
+
+                        {% for error in form.budget_min.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    {# Anggaran maksimum wajib diisi #}
+                    <div class="col-sm-6">
+                        <label class="form-label fw-medium" for="{{ form.budget_max.id_for_label }}">Maksimum <span class="text-danger">*</span></label>
+
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            {{ form.budget_max }}
+                        </div>
+
+                        {% for error in form.budget_max.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
                 </div>
-            </fieldset>
 
-            <div class="user-actions">
-                <button type="submit" class="user-button">Simpan &amp; Lihat Rekomendasi</button>
-                <a href="{% url 'smartbako:beranda' %}" class="user-button user-button--outline">Batal</a>
+                {# Tombol pilihan cepat untuk mengisi anggaran maksimum #}
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                    <small class="text-secondary me-1">Pilihan cepat:</small>
+                    <button type="button" class="btn btn-sm btn-soft sb-budget-chip" data-set-budget="25000">Rp 25.000</button>
+                    <button type="button" class="btn btn-sm btn-soft sb-budget-chip" data-set-budget="50000">Rp 50.000</button>
+                    <button type="button" class="btn btn-sm btn-soft sb-budget-chip" data-set-budget="100000">Rp 100.000</button>
+                    <button type="button" class="btn btn-sm btn-soft sb-budget-chip" data-set-budget="200000">Rp 200.000</button>
+                </div>
+            </div>
+
+            {# BAGIAN 3: Informasi tambahan produk #}
+            <div class="sb-form-bagian">
+                <div class="sb-form-bagian-judul">
+                    <span class="sb-langkah">3</span>
+                    <div>
+                        <h2>Detail tambahan</h2>
+                        <small class="text-secondary">Opsional, membantu hasil lebih tepat.</small>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+
+                    {# Memilih atau mengetik merek produk #}
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium" for="{{ form.merek.id_for_label }}">{{ form.merek.label }}</label>
+                        {{ form.merek }}
+
+                        {# Menampilkan daftar merek dari database #}
+                        <datalist id="daftar-merek">
+                            {% for merek in merek_list %}<option value="{{ merek }}">{% endfor %}
+                        </datalist>
+
+                        {% for error in form.merek.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    {# Memilih jumlah produk rekomendasi yang diinginkan #}
+                    {% include 'smartbako/components/field.html' with field=form.jumlah_rekomendasi kolom='col-md-6' %}
+
+                    {# Mengisi kebutuhan tambahan dalam bentuk teks #}
+                    <div class="col-12">
+                        <label class="form-label fw-medium" for="{{ form.kebutuhan_tambahan.id_for_label }}">{{ form.kebutuhan_tambahan.label }}</label>
+                        {{ form.kebutuhan_tambahan }}
+
+                        <div class="form-text">Kata kunci di sini ikut dicocokkan dengan nama dan deskripsi produk.</div>
+                    </div>
+                </div>
+            </div>
+
+            {# Tombol untuk mengirim atau mengatur ulang formulir #}
+            <div class="d-flex flex-wrap gap-2 mt-4 pt-2">
+                <button type="submit" class="btn btn-primary btn-lg px-4">
+                    <i class="bi bi-stars me-1"></i> Cari Rekomendasi
+                </button>
+
+                <a href="{% url 'smartbako:atur_preferensi' %}" class="btn btn-soft btn-lg">Reset</a>
             </div>
         </form>
-
-        <aside class="user-card user-tips">
-            <h2>Tips Mengisi</h2>
-            <ul>
-                <li>Semakin spesifik kategori, ukuran, dan merek, semakin sedikit hasil yang muncul.</li>
-                <li>Kosongkan kolom yang belum Anda tentukan agar hasil tetap luas.</li>
-                <li>Gunakan kolom catatan untuk kata kunci seperti jenis atau kemasan produk.</li>
-                <li>Anggaran minimum bersifat opsional.</li>
-            </ul>
-        </aside>
-
     </div>
+
+    {# BAGIAN SAMPING: Penjelasan cara kerja sistem rekomendasi #}
+    <aside class="col-lg-4">
+        <div class="sb-card sb-info-card">
+
+            <div class="sb-info-head">
+                <span class="sb-info-ikon"><i class="bi bi-cpu"></i></span>
+                <h2 class="h5 mb-1">Bagaimana sistem memilih?</h2>
+                <p class="small mb-0">SmartBako memakai metode content-based filtering.</p>
+            </div>
+
+            <div class="p-4">
+
+                {# Menjelaskan tahapan sistem rekomendasi #}
+                <ol class="list-unstyled mb-4">
+
+                    <li class="d-flex gap-3 mb-3">
+                        <span class="sb-langkah">1</span>
+                        <span class="small">Anda mengisi kebutuhan dan budget.</span>
+                    </li>
+
+                    <li class="d-flex gap-3 mb-3">
+                        <span class="sb-langkah">2</span>
+                        <span class="small">Preferensi dan data produk diubah menjadi bobot kata dengan <strong>TF-IDF</strong>, lalu kemiripannya dihitung dengan <strong>Cosine Similarity</strong>.</span>
+                    </li>
+
+                    <li class="d-flex gap-3">
+                        <span class="sb-langkah">3</span>
+                        <span class="small">Produk diurutkan dari tingkat kecocokan tertinggi dan disimpan ke riwayat.</span>
+                    </li>
+
+                </ol>
+
+                {# Informasi bahwa rekomendasi hanya berupa saran #}
+                <div class="sb-alasan">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Hasil bersifat saran. Keputusan akhir tetap di tangan Anda.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
 </div>
+
 {% endblock %}
