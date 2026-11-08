@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """Konfigurasi URL utama proyek SmartBako."""
 
 from django.conf import settings
@@ -26,3 +27,18 @@ if settings.DEBUG:
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT,
     )
+=======
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('', include('smartbako.urls')),
+    path('admin/', admin.site.urls),
+]
+
+# Menampilkan file gambar yang diunggah selama development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d

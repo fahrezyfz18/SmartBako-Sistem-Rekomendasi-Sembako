@@ -21,11 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # KEAMANAN
 # ==========================================================
 
+<<<<<<< HEAD
 # SECURITY WARNING: jangan gunakan key default ini di produksi.
 SECRET_KEY = config(
     "SECRET_KEY",
     default="django-insecure-smartbako-development-key-2026",
 )
+=======
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config('SECRET_KEY')
+>>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
 
 # SECURITY WARNING: matikan DEBUG di produksi (DEBUG=False di .env).
 DEBUG = config("DEBUG", default=True, cast=bool)
