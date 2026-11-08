@@ -1,0 +1,93 @@
+{% extends 'smartbako/panel_admin/base_admin.html' %}
+
+{% block title %}Riwayat Preferensi{% endblock %}
+{% block heading %}Riwayat Preferensi Pengguna{% endblock %}
+{% block subheading %}Pantau kebutuhan yang dimasukkan pengguna untuk memahami produk yang paling dicari.{% endblock %}
+
+{% block content %}
+{% if paling_dicari %}
+    <div class="sb-card p-3 mb-3 d-flex flex-wrap align-items-center gap-2">
+        <span class="text-secondary small me-1"><i class="bi bi-fire me-1"></i>Paling sering dicari:</span>
+        {% for item in paling_dicari %}
+            <span class="badge rounded-pill text-bg-accent px-3 py-2">
+                {{ item.kategori__nama }}{% if item.ukuran %} {{ item.ukuran|floatformat:"-2" }} {{ item.satuan }}{% endif %}
+                <span class="opacity-75">· {{ item.jumlah }}x</span>
+            </span>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<section class="sb-card">
+    <form method="get" class="row g-2 p-3 border-bottom" role="search">
+        <div class="col-md-4">
+            <label class="form-label small text-secondary mb-1" for="{{ form_filter.q.id_for_label }}">Pengguna</label>
+            {{ form_filter.q }}
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-secondary mb-1" for="{{ form_filter.kategori.id_for_label }}">Kategori</label>
+            {{ form_filter.kategori }}
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small text-secondary mb-1" for="{{ form_filter.tanggal_awal.id_for_label }}">Dari</label>
+            {{ form_filter.tanggal_awal }}
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label small text-secondary mb-1" for="{{ form_filter.tanggal_akhir.id_for_label }}">Sampai</label>
+            {{ form_filter.tanggal_akhir }}
+        </div>
+        <div class="col-md-1 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-outline-primary w-100" title="Terapkan filter"><i class="bi bi-funnel"></i></button>
+        </div>
+        {% for error in form_filter.errors.values %}
+            <div class="col-12"><div class="invalid-feedback d-block">{{ error.0 }}</div></div>
+        {% endfor %}
+        {% if ada_filter %}
+            <div class="col-12"><a href="{% url 'smartbako:riwayat_preferensi' %}" class="small"><i class="bi bi-x-circle me-1"></i>Hapus semua filter</a></div>
+        {% endif %}
+    </form>
+
+    <div class="table-responsive">
+        <table class="table sb-table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th class="ps-3">Tanggal</th>
+                    <th>Pengguna</th>
+                    <th>Kategori</th>
+                    <th>Budget</th>
+                    <th>Ukuran</th>
+                    <th>Merek</th>
+                    <th class="text-center">Hasil</th>
+                    <th class="text-end pe-3">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td class="ps-3 text-nowrap">{{ item.tanggal_input|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'smartbako:detail_pengguna' item.pengguna.id %}" class="text-reset text-decoration-none fw-medium">{{ item.pengguna.first_name|default:item.pengguna.email }}</a>
+                        </td>
+                        <td>{{ item.kategori.nama|default:"Semua kategori" }}</td>
+                        <td class="text-nowrap">
+                            {% if item.budget_min %}Rp {{ item.budget_min|floatformat:"0g" }} – {% else %}maks {% endif %}Rp {{ item.budget_max|floatformat:"0g" }}
+                        </td>
+                        <td class="text-nowrap">{% if item.ukuran %}{{ item.ukuran|floatformat:"-2" }} {{ item.satuan }}{% else %}-{% endif %}</td>
+                        <td>{{ item.merek|default:"-" }}</td>
+                        <td class="text-center"><span class="badge rounded-pill text-bg-light border">{{ item.jumlah_hasil|default:0 }}</span></td>
+                        <td class="text-end pe-3"><a href="{% url 'smartbako:detail_preferensi' item.id %}" class="btn btn-sm btn-light-subtle">Detail</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="sb-empty">
+                            <i class="bi bi-clock-history"></i>
+                            {% if ada_filter %}Tidak ada preferensi yang cocok dengan filter.{% else %}Belum ada preferensi yang dimasukkan pengguna.{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'smartbako/panel_admin/components/pagination.html' with label='data' %}
+</section>
+<p class="text-secondary small mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>Halaman ini hanya untuk dilihat, tanpa ubah atau hapus.</p>
+{% endblock %}

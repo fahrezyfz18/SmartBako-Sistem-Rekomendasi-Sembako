@@ -1,0 +1,33 @@
+{% comment %}
+    Navigasi halaman. {% querystring %} (Django 5.1+) menjaga filter yang aktif.
+    Variabel: page_obj, label (mis. "produk").
+{% endcomment %}
+{% if page_obj.paginator.count %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 py-3 border-top">
+    <small class="text-secondary">
+        Menampilkan {{ page_obj.start_index }}–{{ page_obj.end_index }} dari {{ page_obj.paginator.count }} {{ label|default:"data" }}
+    </small>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav aria-label="Navigasi halaman">
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.has_previous %}{% querystring page=page_obj.previous_page_number %}{% else %}#{% endif %}" aria-label="Sebelumnya">‹</a>
+            </li>
+            {% for nomor in page_obj.paginator.page_range %}
+                {% if nomor == page_obj.number %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ nomor }}</span></li>
+                {% elif nomor > page_obj.number|add:'-3' and nomor < page_obj.number|add:'3' or nomor == 1 or nomor == page_obj.paginator.num_pages %}
+                    <li class="page-item"><a class="page-link" href="{% querystring page=nomor %}">{{ nomor }}</a></li>
+                {% elif nomor == page_obj.number|add:'-3' or nomor == page_obj.number|add:'3' %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.has_next %}{% querystring page=page_obj.next_page_number %}{% else %}#{% endif %}" aria-label="Berikutnya">›</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endif %}

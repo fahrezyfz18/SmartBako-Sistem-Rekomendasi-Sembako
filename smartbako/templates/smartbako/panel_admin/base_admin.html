@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>{% block title %}Panel Admin{% endblock %} | SmartBako</title>
     <link rel="icon" type="image/png" href="{% static 'smartbako/images/icon_logo.png' %}">
 
@@ -157,110 +152,3 @@
 {% block extra_js %}{% endblock %}
 </body>
 </html>
-=======
-
-    <title>{% block title %}Admin SmartBako{% endblock %}</title>
-
-    <link rel="stylesheet" href="{% static 'smartbako/css/admin.css' %}">
-</head>
-
-<body>
-<div class="admin-layout">
-
-    <!-- SIDEBAR -->
-    <aside class="admin-sidebar">
-
-        <a href="{% url 'dashboard_admin' %}" class="admin-brand">
-            <img
-                src="{% static 'smartbako/images/logo.jpeg' %}"
-                alt="Logo SmartBako"
-                class="admin-logo"
-            >
-            <span class="admin-brand-name">SmartBako</span>
-        </a>
-
-        <p class="admin-menu-label">MENU ADMIN</p>
-
-        <nav class="admin-nav">
-
-            <a href="{% url 'dashboard_admin' %}"
-               class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
-                <span class="admin-nav-icon">▦</span>
-                Dashboard
-            </a>
-
-            <a href="{% url 'daftar_produk' %}"
-               class="admin-nav-link {% if request.resolver_match.url_name == 'daftar_produk' %}active{% endif %}">
-                <span class="admin-nav-icon">▣</span>
-                Kelola Produk
-            </a>
-
-            <a href="{% url 'daftar_kategori' %}"
-               class="admin-nav-link {% if request.resolver_match.url_name == 'daftar_kategori' %}active{% endif %}">
-                <span class="admin-nav-icon">▤</span>
-                Kelola Kategori
-            </a>
-
-            <a href="{% url 'daftar_pengguna' %}"
-               class="admin-nav-link {% if request.resolver_match.url_name == 'daftar_pengguna' %}active{% endif %}">
-                <span class="admin-nav-icon">♙</span>
-                Kelola Pengguna
-            </a>
-
-            <a href="#" class="admin-nav-link">
-                <span class="admin-nav-icon">▥</span>
-                Statistik Rekomendasi
-            </a>
-
-            <a href="#" class="admin-nav-link">
-                <span class="admin-nav-icon">◷</span>
-                Riwayat Preferensi
-            </a>
-
-            <form action="{% url 'logout_admin' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="admin-logout">
-                    <span class="admin-nav-icon">⇥</span>
-                    Keluar
-                </button>
-            </form>
-
-        </nav>
-    </aside>
-
-    <!-- KONTEN UTAMA -->
-    <main class="admin-main">
-
-        <header class="admin-topbar">
-            <div></div>
-
-            <div class="admin-user">
-                <div class="admin-avatar">
-                    {{ request.user.username|default:"A"|first|upper }}
-                </div>
-                <span>Admin</span>
-            </div>
-        </header>
-
-        <section class="admin-content">
-
-            <!-- NOTIFIKASI -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="admin-alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- ISI SETIAP HALAMAN -->
-            {% block content %}
-            {% endblock %}
-
-        </section>
-    </main>
-
-</div>
-</body>
-</html>
->>>>>>> 7bba253e0cd0a7244ef1e96482bef6ce7916ed0d
